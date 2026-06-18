@@ -3,29 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NardIQ — Multiplayer</title>
+<title>NardIQ — Desafio Mental</title>
+
+<!-- PWA Manifest -->
 <link rel="manifest" href="manifest.json">
+
+<!-- PWA Meta Tags -->
 <meta name="theme-color" content="#6C63FF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NardIQ">
+
+<!-- Ícones para PWA -->
+<link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><linearGradient id='g'><stop offset='0%' stop-color='%236C63FF'/><stop offset='100%' stop-color='%23A78BFA'/></linearGradient></defs><circle cx='100' cy='100' r='90' fill='url(%23g)'/><text x='100' y='130' text-anchor='middle' font-size='80' font-weight='800' fill='white' font-family='sans-serif'>N</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><linearGradient id='g'><stop offset='0%' stop-color='%236C63FF'/><stop offset='100%' stop-color='%23A78BFA'/></linearGradient></defs><circle cx='100' cy='100' r='90' fill='url(%23g)'/><text x='100' y='130' text-anchor='middle' font-size='80' font-weight='800' fill='white' font-family='sans-serif'>N</text></svg>">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+/* ── TEMAS ── */
+:root {
+  --bg: #0D0D1A;
+  --surface: #13112B;
+  --surfaceHi: #1A1836;
+  --border: #2A2744;
+  --border2: #1E1B3A;
+  --violet: #6C63FF;
+  --violetL: #A78BFA;
+  --cyan: #00F5C4;
+  --yellow: #FFD166;
+  --red: #FF4D6D;
+  --text: #E8E6F0;
+  --muted: #7C7A9C;
+  --bodyMuted: #B8B6D4;
+}
+[data-theme="black"] { --bg:#000; --surface:#0A0A0A; --surfaceHi:#111; --border:#222; --border2:#181818; --muted:#555577; --bodyMuted:#9995BB; }
+[data-theme="white"] { --bg:#F5F4FF; --surface:#FFF; --surfaceHi:#EDEDFF; --border:#DDD9FF; --border2:#EEEAFF; --violet:#5A52E0; --violetL:#8B7CF8; --cyan:#00B89C; --yellow:#E6A800; --red:#E63B5A; --text:#1A1733; --muted:#7770AA; --bodyMuted:#5A5588; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background .3s,color .3s}
-:root{--bg:#0D0D1A;--surface:#13112B;--surfaceHi:#1A1836;--border:#2A2744;--border2:#1E1B3A;--violet:#6C63FF;--violetL:#A78BFA;--cyan:#00F5C4;--yellow:#FFD166;--red:#FF4D6D;--text:#E8E6F0;--muted:#7C7A9C;--bodyMuted:#B8B6D4}
-[data-theme="black"]{--bg:#000;--surface:#0A0A0A;--surfaceHi:#111;--border:#222;--border2:#181818;--muted:#555577;--bodyMuted:#9995BB}
-[data-theme="white"]{--bg:#F5F4FF;--surface:#FFF;--surfaceHi:#EDEDFF;--border:#DDD9FF;--border2:#EEEAFF;--violet:#5A52E0;--violetL:#8B7CF8;--cyan:#00B89C;--yellow:#E6A800;--red:#E63B5A;--text:#1A1733;--muted:#7770AA;--bodyMuted:#5A5588}
 #app{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden}
 .screen{position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;background:var(--bg);display:none}
 .screen.active{display:block;z-index:10}
+#screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-/* Splash */
-#screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+/* ── BOTÃO INSTALAR ── */
+.install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--violet), var(--violetL));
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 16px;
+  display: none;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
+  z-index: 1000;
+  max-width: 90%;
+  animation: slideUp 0.5s ease-out;
+  cursor: pointer;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+.install-banner.visible {
+  display: flex;
+}
+.install-banner .icon {
+  font-size: 28px;
+}
+.install-banner .close-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.install-banner .close-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ── SPLASH ── */
+#screen-splash{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
 .splash-brain-wrap{position:relative;width:180px;height:180px;margin-bottom:28px}
 .splash-brain{width:180px;height:180px}
 .splash-pulse{position:absolute;inset:-20px;border-radius:50%;border:2px solid var(--violet);opacity:0;animation:splashPulse 2.4s ease-out infinite}
@@ -39,10 +116,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes splashPulse{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes splashFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes brainFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes brainGlow{0%,100%{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--violet) 50%,transparent))}50%{filter:drop-shadow(0 0 24px color-mix(in srgb,var(--violet) 80%,transparent))}}
 
-/* Auth */
+/* ── AUTH ── */
 #screen-auth.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:100%}
 .auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 24px}
+.auth-brain-wrap{display:flex;justify-content:center;margin-bottom:16px}
+.auth-brain-mini{width:64px;height:64px;animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite}
 .auth-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:32px;color:var(--text);letter-spacing:-1px;text-align:center;margin-bottom:4px}
 .auth-logo span{color:var(--violet)}
 .auth-subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
@@ -61,8 +141,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .auth-google-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
 .google-icon{width:18px;height:18px;flex-shrink:0}
 .auth-error{color:var(--red);font-size:13px;text-align:center;margin-bottom:10px;min-height:18px}
+.auth-success{color:var(--cyan);font-size:13px;text-align:center;margin-bottom:10px}
+.auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
 
-/* Home */
+/* ── LOGO / TOPBAR ── */
 .logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;color:var(--text);letter-spacing:-2px;text-align:center}
 .logo span{color:var(--violet)}
 .tagline{color:var(--muted);font-size:12px;letter-spacing:3px;text-align:center;margin-top:4px;margin-bottom:20px}
@@ -103,7 +185,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .quick-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
 .quick-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--text)}
 
-/* Quiz */
+/* ── QUIZ ── */
 .quiz-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;padding:4px 0;transition:color .2s}
 .back-btn:hover{color:var(--text)}
@@ -151,10 +233,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes streakPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-@keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-@keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-/* Puzzle Visual */
+/* ── PUZZLE VISUAL ── */
 .puzzle-visual{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 8px;min-height:60px;align-items:center}
 .seq-box{width:46px;height:46px;border-radius:10px;background:color-mix(in srgb,var(--violet) 15%,var(--border2));border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text);animation:seqPop .3s backwards}
 .seq-box.missing{background:var(--violet);color:#fff;border-color:var(--violetL);animation:seqPop .3s backwards,seqPulse 1.2s .3s ease-in-out infinite}
@@ -173,8 +253,23 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .progress-dot.done{background:var(--cyan)}
 .progress-dot.wrong{background:var(--red)}
 .progress-dot.current{background:var(--violet);transform:scale(1.3)}
+@keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-/* Ranking */
+/* ── GAMEOVER ── */
+.go-emoji{font-size:62px;text-align:center;margin-bottom:10px}
+.go-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--red);text-align:center}
+.go-sub{color:var(--muted);text-align:center;margin-top:6px;margin-bottom:28px}
+.stats-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px}
+.stat-row{display:flex;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border2);font-family:'Space Grotesk',sans-serif;font-size:15px}
+.stat-row:last-child{border-bottom:none}
+.stat-row span:first-child{color:var(--muted)}
+.stat-row span:last-child{font-weight:700}
+.primary-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:12px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:opacity .2s,transform .1s;margin-bottom:12px}
+.primary-btn:hover{opacity:.9;transform:translateY(-1px)}
+.primary-btn.outline{background:var(--surface);border:1px solid var(--border);color:var(--text)}
+
+/* ── RANKING ── */
 .page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
 .page-back{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:color .2s}
 .page-back:hover{color:var(--text)}
@@ -189,20 +284,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .rank-xp{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--violet)}
 .my-rank-bar{margin-top:16px;padding:14px 16px;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border:1.5px solid var(--violet);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
 
-/* Game Over */
-.go-emoji{font-size:62px;text-align:center;margin-bottom:10px}
-.go-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--red);text-align:center}
-.go-sub{color:var(--muted);text-align:center;margin-top:6px;margin-bottom:28px}
-.stats-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px}
-.stat-row{display:flex;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border2);font-family:'Space Grotesk',sans-serif;font-size:15px}
-.stat-row:last-child{border-bottom:none}
-.stat-row span:first-child{color:var(--muted)}
-.stat-row span:last-child{font-weight:700}
-.primary-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:12px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:opacity .2s,transform .1s;margin-bottom:12px}
-.primary-btn:hover{opacity:.9;transform:translateY(-1px)}
-.primary-btn.outline{background:var(--surface);border:1px solid var(--border);color:var(--text)}
-
-/* Session Score */
+/* ── SESSION SCORE ── */
 .ss-header{text-align:center;padding:32px 0 24px}
 .ss-emoji{font-size:72px;display:block;margin-bottom:14px;animation:crEmojiPop .5s .1s both}
 .ss-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:30px;color:var(--text);animation:crFadeUp .4s .25s both}
@@ -231,7 +313,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes crEmojiPop{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes crFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
-/* Share */
+/* ── SHARE ── */
 .share-section{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
 .share-btn{padding:10px 20px;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:transform .2s,opacity .2s}
 .share-btn:hover{transform:scale(1.05);opacity:.9}
@@ -239,41 +321,60 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .share-btn.twitter{background:#1DA1F2;color:#fff}
 .share-btn.copy{background:var(--violet);color:#fff}
 
-/* Multiplayer */
+/* ── MULTIPLAYER ── */
 .multiplayer-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
-.friend-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--border2);border-radius:10px;margin-bottom:6px}
-.friend-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--text)}
-.friend-status{font-size:12px;color:var(--muted)}
-.challenge-btn{padding:4px 14px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .2s}
-.challenge-btn:hover{opacity:.8}
 .invite-input-wrap{display:flex;gap:8px;margin-top:10px}
 .invite-input-wrap input{flex:1;padding:10px 12px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none}
 .invite-input-wrap input:focus{border-color:var(--violet)}
 .invite-input-wrap button{padding:10px 18px;background:var(--violet);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:opacity .2s}
 .invite-input-wrap button:hover{opacity:.8}
+#challenge-status{font-size:12px;color:var(--muted);margin-top:8px}
 #cr-confetti{position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- SPLASH -->
+<!-- ══ BOTÃO INSTALAR PWA ══ -->
+<button id="install-banner" class="install-banner" onclick="installApp()">
+  <span class="icon">📲</span>
+  <span>Instalar NardIQ no seu dispositivo</span>
+  <span class="close-btn" onclick="event.stopPropagation();hideInstallBanner()">✕</span>
+</button>
+
+<!-- ══ SPLASH ══ -->
 <div id="screen-splash" class="screen active">
   <div class="splash-brain-wrap">
     <div class="splash-pulse"></div>
     <div class="splash-pulse"></div>
     <div class="splash-pulse"></div>
-    <svg class="splash-brain" viewBox="0 0 200 200" style="animation:brainFloat 3s ease-in-out infinite">
+    <svg class="splash-brain" viewBox="0 0 200 200" style="animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite">
       <defs>
-        <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6C63FF"/><stop offset="100%" style="stop-color:#A78BFA"/></linearGradient>
-        <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A78BFA"/><stop offset="100%" style="stop-color:#00F5C4"/></linearGradient>
+        <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6C63FF"/><stop offset="100%" stop-color="#A78BFA"/></linearGradient>
+        <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#A78BFA"/><stop offset="100%" stop-color="#00F5C4"/></linearGradient>
       </defs>
       <path d="M105 55 C125 48, 155 52, 162 72 C170 88, 165 108, 155 120 C148 130, 140 138, 130 142 C125 144, 120 143, 118 138 L115 100 Z" fill="url(#bg1)" opacity="0.9"/>
       <path d="M95 55 C75 48, 45 52, 38 72 C30 88, 35 108, 45 120 C52 130, 60 138, 70 142 C75 144, 80 143, 82 138 L85 100 Z" fill="url(#bg2)" opacity="0.9"/>
       <path d="M85 50 C85 40, 95 34, 100 34 C105 34, 115 40, 115 50 L118 138 C115 148, 108 152, 100 152 C92 152, 85 148, 82 138 Z" fill="url(#bg1)" opacity="0.85"/>
       <path d="M120 70 C130 75, 148 78, 152 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M122 88 C132 92, 148 95, 150 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M118 106 C128 110, 140 114, 142 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
       <path d="M80 70 C70 75, 52 78, 48 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M78 88 C68 92, 52 95, 50 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M82 106 C72 110, 60 114, 58 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
       <line x1="100" y1="52" x2="100" y2="148" stroke="white" stroke-width="1.5" opacity="0.3"/>
+      <ellipse cx="130" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(-20 130 65)"/>
+      <ellipse cx="70" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(20 70 65)"/>
+      <circle cx="168" cy="95" r="4" fill="#00F5C4" opacity="0.7"/>
+      <line x1="164" y1="95" x2="156" y2="95" stroke="#00F5C4" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="32" cy="95" r="4" fill="#A78BFA" opacity="0.7"/>
+      <line x1="36" y1="95" x2="44" y2="95" stroke="#A78BFA" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="100" cy="22" r="4" fill="#6C63FF" opacity="0.7"/>
+      <line x1="100" y1="26" x2="100" y2="34" stroke="#6C63FF" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="155" cy="145" r="3" fill="#FFD166" opacity="0.6"/>
+      <line x1="152" y1="143" x2="145" y2="138" stroke="#FFD166" stroke-width="1.2" opacity="0.4"/>
+      <circle cx="45" cy="145" r="3" fill="#FF4D6D" opacity="0.6"/>
+      <line x1="48" y1="143" x2="55" y2="138" stroke="#FF4D6D" stroke-width="1.2" opacity="0.4"/>
     </svg>
   </div>
   <div class="splash-logo">Nard<span>IQ</span></div>
@@ -281,7 +382,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="splash-btn" onclick="onSplashStart()">Começar →</button>
 </div>
 
-<!-- AUTH -->
+<!-- ══ AUTH ══ -->
 <div id="screen-auth" class="screen">
   <div class="auth-card">
     <div class="auth-logo">Nard<span>IQ</span></div>
@@ -311,11 +412,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
         <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Cadastrar com Google
       </button>
+      <div class="auth-note">Com Google, seu username será definido automaticamente.</div>
     </div>
   </div>
 </div>
 
-<!-- HOME -->
+<!-- ══ HOME ══ -->
 <div id="screen-home" class="screen"><div class="screen-inner">
   <div class="logo">Nard<span>IQ</span></div>
   <div class="tagline">PENSE · APRENDA · EVOLUA</div>
@@ -339,17 +441,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     </div>
     <div class="progress-track"><div class="progress-fill" id="home-xp-bar" style="width:0%"></div></div>
   </div>
-
-  <!-- MULTIPLAYER -->
   <div class="multiplayer-section">
     <div class="section-label">👥 Jogar com amigos</div>
     <div class="invite-input-wrap">
       <input id="invite-input" placeholder="Nome do amigo para desafiar..." maxlength="20">
       <button onclick="challengeFriend()">Desafiar</button>
     </div>
-    <div id="challenge-status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+    <div id="challenge-status"></div>
   </div>
-
   <div class="section">
     <div class="section-label">Ano escolar</div>
     <div class="ano-row" id="ano-row"></div>
@@ -364,7 +463,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- QUIZ -->
+<!-- ══ QUIZ ══ -->
 <div id="screen-quiz" class="screen"><div class="screen-inner">
   <div class="quiz-topbar">
     <button class="back-btn" onclick="goHome()">← Sair</button>
@@ -386,7 +485,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima questão →</button>
 </div></div>
 
-<!-- GAMEOVER -->
+<!-- ══ GAMEOVER ══ -->
 <div id="screen-gameover" class="screen"><div class="screen-inner">
   <div class="go-emoji">💀</div><div class="go-title">Game Over</div><div class="go-sub">Sem vidas restantes</div>
   <div class="stats-card">
@@ -399,7 +498,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="primary-btn" onclick="goHome()">Voltar ao início</button>
 </div></div>
 
-<!-- SESSION SCORE -->
+<!-- ══ SESSION SCORE ══ -->
 <div id="screen-session-score" class="screen"><div class="screen-inner">
   <div class="ss-header">
     <span class="ss-emoji" id="ss-emoji">🏆</span>
@@ -423,21 +522,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     <div class="ss-perf-row"><div class="ss-perf-icon">✓</div><div class="ss-perf-info"><div class="ss-perf-label">Acertos</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-correct" style="background:var(--cyan);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-correct-num" style="color:var(--cyan)">0</div></div>
     <div class="ss-perf-row"><div class="ss-perf-icon">✗</div><div class="ss-perf-info"><div class="ss-perf-label">Erros</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-wrong" style="background:var(--red);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-wrong-num" style="color:var(--red)">0</div></div>
   </div>
-  
-  <!-- SHARE SECTION -->
   <div class="share-section">
     <button class="share-btn whatsapp" onclick="shareResult('whatsapp')">📱 WhatsApp</button>
     <button class="share-btn twitter" onclick="shareResult('twitter')">🐦 Twitter</button>
     <button class="share-btn copy" onclick="shareResult('copy')">📋 Copiar</button>
   </div>
-  
   <div class="ss-btns" style="margin-top:16px">
     <button class="primary-btn" onclick="replaySession()">Jogar novamente</button>
     <button class="primary-btn outline" onclick="goHome()">Voltar ao início</button>
   </div>
 </div></div>
 
-<!-- RANKING -->
+<!-- ══ RANKING ══ -->
 <div id="screen-ranking" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">🏆 Ranking NardIQ</div></div>
   <div id="ranking-list"><div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div></div>
@@ -447,7 +543,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- HISTORY -->
+<!-- ══ HISTORY ══ -->
 <div id="screen-history" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">📊 Histórico</div></div>
   <div id="history-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"></div>
@@ -458,6 +554,56 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <div id="xp-float-container"></div>
 
 <script>
+// ── PWA INSTALAÇÃO ──
+let deferredPrompt = null;
+let installBannerVisible = false;
+
+// Detecta se o app pode ser instalado
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+// Detecta se o app foi instalado
+window.addEventListener('appinstalled', () => {
+  hideInstallBanner();
+  console.log('📲 App instalado com sucesso!');
+});
+
+function showInstallBanner() {
+  const banner = document.getElementById('install-banner');
+  if (banner && !installBannerVisible && !window.matchMedia('(display-mode: standalone)').matches) {
+    banner.classList.add('visible');
+    installBannerVisible = true;
+  }
+}
+
+function hideInstallBanner() {
+  const banner = document.getElementById('install-banner');
+  if (banner) {
+    banner.classList.remove('visible');
+    installBannerVisible = false;
+  }
+}
+
+async function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    if (result.outcome === 'accepted') {
+      console.log('✅ Usuário aceitou instalar');
+      hideInstallBanner();
+    } else {
+      console.log('❌ Usuário recusou instalar');
+    }
+    deferredPrompt = null;
+  } else {
+    // Fallback para navegadores que não suportam beforeinstallprompt
+    alert('📲 Para instalar, abra este site no Chrome e clique em "Adicionar à tela inicial" no menu.');
+  }
+}
+
 // ── HELPERS ──
 function $id(id){return document.getElementById(id)}
 function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
@@ -560,7 +706,6 @@ function shareResult(platform) {
       navigator.clipboard.writeText(message).then(() => {
         showXpFloat('📋 Copiado!');
       }).catch(() => {
-        // Fallback
         const textarea = document.createElement('textarea');
         textarea.value = message;
         document.body.appendChild(textarea);
@@ -602,7 +747,6 @@ function challengeFriend() {
         return;
       }
       
-      // Salvar desafio no banco
       _sb.from('nardiq_challenges').insert({
         challenger_id: _sbUser.id,
         opponent_id: data.id,
@@ -1208,7 +1352,13 @@ function loadHistory() {
   }).join('');
 }
 
-console.log('🚀 NardIQ Multiplayer iniciado!');
+// ── INICIALIZAÇÃO ──
+console.log('🚀 NardIQ PWA iniciado!');
+
+// Verificar se já está instalado
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  console.log('📱 App está rodando como PWA instalado');
+}
 </script>
 </body>
 </html>
