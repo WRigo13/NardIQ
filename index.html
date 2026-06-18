@@ -4,27 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NardIQ — Desafio Mental</title>
-
-<!-- PWA Manifest -->
 <link rel="manifest" href="manifest.json">
-
-<!-- PWA Meta Tags -->
 <meta name="theme-color" content="#6C63FF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NardIQ">
-
-<!-- Ícones para PWA -->
-<link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><linearGradient id='g'><stop offset='0%' stop-color='%236C63FF'/><stop offset='100%' stop-color='%23A78BFA'/></linearGradient></defs><circle cx='100' cy='100' r='90' fill='url(%23g)'/><text x='100' y='130' text-anchor='middle' font-size='80' font-weight='800' fill='white' font-family='sans-serif'>N</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><linearGradient id='g'><stop offset='0%' stop-color='%236C63FF'/><stop offset='100%' stop-color='%23A78BFA'/></linearGradient></defs><circle cx='100' cy='100' r='90' fill='url(%23g)'/><text x='100' y='130' text-anchor='middle' font-size='80' font-weight='800' fill='white' font-family='sans-serif'>N</text></svg>">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
-/* ── TEMAS ── */
 :root {
   --bg: #0D0D1A;
   --surface: #13112B;
@@ -50,7 +39,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-/* ── BOTÃO INSTALAR ── */
+/* Botão Instalar */
 .install-banner {
   position: fixed;
   bottom: 20px;
@@ -73,12 +62,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   font-weight: 600;
   font-size: 15px;
 }
-.install-banner.visible {
-  display: flex;
-}
-.install-banner .icon {
-  font-size: 28px;
-}
+.install-banner.visible { display: flex; }
+.install-banner .icon { font-size: 28px; }
 .install-banner .close-btn {
   background: rgba(255,255,255,0.2);
   border: none;
@@ -93,15 +78,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   justify-content: center;
   transition: background 0.2s;
 }
-.install-banner .close-btn:hover {
-  background: rgba(255,255,255,0.3);
-}
+.install-banner .close-btn:hover { background: rgba(255,255,255,0.3); }
 @keyframes slideUp {
   from { transform: translateX(-50%) translateY(100px); opacity: 0; }
   to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
-/* ── SPLASH ── */
+/* Splash */
 #screen-splash{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
 .splash-brain-wrap{position:relative;width:180px;height:180px;margin-bottom:28px}
 .splash-brain{width:180px;height:180px}
@@ -118,7 +101,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes brainFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes brainGlow{0%,100%{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--violet) 50%,transparent))}50%{filter:drop-shadow(0 0 24px color-mix(in srgb,var(--violet) 80%,transparent))}}
 
-/* ── AUTH ── */
+/* Auth */
 #screen-auth.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:100%}
 .auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 24px}
 .auth-brain-wrap{display:flex;justify-content:center;margin-bottom:16px}
@@ -144,7 +127,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .auth-success{color:var(--cyan);font-size:13px;text-align:center;margin-bottom:10px}
 .auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
 
-/* ── LOGO / TOPBAR ── */
+/* Home */
 .logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;color:var(--text);letter-spacing:-2px;text-align:center}
 .logo span{color:var(--violet)}
 .tagline{color:var(--muted);font-size:12px;letter-spacing:3px;text-align:center;margin-top:4px;margin-bottom:20px}
@@ -185,7 +168,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .quick-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
 .quick-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--text)}
 
-/* ── QUIZ ── */
+/* Quiz */
 .quiz-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;padding:4px 0;transition:color .2s}
 .back-btn:hover{color:var(--text)}
@@ -234,7 +217,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 @keyframes streakPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 
-/* ── PUZZLE VISUAL ── */
+/* Puzzle Visual */
 .puzzle-visual{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 8px;min-height:60px;align-items:center}
 .seq-box{width:46px;height:46px;border-radius:10px;background:color-mix(in srgb,var(--violet) 15%,var(--border2));border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text);animation:seqPop .3s backwards}
 .seq-box.missing{background:var(--violet);color:#fff;border-color:var(--violetL);animation:seqPop .3s backwards,seqPulse 1.2s .3s ease-in-out infinite}
@@ -256,7 +239,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 @keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-/* ── GAMEOVER ── */
+/* Game Over */
 .go-emoji{font-size:62px;text-align:center;margin-bottom:10px}
 .go-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--red);text-align:center}
 .go-sub{color:var(--muted);text-align:center;margin-top:6px;margin-bottom:28px}
@@ -269,7 +252,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .primary-btn:hover{opacity:.9;transform:translateY(-1px)}
 .primary-btn.outline{background:var(--surface);border:1px solid var(--border);color:var(--text)}
 
-/* ── RANKING ── */
+/* Ranking */
 .page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
 .page-back{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:color .2s}
 .page-back:hover{color:var(--text)}
@@ -284,7 +267,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .rank-xp{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--violet)}
 .my-rank-bar{margin-top:16px;padding:14px 16px;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border:1.5px solid var(--violet);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
 
-/* ── SESSION SCORE ── */
+/* Session Score */
 .ss-header{text-align:center;padding:32px 0 24px}
 .ss-emoji{font-size:72px;display:block;margin-bottom:14px;animation:crEmojiPop .5s .1s both}
 .ss-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:30px;color:var(--text);animation:crFadeUp .4s .25s both}
@@ -313,7 +296,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes crEmojiPop{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes crFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── SHARE ── */
+/* Share */
 .share-section{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
 .share-btn{padding:10px 20px;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:transform .2s,opacity .2s}
 .share-btn:hover{transform:scale(1.05);opacity:.9}
@@ -321,7 +304,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .share-btn.twitter{background:#1DA1F2;color:#fff}
 .share-btn.copy{background:var(--violet);color:#fff}
 
-/* ── MULTIPLAYER ── */
+/* Multiplayer */
 .multiplayer-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
 .invite-input-wrap{display:flex;gap:8px;margin-top:10px}
 .invite-input-wrap input{flex:1;padding:10px 12px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none}
@@ -335,14 +318,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <body>
 <div id="app">
 
-<!-- ══ BOTÃO INSTALAR PWA ══ -->
+<!-- Botão Instalar -->
 <button id="install-banner" class="install-banner" onclick="installApp()">
   <span class="icon">📲</span>
   <span>Instalar NardIQ no seu dispositivo</span>
   <span class="close-btn" onclick="event.stopPropagation();hideInstallBanner()">✕</span>
 </button>
 
-<!-- ══ SPLASH ══ -->
+<!-- Splash -->
 <div id="screen-splash" class="screen active">
   <div class="splash-brain-wrap">
     <div class="splash-pulse"></div>
@@ -382,7 +365,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="splash-btn" onclick="onSplashStart()">Começar →</button>
 </div>
 
-<!-- ══ AUTH ══ -->
+<!-- Auth -->
 <div id="screen-auth" class="screen">
   <div class="auth-card">
     <div class="auth-logo">Nard<span>IQ</span></div>
@@ -417,7 +400,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div>
 
-<!-- ══ HOME ══ -->
+<!-- Home -->
 <div id="screen-home" class="screen"><div class="screen-inner">
   <div class="logo">Nard<span>IQ</span></div>
   <div class="tagline">PENSE · APRENDA · EVOLUA</div>
@@ -463,7 +446,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- ══ QUIZ ══ -->
+<!-- Quiz -->
 <div id="screen-quiz" class="screen"><div class="screen-inner">
   <div class="quiz-topbar">
     <button class="back-btn" onclick="goHome()">← Sair</button>
@@ -485,7 +468,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima questão →</button>
 </div></div>
 
-<!-- ══ GAMEOVER ══ -->
+<!-- Game Over -->
 <div id="screen-gameover" class="screen"><div class="screen-inner">
   <div class="go-emoji">💀</div><div class="go-title">Game Over</div><div class="go-sub">Sem vidas restantes</div>
   <div class="stats-card">
@@ -498,7 +481,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="primary-btn" onclick="goHome()">Voltar ao início</button>
 </div></div>
 
-<!-- ══ SESSION SCORE ══ -->
+<!-- Session Score -->
 <div id="screen-session-score" class="screen"><div class="screen-inner">
   <div class="ss-header">
     <span class="ss-emoji" id="ss-emoji">🏆</span>
@@ -533,7 +516,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- ══ RANKING ══ -->
+<!-- Ranking -->
 <div id="screen-ranking" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">🏆 Ranking NardIQ</div></div>
   <div id="ranking-list"><div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div></div>
@@ -543,7 +526,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- ══ HISTORY ══ -->
+<!-- History -->
 <div id="screen-history" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">📊 Histórico</div></div>
   <div id="history-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"></div>
@@ -554,18 +537,33 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <div id="xp-float-container"></div>
 
 <script>
-// ── PWA INSTALAÇÃO ──
+// ============================================
+// SUPABASE - NOVAS CREDENCIAIS
+// ============================================
+const _sb = supabase.createClient(
+  'https://jcwgzovdcfgfnciqudox.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjd2d6b3ZkY2ZnZm5jaXF1ZG94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTIzMDIsImV4cCI6MjA5NzM4ODMwMn0.1DzJbGUWtW_21hNTs3EspmJaf3-hMMkeUN5JWRf8ka0'
+);
+
+// ============================================
+// HELPERS
+// ============================================
+function $id(id){return document.getElementById(id)}
+function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
+function $cls(id){const el=$id(id);return el?el.classList:{add:()=>{},remove:()=>{},toggle:()=>{}}}
+
+// ============================================
+// PWA - INSTALAÇÃO
+// ============================================
 let deferredPrompt = null;
 let installBannerVisible = false;
 
-// Detecta se o app pode ser instalado
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   showInstallBanner();
 });
 
-// Detecta se o app foi instalado
 window.addEventListener('appinstalled', () => {
   hideInstallBanner();
   console.log('📲 App instalado com sucesso!');
@@ -599,25 +597,16 @@ async function installApp() {
     }
     deferredPrompt = null;
   } else {
-    // Fallback para navegadores que não suportam beforeinstallprompt
     alert('📲 Para instalar, abra este site no Chrome e clique em "Adicionar à tela inicial" no menu.');
   }
 }
 
-// ── HELPERS ──
-function $id(id){return document.getElementById(id)}
-function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
-function $cls(id){const el=$id(id);return el?el.classList:{add:()=>{},remove:()=>{},toggle:()=>{}}}
-
-// ── SUPABASE ──
-const _sb = supabase.createClient(
-  'https://glmakzmtklycnlolfybi.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk'
-);
+// ============================================
+// STATE
+// ============================================
 let _sbUser = null;
 let _sbProfile = null;
 
-// ── STATE ──
 const ANOS = ['5°','6°','7°','8°','9°'];
 const CATS = [
   {key:'sequencias', name:'Sequências', icon:'🔢', color:'#6C63FF'},
@@ -640,7 +629,9 @@ let state = {
   answeredResults: [],
 };
 
-// ── BANCO DE QUESTÕES ──
+// ============================================
+// BANCO DE QUESTÕES
+// ============================================
 function getPuzzlesFor(ano, cat) {
   const baseQuestions = {
     'sequencias': [
@@ -677,7 +668,9 @@ function getPuzzlesFor(ano, cat) {
   return baseQuestions[cat] || [];
 }
 
-// ── SHARE FUNCTIONS ──
+// ============================================
+// SHARE FUNCTIONS
+// ============================================
 function shareResult(platform) {
   const total = state.sessionTotal;
   const correct = state.sessionCorrect;
@@ -718,7 +711,9 @@ function shareResult(platform) {
   }
 }
 
-// ── CHALLENGE FUNCTIONS ──
+// ============================================
+// CHALLENGE FUNCTIONS
+// ============================================
 function challengeFriend() {
   const input = $id('invite-input');
   const friendName = input.value.trim();
@@ -765,7 +760,9 @@ function challengeFriend() {
     });
 }
 
-// ── TEMA ──
+// ============================================
+// THEME
+// ============================================
 function setTheme(t) {
   state.theme = t;
   document.documentElement.setAttribute('data-theme', t==='night'?'':t);
@@ -774,7 +771,9 @@ function setTheme(t) {
 }
 (function(){ setTheme(localStorage.getItem('nardiq-theme')||'night'); })();
 
-// ── SCREENS ──
+// ============================================
+// SCREENS
+// ============================================
 function showScreen(id) {
   const elId = id.startsWith('screen-') ? id : 'screen-' + id;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -782,12 +781,15 @@ function showScreen(id) {
   if(el){ el.classList.add('active'); el.scrollTop=0; }
 }
 
-// ── XP / NÍVEL ──
+// ============================================
+// XP / LEVEL
+// ============================================
 function getLevel(xp) {
   let l=0;
   for(let i=0;i<XP_THRESHOLDS.length;i++) if(xp>=XP_THRESHOLDS[i]) l=i;
   return l;
 }
+
 function updateHomeXP() {
   const xp=state.xp, lvl=getLevel(xp);
   const xpIn=xp-XP_THRESHOLDS[lvl];
@@ -805,7 +807,9 @@ function updateHomeXP() {
   }
 }
 
-// ── HOME RENDER ──
+// ============================================
+// HOME RENDER
+// ============================================
 function renderHome() {
   const anoRow = $id('ano-row');
   if(anoRow) anoRow.innerHTML = ANOS.map(a =>
@@ -823,9 +827,12 @@ function renderHome() {
     </button>`;
   }).join('');
 }
+
 function selectAno(a) { state.ano=a; renderHome(); }
 
-// ── QUIZ ──
+// ============================================
+// QUIZ
+// ============================================
 function startQuiz(catKey) {
   state.category = catKey;
   state.lives=3; state.streak=0;
@@ -1172,7 +1179,9 @@ function goHome(){
   loadData();updateHomeXP();renderHome();showScreen('home');
 }
 
-// ── SUPABASE AUTH ──
+// ============================================
+// SUPABASE AUTH
+// ============================================
 async function onSplashStart() {
   try {
     const { data } = await _sb.auth.getSession();
@@ -1265,6 +1274,9 @@ async function doLogout() {
   showScreen('screen-auth');
 }
 
+// ============================================
+// SAVE/LOAD
+// ============================================
 function loadData() {
   if(!_sbProfile){state.xp=parseInt(localStorage.getItem('nardiq-xp')||'0');state.bestStreak=parseInt(localStorage.getItem('nardiq-streak')||'0');}
 }
@@ -1294,7 +1306,9 @@ async function saveProgress(q,correct) {
   if(_sbProfile) _sbProfile.total_questions=(_sbProfile.total_questions||0)+1;
 }
 
-// ── RANKING ──
+// ============================================
+// RANKING
+// ============================================
 async function loadRanking() {
   const list=$id('ranking-list');
   if(!list) return;
@@ -1323,7 +1337,9 @@ async function loadRanking() {
   }
 }
 
-// ── HISTORY ──
+// ============================================
+// HISTORY
+// ============================================
 function loadHistory() {
   const hist = JSON.parse(localStorage.getItem('nardiq-history') || '[]');
   const summary = $id('history-summary');
@@ -1352,10 +1368,12 @@ function loadHistory() {
   }).join('');
 }
 
-// ── INICIALIZAÇÃO ──
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
 console.log('🚀 NardIQ PWA iniciado!');
+console.log('🔗 Supabase URL:', 'https://jcwgzovdcfgfnciqudox.supabase.co');
 
-// Verificar se já está instalado
 if (window.matchMedia('(display-mode: standalone)').matches) {
   console.log('📱 App está rodando como PWA instalado');
 }
