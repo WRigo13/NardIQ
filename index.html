@@ -2,981 +2,1141 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#4C3BCF">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>NardIQ — Desafio Mental</title>
 <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6C63FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NardIQ">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --pri: #4C3BCF;
-    --pri-light: #EEF0FF;
-    --pri-mid: #7B6FE8;
-    --sec: #F97316;
-    --sec-light: #FFF4EC;
-    --ok: #16A34A;
-    --ok-light: #DCFCE7;
-    --err: #DC2626;
-    --err-light: #FEE2E2;
-    --warn: #CA8A04;
-    --warn-light: #FEF9C3;
-    --bg: #F5F4FF;
-    --surface: #ffffff;
-    --text: #1a1a2e;
-    --muted: #6B7280;
-    --border: #E5E7EB;
-    --radius: 16px;
-    --radius-sm: 10px;
-    --shadow: 0 2px 12px rgba(76,59,207,.10);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; overflow: hidden; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    max-width: 480px;
-    margin: 0 auto;
-    position: relative;
-  }
+/* ── TEMAS ──────────────────────────────────────────── */
+:root {
+  --bg:        #0D0D1A;
+  --surface:   #13112B;
+  --surfaceHi: #1A1836;
+  --border:    #2A2744;
+  --border2:   #1E1B3A;
+  --violet:    #6C63FF;
+  --violetL:   #A78BFA;
+  --cyan:      #00F5C4;
+  --yellow:    #FFD166;
+  --red:       #FF4D6D;
+  --text:      #E8E6F0;
+  --muted:     #7C7A9C;
+  --bodyMuted: #B8B6D4;
+}
+[data-theme="black"] {
+  --bg:#000; --surface:#0A0A0A; --surfaceHi:#111;
+  --border:#222; --border2:#181818; --muted:#555577; --bodyMuted:#9995BB;
+}
+[data-theme="white"] {
+  --bg:#F5F4FF; --surface:#FFF; --surfaceHi:#EDEDFF;
+  --border:#DDD9FF; --border2:#EEEAFF;
+  --violet:#5A52E0; --violetL:#8B7CF8;
+  --cyan:#00B89C; --yellow:#E6A800; --red:#E63B5A;
+  --text:#1A1733; --muted:#7770AA; --bodyMuted:#5A5588;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background .3s,color .3s}
+#app{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden}
+.screen{position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;background:var(--bg);display:none}
+.screen.active{display:block;z-index:10}
+#screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-  /* ── SCREENS ── */
-  .screen { display: none; flex-direction: column; height: 100%; overflow-y: auto; }
-  .screen.active { display: flex; }
+/* ── SPLASH ── */
+#screen-splash{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+.splash-brain-wrap{position:relative;width:180px;height:180px;margin-bottom:28px}
+.splash-brain{width:180px;height:180px}
+.splash-pulse{position:absolute;inset:-20px;border-radius:50%;border:2px solid var(--violet);opacity:0;animation:splashPulse 2.4s ease-out infinite}
+.splash-pulse:nth-child(2){animation-delay:.8s}
+.splash-pulse:nth-child(3){animation-delay:1.6s}
+.splash-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:52px;color:var(--text);letter-spacing:-2px;animation:splashFadeUp .7s .2s both}
+.splash-logo span{color:var(--violet)}
+.splash-tagline{font-size:12px;letter-spacing:4px;color:var(--muted);margin-top:8px;margin-bottom:52px;animation:splashFadeUp .7s .4s both}
+.splash-btn{padding:16px 48px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:50px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;cursor:pointer;animation:splashFadeUp .7s .6s both;box-shadow:0 8px 32px color-mix(in srgb,var(--violet) 40%,transparent);transition:transform .15s,box-shadow .15s}
+.splash-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px color-mix(in srgb,var(--violet) 50%,transparent)}
+@keyframes splashPulse{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+@keyframes splashFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes brainFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes brainGlow{0%,100%{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--violet) 50%,transparent))}50%{filter:drop-shadow(0 0 24px color-mix(in srgb,var(--violet) 80%,transparent))}}
 
-  /* ── AUTH ── */
-  #screen-auth {
-    background: linear-gradient(160deg, #4C3BCF 0%, #7B6FE8 55%, #F97316 100%);
-    align-items: center; justify-content: center; padding: 32px 24px; gap: 0;
-  }
-  .auth-logo { font-size: 72px; margin-bottom: 8px; animation: bounce 2s infinite; }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  .auth-title { font-size: 38px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-  .auth-sub { font-size: 15px; color: rgba(255,255,255,.75); margin-top: 4px; margin-bottom: 36px; }
-  .auth-card {
-    background: #fff; border-radius: var(--radius); padding: 28px 24px;
-    width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,.18);
-  }
-  .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); }
-  .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; background: #fff; color: var(--muted); border: none; transition: all .2s; }
-  .auth-tab.active { background: var(--pri); color: #fff; }
-  .auth-form { display: flex; flex-direction: column; gap: 12px; }
-  .auth-form input {
-    padding: 13px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
-    font-size: 15px; outline: none; transition: border .2s; background: #fafafa;
-  }
-  .auth-form input:focus { border-color: var(--pri); background: #fff; }
-  .btn-primary {
-    padding: 14px; border-radius: var(--radius-sm); border: none;
-    background: var(--pri); color: #fff; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: opacity .15s, transform .1s;
-  }
-  .btn-primary:active { opacity: .85; transform: scale(.98); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  .auth-err { font-size: 13px; color: var(--err); text-align: center; min-height: 18px; }
-  .emoji-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 4px 0; }
-  .emoji-opt { font-size: 26px; padding: 8px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; text-align: center; transition: all .15s; }
-  .emoji-opt.selected { border-color: var(--pri); background: var(--pri-light); }
+/* ── AUTH ── */
+#screen-auth.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:100%}
+.auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 24px}
+.auth-brain-wrap{display:flex;justify-content:center;margin-bottom:16px}
+.auth-brain-mini{width:64px;height:64px;animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite}
+.auth-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:32px;color:var(--text);letter-spacing:-1px;text-align:center;margin-bottom:4px}
+.auth-logo span{color:var(--violet)}
+.auth-subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
+.auth-tabs{display:flex;background:var(--border2);border-radius:10px;padding:3px;gap:3px;margin-bottom:20px}
+.auth-tab{flex:1;padding:9px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--muted);transition:all .2s}
+.auth-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.auth-input{width:100%;padding:13px 14px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;color:var(--text);margin-bottom:12px;outline:none;transition:border-color .2s}
+.auth-input:focus{border-color:var(--violet)}
+.auth-input::placeholder{color:var(--muted)}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:10px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;transition:opacity .2s}
+.auth-btn:hover{opacity:.9}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-google-btn{width:100%;padding:13px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.auth-google-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
+.google-icon{width:18px;height:18px;flex-shrink:0}
+.auth-error{color:var(--red);font-size:13px;text-align:center;margin-bottom:10px;min-height:18px}
+.auth-success{color:var(--cyan);font-size:13px;text-align:center;margin-bottom:10px}
+.auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
 
-  /* ── TOP BAR ── */
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px; background: var(--surface);
-    border-bottom: 1px solid var(--border); flex-shrink: 0; position: sticky; top: 0; z-index: 10;
-  }
-  .topbar-logo { font-size: 20px; font-weight: 800; color: var(--pri); letter-spacing: -0.5px; }
-  .topbar-user { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--pri-light); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid var(--pri); }
-  .topbar-pts { font-size: 13px; font-weight: 700; color: var(--pri); }
+/* ── LOGO / TOPBAR ── */
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;color:var(--text);letter-spacing:-2px;text-align:center}
+.logo span{color:var(--violet)}
+.tagline{color:var(--muted);font-size:12px;letter-spacing:3px;text-align:center;margin-top:4px;margin-bottom:20px}
 
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
-    display: flex; background: var(--surface); border-top: 1px solid var(--border);
-    flex-shrink: 0; position: sticky; bottom: 0;
-  }
-  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 12px; gap: 3px; cursor: pointer; border: none; background: transparent; }
-  .nav-icon { font-size: 22px; }
-  .nav-label { font-size: 10px; font-weight: 600; color: var(--muted); }
-  .nav-item.active .nav-icon { filter: drop-shadow(0 0 4px var(--pri)); }
-  .nav-item.active .nav-label { color: var(--pri); }
+/* ── THEME TOGGLE ── */
+.theme-row{display:flex;justify-content:center;gap:8px;margin-bottom:28px}
+.theme-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;background:transparent;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;color:var(--muted);transition:all .2s}
+.theme-btn.active{border-color:var(--violet);color:var(--violet);background:color-mix(in srgb,var(--violet) 12%,transparent)}
+.theme-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
-  /* ── HOME ── */
-  #screen-home { padding: 0; }
-  .home-scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-  .hero-card {
-    background: linear-gradient(135deg, var(--pri) 0%, var(--pri-mid) 100%);
-    border-radius: var(--radius); padding: 20px; color: #fff; position: relative; overflow: hidden;
-  }
-  .hero-card::after { content:'🧠'; position:absolute; right:-8px; bottom:-12px; font-size:80px; opacity:.15; }
-  .hero-greeting { font-size: 13px; opacity: .8; }
-  .hero-name { font-size: 22px; font-weight: 800; margin: 2px 0 12px; }
-  .hero-stats { display: flex; gap: 16px; }
-  .hero-stat { display: flex; flex-direction: column; }
-  .hero-stat-val { font-size: 22px; font-weight: 800; }
-  .hero-stat-lbl { font-size: 11px; opacity: .75; }
-  .level-bar-wrap { margin-top: 14px; }
-  .level-bar-label { font-size: 11px; opacity: .8; margin-bottom: 4px; display: flex; justify-content: space-between; }
-  .level-bar { height: 6px; background: rgba(255,255,255,.25); border-radius: 3px; }
-  .level-bar-fill { height: 100%; background: #fff; border-radius: 3px; transition: width .6s; }
+/* ── XP CARD ── */
+.xp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px}
+.xp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.level-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+.level-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:var(--text)}
+.xp-value{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;color:var(--violet);text-align:right}
+.xp-streak-text{font-size:12px;color:var(--muted);text-align:right}
+.progress-track{height:6px;background:var(--border2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--violetL));border-radius:3px;transition:width .5s ease}
 
-  .section-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .ano-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-  .ano-row::-webkit-scrollbar { display: none; }
-  .ano-chip {
-    padding: 10px 18px; border-radius: 50px; border: 1.5px solid var(--border);
-    font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
-    background: var(--surface); color: var(--muted); transition: all .2s; flex-shrink: 0;
-  }
-  .ano-chip.active { background: var(--pri); color: #fff; border-color: var(--pri); }
+/* ── SECTION ── */
+.section{margin-bottom:22px}
+.section-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
 
-  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .cat-card {
-    background: var(--surface); border-radius: var(--radius); padding: 16px;
-    border: 1.5px solid var(--border); cursor: pointer; transition: all .15s;
-    display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden;
-  }
-  .cat-card:active { transform: scale(.97); }
-  .cat-card.locked { opacity: .5; cursor: not-allowed; }
-  .cat-icon { font-size: 28px; }
-  .cat-name { font-size: 13px; font-weight: 700; color: var(--text); }
-  .cat-count { font-size: 11px; color: var(--muted); }
-  .cat-badge {
-    position: absolute; top: 10px; right: 10px; background: var(--pri-light);
-    color: var(--pri); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
-  }
+/* ── ANO CHIPS ── */
+.ano-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:0}
+.ano-row::-webkit-scrollbar{display:none}
+.ano-chip{padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);font-size:13px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;white-space:nowrap;background:transparent;color:var(--muted);transition:all .2s;flex-shrink:0}
+.ano-chip.active{background:var(--violet);color:#fff;border-color:var(--violet)}
 
-  /* ── QUIZ ── */
-  #screen-quiz { padding: 0; }
-  .quiz-scroll { flex: 1; overflow-y: auto; padding: 16px; }
-  .quiz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .back-btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .quiz-meta { flex: 1; }
-  .quiz-cat { font-size: 12px; font-weight: 700; color: var(--pri); text-transform: uppercase; letter-spacing: .4px; }
-  .quiz-progress-text { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .progress-track { height: 5px; background: var(--border); border-radius: 3px; margin-bottom: 20px; }
-  .progress-thumb { height: 100%; background: var(--pri); border-radius: 3px; transition: width .4s cubic-bezier(.4,0,.2,1); }
+/* ── CATEGORY GRID ── */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat-btn{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px 16px;cursor:pointer;text-align:center;transition:transform .15s,box-shadow .2s;overflow:hidden}
+.cat-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.15)}
+.cat-btn .cat-icon{font-size:28px;margin-bottom:8px;display:block}
+.cat-btn .cat-name{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--text);font-size:14px}
+.cat-btn .cat-count{font-size:11px;color:var(--muted);margin-top:4px}
+.cat-glow{position:absolute;inset:0;border-radius:13px;pointer-events:none}
 
-  .puzzle-card {
-    background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--border);
-    padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow);
-  }
-  .puzzle-tag { display: inline-block; background: var(--pri-light); color: var(--pri); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
-  .puzzle-question { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.5; text-align: center; margin-bottom: 16px; }
-  .puzzle-visual { display: flex; justify-content: center; margin-bottom: 20px; min-height: 80px; align-items: center; }
+/* ── QUICK NAV ── */
+.quick-nav{display:flex;flex-direction:column;gap:8px}
+.quick-btn{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:border-color .2s,background .2s}
+.quick-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
+.quick-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--text)}
 
-  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-  .opt-btn {
-    padding: 14px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
-    background: var(--surface); color: var(--text); font-size: 16px; font-weight: 700;
-    cursor: pointer; transition: all .15s; text-align: center; position: relative;
-  }
-  .opt-btn:hover { border-color: var(--pri); background: var(--pri-light); }
-  .opt-btn.correct { background: var(--ok-light); border-color: var(--ok); color: var(--ok); }
-  .opt-btn.wrong { background: var(--err-light); border-color: var(--err); color: var(--err); }
-  .opt-btn:disabled { cursor: not-allowed; }
-  .opt-letter { font-size: 11px; font-weight: 800; opacity: .5; display: block; margin-bottom: 2px; }
+/* ── USER BAR ── */
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violetL));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.user-info{flex:1;margin:0 12px}
+.user-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
+.user-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;padding:6px 12px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-  .feedback-box {
-    border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 12px;
-    font-size: 14px; font-weight: 500; display: none; line-height: 1.5;
-  }
-  .feedback-box.show { display: block; }
-  .feedback-box.ok { background: var(--ok-light); color: var(--ok); border-left: 3px solid var(--ok); }
-  .feedback-box.nok { background: var(--err-light); color: var(--err); border-left: 3px solid var(--err); }
-  .expl-box {
-    background: var(--pri-light); border-radius: var(--radius-sm); padding: 14px 16px;
-    margin-top: 10px; font-size: 13px; color: var(--pri); line-height: 1.6; display: none;
-  }
-  .expl-box.show { display: block; }
-  .next-btn {
-    width: 100%; padding: 15px; border-radius: var(--radius-sm); border: none;
-    background: var(--pri); color: #fff; font-size: 16px; font-weight: 700;
-    cursor: pointer; margin-top: 14px; display: none; transition: opacity .15s;
-  }
-  .next-btn:active { opacity: .85; }
-  .next-btn.show { display: block; }
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.page-back{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:color .2s}
+.page-back:hover{color:var(--text)}
+.page-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:22px;color:var(--text)}
 
-  /* streak toast */
-  .streak-toast {
-    position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-80px);
-    background: var(--sec); color: #fff; padding: 10px 22px; border-radius: 50px;
-    font-size: 14px; font-weight: 700; z-index: 100; transition: transform .35s cubic-bezier(.34,1.56,.64,1);
-    pointer-events: none; white-space: nowrap;
-  }
-  .streak-toast.show { transform: translateX(-50%) translateY(0); }
+/* ── QUIZ ── */
+.quiz-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;padding:4px 0;transition:color .2s}
+.back-btn:hover{color:var(--text)}
+.lives{display:flex;gap:4px}
+.life{font-size:17px;transition:filter .3s}
+.life.lost{filter:grayscale(1) opacity(.2)}
+.xp-display{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--violet);font-size:16px}
+.pills-row{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+.pill{border:1px solid;border-radius:20px;padding:3px 10px;font-size:12px;font-family:'Space Grotesk',sans-serif}
+.q-counter{color:var(--muted);font-size:13px;margin-left:auto}
+.timer-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.timer-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;align-self:center}
+.timer-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;transition:color .3s}
+.timer-val.pulse{animation:pulse .6s ease-in-out infinite}
+.timer-track{height:6px;background:var(--border2);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.timer-fill{height:100%;border-radius:3px;transition:width 1s linear,background .5s}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 20px}
+.q-text{color:var(--text);font-size:16px;line-height:1.65}
+.options-list{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+.opt-btn{display:flex;align-items:center;gap:12px;background:transparent;border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;text-align:left;cursor:pointer;color:var(--bodyMuted);font-family:'Inter',sans-serif;font-size:15px;line-height:1.4;transition:all .2s;width:100%}
+.opt-btn:hover:not(:disabled){border-color:var(--violet);background:color-mix(in srgb,var(--violet) 8%,transparent)}
+.opt-btn:disabled{cursor:default}
+.opt-btn.correct{border-color:var(--cyan);background:color-mix(in srgb,var(--cyan) 10%,transparent);color:var(--cyan);box-shadow:0 0 16px color-mix(in srgb,var(--cyan) 20%,transparent)}
+.opt-btn.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--red)}
+.opt-letter{min-width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--border2);color:var(--muted);font-weight:700;font-size:13px;font-family:'Space Grotesk',sans-serif;flex-shrink:0;transition:all .2s}
+.opt-btn.correct .opt-letter{background:var(--cyan);color:#000}
+.opt-btn.wrong .opt-letter{background:var(--red);color:#fff}
+.streak-badge{display:none;align-items:center;gap:5px;background:linear-gradient(135deg,#FF6B35,#FF4D6D);border-radius:20px;padding:4px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#fff;box-shadow:0 0 14px rgba(255,77,109,.35);animation:streakPop .3s ease}
+.streak-badge.visible{display:inline-flex}
+.explanation{margin-top:18px;padding:14px 16px;background:var(--border2);border-radius:10px;border-left:3px solid var(--cyan)}
+.explanation.wrong{border-left-color:var(--red)}
+.explanation.timeout{border-left-color:var(--yellow)}
+.expl-label{font-size:12px;color:var(--muted);margin-bottom:5px}
+.expl-divider{height:1px;background:var(--border);margin:10px 0}
+.how-label{font-size:11px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;font-family:'Inter',sans-serif}
+.expl-steps{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.expl-step{display:flex;gap:10px;align-items:flex-start}
+.step-num{min-width:22px;height:22px;border-radius:50%;background:var(--violet);color:#fff;font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:13px;color:var(--bodyMuted);line-height:1.5}
+.step-text code{background:var(--border);padding:1px 6px;border-radius:4px;font-family:monospace;color:var(--cyan);font-size:12px}
+.expl-answer{padding:8px 12px;background:color-mix(in srgb,var(--cyan) 8%,transparent);border-radius:8px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:var(--cyan)}
+.expl-answer.wrong-ans{background:color-mix(in srgb,var(--red) 8%,transparent);color:var(--red)}
+.next-btn{width:100%;padding:15px;margin-top:14px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:12px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;cursor:pointer;display:none;transition:opacity .2s,transform .1s}
+.next-btn:hover{opacity:.9;transform:translateY(-1px)}
+.next-btn.visible{display:block}
+.xp-float{position:fixed;top:38%;left:50%;transform:translateX(-50%);color:var(--cyan);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;pointer-events:none;z-index:200;text-shadow:0 0 20px var(--cyan);animation:floatUp 1.2s ease-out forwards}
 
-  /* ── RANKING ── */
-  #screen-ranking { padding: 0; }
-  .ranking-scroll { flex: 1; overflow-y: auto; padding: 16px; }
-  .ranking-podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; }
-  .podium-place { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .podium-avatar { font-size: 28px; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid transparent; }
-  .podium-avatar.p1 { border-color: #F59E0B; background: #FEF9C3; width: 60px; height: 60px; font-size: 32px; }
-  .podium-avatar.p2 { border-color: #9CA3AF; background: #F3F4F6; }
-  .podium-avatar.p3 { border-color: #B45309; background: #FEF3C7; }
-  .podium-name { font-size: 12px; font-weight: 700; color: var(--text); max-width: 70px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .podium-pts { font-size: 12px; color: var(--muted); }
-  .podium-bar { border-radius: 6px 6px 0 0; width: 64px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .podium-bar.p1 { height: 80px; background: linear-gradient(180deg, #FEF9C3, #F59E0B); }
-  .podium-bar.p2 { height: 60px; background: linear-gradient(180deg, #F3F4F6, #9CA3AF); }
-  .podium-bar.p3 { height: 48px; background: linear-gradient(180deg, #FEF3C7, #D97706); }
+/* ── PUZZLE VISUAL ── */
+.puzzle-visual{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 8px;min-height:60px;align-items:center}
+.seq-box{width:46px;height:46px;border-radius:10px;background:color-mix(in srgb,var(--violet) 15%,var(--border2));border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text);animation:seqPop .3s backwards}
+.seq-box.missing{background:var(--violet);color:#fff;border-color:var(--violetL);animation:seqPop .3s backwards,seqPulse 1.2s .3s ease-in-out infinite}
+.visual-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:18px;margin:4px 0;width:100%}
+.visual-eq{font-size:13px;color:var(--muted);font-weight:600}
+.visual-res{font-size:15px;font-weight:700;color:var(--text)}
+.visual-res.unknown{color:var(--violet);animation:seqPulse 1.2s ease-in-out infinite}
+.visual-word-row{display:flex;justify-content:space-between;align-items:center;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border-radius:8px;padding:10px 14px;margin:4px 0;width:100%;font-size:14px}
+.visual-word{font-weight:700;color:var(--violet)}
+.visual-val{font-weight:700;color:var(--text)}
+.visual-val.unknown{color:var(--cyan);animation:seqPulse 1.2s ease-in-out infinite}
+.visual-eq-box{background:color-mix(in srgb,var(--violet) 12%,var(--surface));border-radius:8px;padding:14px 20px;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:20px;color:var(--violet);text-align:center;border:1.5px solid var(--border);animation:seqPop .4s backwards}
+.visual-shape{animation:seqPop .4s backwards}
+@keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-  .rank-list { display: flex; flex-direction: column; gap: 8px; }
-  .rank-row {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--surface); border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border); padding: 12px 14px;
-  }
-  .rank-row.me { border-color: var(--pri); background: var(--pri-light); }
-  .rank-pos { font-size: 14px; font-weight: 800; color: var(--muted); width: 22px; text-align: center; }
-  .rank-avatar { font-size: 22px; }
-  .rank-info { flex: 1; }
-  .rank-name { font-size: 14px; font-weight: 700; color: var(--text); }
-  .rank-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .rank-pts { font-size: 15px; font-weight: 800; color: var(--pri); }
+/* ── GAMEOVER ── */
+.go-emoji{font-size:62px;text-align:center;margin-bottom:10px}
+.go-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--red);text-align:center}
+.go-sub{color:var(--muted);text-align:center;margin-top:6px;margin-bottom:28px}
+.stats-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px}
+.stat-row{display:flex;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border2);font-family:'Space Grotesk',sans-serif;font-size:15px}
+.stat-row:last-child{border-bottom:none}
+.stat-row span:first-child{color:var(--muted)}
+.stat-row span:last-child{font-weight:700}
+.primary-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:12px;color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:opacity .2s,transform .1s;margin-bottom:12px}
+.primary-btn:hover{opacity:.9;transform:translateY(-1px)}
+.primary-btn.outline{background:var(--surface);border:1px solid var(--border);color:var(--text)}
 
-  /* ── PROFILE ── */
-  #screen-profile { padding: 0; }
-  .profile-scroll { flex: 1; overflow-y: auto; padding: 16px; }
-  .profile-hero { text-align: center; padding: 24px 0 16px; }
-  .profile-avatar-big { font-size: 64px; width: 96px; height: 96px; border-radius: 50%; background: var(--pri-light); border: 3px solid var(--pri); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
-  .profile-username { font-size: 22px; font-weight: 800; color: var(--text); }
-  .profile-level { font-size: 13px; color: var(--pri); font-weight: 600; margin-top: 4px; }
-  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: var(--surface); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 14px 8px; text-align: center; }
-  .stat-card-val { font-size: 22px; font-weight: 800; color: var(--pri); }
-  .stat-card-lbl { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 3px; }
-  .cat-progress-list { display: flex; flex-direction: column; gap: 10px; }
-  .cat-prog-row { background: var(--surface); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 12px 14px; }
-  .cat-prog-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
-  .cat-prog-track { height: 5px; background: var(--border); border-radius: 3px; }
-  .cat-prog-fill { height: 100%; border-radius: 3px; background: var(--pri); transition: width .6s; }
-  .logout-btn { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--err); background: var(--err-light); color: var(--err); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+/* ── RANKING ── */
+.rank-tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px;gap:4px}
+.rank-tab{flex:1;padding:9px;border:none;background:transparent;border-radius:9px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--muted);transition:all .2s}
+.rank-tab.active{background:var(--violet);color:#fff}
+.rank-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color .2s}
+.rank-row.me{border-color:var(--violet);background:color-mix(in srgb,var(--violet) 6%,var(--surface))}
+.rank-pos{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:16px;width:32px;text-align:center;flex-shrink:0}
+.rank-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
+.rank-info{flex:1}
+.rank-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.rank-level{font-size:12px;color:var(--muted);margin-top:2px}
+.rank-xp{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--violet)}
+.rank-medal{font-size:20px}
+.my-rank-bar{margin-top:16px;padding:14px 16px;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border:1.5px solid var(--violet);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
 
-  /* ── SVG ANIMATIONS ── */
-  @keyframes seq-pop { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
-  @keyframes flower-grow { 0%{transform:scale(0) rotate(-20deg);opacity:0} 80%{transform:scale(1.1) rotate(3deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
-  @keyframes pulse-q { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-  .anim-seq { animation: seq-pop .4s backwards; }
-  .anim-flower { animation: flower-grow .5s backwards; }
-  .anim-q { animation: pulse-q 1.4s infinite; }
-
-  /* loading */
-  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--pri); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── SESSION SCORE ── */
+.ss-header{text-align:center;padding:32px 0 24px}
+.ss-emoji{font-size:72px;display:block;margin-bottom:14px;animation:crEmojiPop .5s .1s both}
+.ss-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:30px;color:var(--text);animation:crFadeUp .4s .25s both}
+.ss-sub{color:var(--muted);font-size:15px;margin-top:6px;animation:crFadeUp .4s .35s both}
+.ss-accuracy-ring{position:relative;width:140px;height:140px;margin:0 auto 28px;animation:crFadeUp .5s .4s both}
+.ss-ring-svg{transform:rotate(-90deg)}
+.ss-ring-bg{fill:none;stroke:var(--border2);stroke-width:10}
+.ss-ring-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.ss-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ss-ring-pct{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:28px;color:var(--text)}
+.ss-ring-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.ss-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;animation:crFadeUp .4s .55s both}
+.ss-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.ss-stat-val{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:24px;color:var(--violet)}
+.ss-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.ss-perf-bar{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;animation:crFadeUp .4s .65s both}
+.ss-perf-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ss-perf-row:last-child{margin-bottom:0}
+.ss-perf-icon{width:28px;text-align:center;font-size:16px}
+.ss-perf-info{flex:1}
+.ss-perf-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--text)}
+.ss-perf-track{height:5px;background:var(--border2);border-radius:3px;margin-top:5px;overflow:hidden}
+.ss-perf-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.ss-perf-num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;min-width:36px;text-align:right}
+.ss-btns{display:flex;flex-direction:column;gap:10px;animation:crFadeUp .4s .75s both}
+@keyframes crEmojiPop{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes crFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes streakPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- AUTH -->
-<div id="screen-auth" class="screen active">
-  <div class="auth-logo">🧠</div>
-  <div class="auth-title">NardIQ</div>
-  <div class="auth-sub">Desafio mental para o ensino básico</div>
+<!-- ══ SPLASH ══ -->
+<div id="screen-splash" class="screen active">
+  <div class="splash-brain-wrap">
+    <div class="splash-pulse"></div>
+    <div class="splash-pulse"></div>
+    <div class="splash-pulse"></div>
+    <svg class="splash-brain" viewBox="0 0 200 200" style="animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite">
+      <defs>
+        <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6C63FF"/><stop offset="100%" style="stop-color:#A78BFA"/></linearGradient>
+        <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A78BFA"/><stop offset="100%" style="stop-color:#00F5C4"/></linearGradient>
+      </defs>
+      <path d="M105 55 C125 48, 155 52, 162 72 C170 88, 165 108, 155 120 C148 130, 140 138, 130 142 C125 144, 120 143, 118 138 L115 100 Z" fill="url(#bg1)" opacity="0.9"/>
+      <path d="M95 55 C75 48, 45 52, 38 72 C30 88, 35 108, 45 120 C52 130, 60 138, 70 142 C75 144, 80 143, 82 138 L85 100 Z" fill="url(#bg2)" opacity="0.9"/>
+      <path d="M85 50 C85 40, 95 34, 100 34 C105 34, 115 40, 115 50 L118 138 C115 148, 108 152, 100 152 C92 152, 85 148, 82 138 Z" fill="url(#bg1)" opacity="0.85"/>
+      <path d="M120 70 C130 75, 148 78, 152 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M122 88 C132 92, 148 95, 150 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M118 106 C128 110, 140 114, 142 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
+      <path d="M80 70 C70 75, 52 78, 48 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M78 88 C68 92, 52 95, 50 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <path d="M82 106 C72 110, 60 114, 58 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
+      <line x1="100" y1="52" x2="100" y2="148" stroke="white" stroke-width="1.5" opacity="0.3"/>
+      <ellipse cx="130" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(-20 130 65)"/>
+      <ellipse cx="70" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(20 70 65)"/>
+      <circle cx="168" cy="95" r="4" fill="#00F5C4" opacity="0.7"/>
+      <line x1="164" y1="95" x2="156" y2="95" stroke="#00F5C4" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="32" cy="95" r="4" fill="#A78BFA" opacity="0.7"/>
+      <line x1="36" y1="95" x2="44" y2="95" stroke="#A78BFA" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="100" cy="22" r="4" fill="#6C63FF" opacity="0.7"/>
+      <line x1="100" y1="26" x2="100" y2="34" stroke="#6C63FF" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="155" cy="145" r="3" fill="#FFD166" opacity="0.6"/>
+      <line x1="152" y1="143" x2="145" y2="138" stroke="#FFD166" stroke-width="1.2" opacity="0.4"/>
+      <circle cx="45" cy="145" r="3" fill="#FF4D6D" opacity="0.6"/>
+      <line x1="48" y1="143" x2="55" y2="138" stroke="#FF4D6D" stroke-width="1.2" opacity="0.4"/>
+    </svg>
+  </div>
+  <div class="splash-logo">Nard<span>IQ</span></div>
+  <div class="splash-tagline">PENSE · APRENDA · EVOLUA</div>
+  <button class="splash-btn" onclick="onSplashStart()">Começar →</button>
+</div>
+
+<!-- ══ AUTH ══ -->
+<div id="screen-auth" class="screen">
   <div class="auth-card">
+    <div class="auth-brain-wrap">
+      <svg class="auth-brain-mini" viewBox="0 0 200 200">
+        <defs>
+          <linearGradient id="abg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6C63FF"/><stop offset="100%" style="stop-color:#A78BFA"/></linearGradient>
+          <linearGradient id="abg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A78BFA"/><stop offset="100%" style="stop-color:#00F5C4"/></linearGradient>
+        </defs>
+        <path d="M105 55 C125 48, 155 52, 162 72 C170 88, 165 108, 155 120 C148 130, 140 138, 130 142 C125 144, 120 143, 118 138 L115 100 Z" fill="url(#abg1)" opacity="0.9"/>
+        <path d="M95 55 C75 48, 45 52, 38 72 C30 88, 35 108, 45 120 C52 130, 60 138, 70 142 C75 144, 80 143, 82 138 L85 100 Z" fill="url(#abg2)" opacity="0.9"/>
+        <path d="M85 50 C85 40, 95 34, 100 34 C105 34, 115 40, 115 50 L118 138 C115 148, 108 152, 100 152 C92 152, 85 148, 82 138 Z" fill="url(#abg1)" opacity="0.85"/>
+        <path d="M120 70 C130 75, 148 78, 152 90" stroke="white" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <path d="M80 70 C70 75, 52 78, 48 90" stroke="white" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <line x1="100" y1="52" x2="100" y2="148" stroke="white" stroke-width="1.5" opacity="0.3"/>
+      </svg>
+    </div>
+    <div class="auth-logo">Nard<span>IQ</span></div>
+    <div class="auth-subtitle">Entre para competir no ranking global</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('login')">Entrar</button>
-      <button class="auth-tab" onclick="switchTab('register')">Cadastrar</button>
+      <button class="auth-tab active" id="tab-login"  onclick="authSwitchTab('login')">Entrar</button>
+      <button class="auth-tab"        id="tab-signup" onclick="authSwitchTab('signup')">Criar conta</button>
     </div>
-    <!-- LOGIN -->
-    <div id="form-login" class="auth-form">
-      <input type="email" id="login-email" placeholder="Seu e-mail" autocomplete="email">
-      <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password">
-      <button class="btn-primary" onclick="doLogin()">Entrar 🚀</button>
-      <div class="auth-err" id="login-err"></div>
+    <div id="auth-error"   class="auth-error"></div>
+    <div id="auth-success" class="auth-success" style="display:none"></div>
+    <!-- Login -->
+    <div id="form-login">
+      <input class="auth-input" id="login-email"    type="email"    placeholder="E-mail" autocomplete="email">
+      <input class="auth-input" id="login-password" type="password" placeholder="Senha"  autocomplete="current-password">
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-google-btn" onclick="doGoogleLogin()">
+        <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Entrar com Google
+      </button>
     </div>
-    <!-- REGISTER -->
-    <div id="form-register" class="auth-form" style="display:none">
-      <input type="text" id="reg-username" placeholder="Seu apelido (ex: Nard123)" maxlength="20">
-      <input type="email" id="reg-email" placeholder="E-mail">
-      <input type="password" id="reg-pass" placeholder="Senha (mín. 6 caracteres)">
-      <div style="font-size:13px;color:var(--muted);font-weight:600;">Escolha seu avatar:</div>
-      <div class="emoji-picker" id="emoji-picker"></div>
-      <button class="btn-primary" onclick="doRegister()">Criar conta 🎉</button>
-      <div class="auth-err" id="reg-err"></div>
+    <!-- Signup -->
+    <div id="form-signup" style="display:none">
+      <input class="auth-input" id="signup-username" type="text"     placeholder="Username (visível no ranking)" autocomplete="off" maxlength="20">
+      <input class="auth-input" id="signup-email"    type="email"    placeholder="E-mail" autocomplete="email">
+      <input class="auth-input" id="signup-password" type="password" placeholder="Senha (mín. 6 caracteres)" autocomplete="new-password">
+      <button class="auth-btn" id="signup-btn" onclick="doSignup()">Criar conta</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-google-btn" onclick="doGoogleLogin()">
+        <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Cadastrar com Google
+      </button>
+      <div class="auth-note">Com Google, seu username será definido automaticamente.<br>Você pode alterar depois no perfil.</div>
     </div>
   </div>
 </div>
 
-<!-- HOME -->
-<div id="screen-home" class="screen">
-  <div class="topbar">
-    <span class="topbar-logo">🧠 NardIQ</span>
-    <div class="topbar-user" onclick="goTo('profile')">
-      <div class="topbar-pts" id="topbar-pts">0 pts</div>
-      <div class="avatar" id="topbar-avatar">😊</div>
-    </div>
+<!-- ══ HOME ══ -->
+<div id="screen-home" class="screen"><div class="screen-inner">
+  <div class="logo">Nard<span>IQ</span></div>
+  <div class="tagline">PENSE · APRENDA · EVOLUA</div>
+  <!-- Theme toggle -->
+  <div class="theme-row">
+    <button class="theme-btn active" id="theme-night" onclick="setTheme('night')"><span class="theme-dot" style="background:#0D0D1A;border:1.5px solid #6C63FF"></span>Noite</button>
+    <button class="theme-btn" id="theme-black" onclick="setTheme('black')"><span class="theme-dot" style="background:#000;border:1.5px solid #555"></span>Preto</button>
+    <button class="theme-btn" id="theme-white" onclick="setTheme('white')"><span class="theme-dot" style="background:#F5F4FF;border:1.5px solid #5A52E0"></span>Branco</button>
   </div>
-  <div class="home-scroll">
-    <div class="hero-card">
-      <div class="hero-greeting">Olá, bora treinar?</div>
-      <div class="hero-name" id="hero-name">Aluno</div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <span class="hero-stat-val" id="hero-pts">0</span>
-          <span class="hero-stat-lbl">pontos</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-val" id="hero-streak">0🔥</span>
-          <span class="hero-stat-lbl">sequência</span>
-        </div>
-        <div class="hero-stat">
-          <span class="hero-stat-val" id="hero-acc">—</span>
-          <span class="hero-stat-lbl">acertos</span>
-        </div>
-      </div>
-      <div class="level-bar-wrap">
-        <div class="level-bar-label">
-          <span id="hero-level">Nível 1 — Iniciante</span>
-          <span id="hero-level-pct">0%</span>
-        </div>
-        <div class="level-bar"><div class="level-bar-fill" id="level-fill" style="width:0%"></div></div>
-      </div>
+  <!-- User bar -->
+  <div class="user-bar">
+    <div class="user-avatar" id="home-avatar">?</div>
+    <div class="user-info">
+      <div class="user-name" id="home-username">—</div>
+      <div class="user-sub" id="home-usersub">Carregando...</div>
     </div>
-
-    <div class="section-title">Ano escolar</div>
+    <button class="logout-btn" onclick="doLogout()">Sair</button>
+  </div>
+  <!-- XP Card -->
+  <div class="xp-card">
+    <div class="xp-header">
+      <div><div class="level-label" id="home-level-num">NÍVEL 1</div><div class="level-name" id="home-level-name">Iniciante</div></div>
+      <div><div class="xp-value" id="home-xp">0 XP</div><div class="xp-streak-text" id="home-best-streak">melhor streak: 🔥0</div></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="home-xp-bar" style="width:0%"></div></div>
+  </div>
+  <!-- Ano escolar -->
+  <div class="section">
+    <div class="section-label">Ano escolar</div>
     <div class="ano-row" id="ano-row"></div>
-
-    <div class="section-title">Categorias</div>
+  </div>
+  <!-- Categorias -->
+  <div class="section">
+    <div class="section-label">Escolha a categoria</div>
     <div class="cat-grid" id="cat-grid"></div>
   </div>
-  <div class="bottom-nav" id="main-nav">
-    <button class="nav-item active" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
-    <button class="nav-item" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
-    <button class="nav-item" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
+  <!-- Quick nav -->
+  <div class="quick-nav">
+    <button class="quick-btn" onclick="showScreen('screen-ranking');loadRanking()"><span class="quick-label">🏆 Ranking global</span><span style="color:var(--muted);font-size:13px">→</span></button>
+    <button class="quick-btn" onclick="showScreen('screen-history')"><span class="quick-label">📊 Histórico</span><span style="color:var(--muted);font-size:13px">→</span></button>
   </div>
-</div>
+</div></div>
 
-<!-- QUIZ -->
-<div id="screen-quiz" class="screen">
-  <div class="topbar">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <span class="topbar-logo">🧠 NardIQ</span>
-    <div class="topbar-pts" id="quiz-pts-top">0 pts</div>
-  </div>
-  <div class="quiz-scroll" id="quiz-scroll">
-    <div class="quiz-header">
-      <div class="quiz-meta">
-        <div class="quiz-cat" id="quiz-cat-label">—</div>
-        <div class="quiz-progress-text" id="quiz-prog-text">Questão 1 de 5</div>
-      </div>
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="screen"><div class="screen-inner">
+  <div class="quiz-topbar">
+    <button class="back-btn" onclick="goHome()">← Sair</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="streak-badge" id="streak-badge">🔥 <span id="streak-num">0</span>x</div>
+      <div class="lives"><span class="life" id="life-1">❤️</span><span class="life" id="life-2">❤️</span><span class="life" id="life-3">❤️</span></div>
     </div>
-    <div class="progress-track"><div class="progress-thumb" id="quiz-progress" style="width:0%"></div></div>
-    <div class="puzzle-card" id="puzzle-card">
-      <div class="puzzle-tag" id="p-tag"></div>
-      <div class="puzzle-question" id="p-question"></div>
-      <div class="puzzle-visual" id="p-visual"></div>
-      <div class="options-grid" id="p-options"></div>
-      <div class="feedback-box" id="p-feedback"></div>
-      <div class="expl-box" id="p-expl"></div>
-      <button class="next-btn" id="next-btn" onclick="nextPuzzle()">Próximo →</button>
-    </div>
+    <div class="xp-display" id="quiz-xp">0 XP</div>
   </div>
-</div>
+  <div class="pills-row">
+    <span class="pill" id="cat-pill"></span>
+    <span class="pill" id="diff-pill"></span>
+    <span class="q-counter" id="q-counter">#1</span>
+  </div>
+  <div class="timer-row"><span class="timer-label">Tempo</span><span class="timer-val" id="timer-val">—</span></div>
+  <div class="timer-track"><div class="timer-fill" id="timer-fill" style="width:100%;background:#00F5C4"></div></div>
+  <div class="q-card" id="question-area"><div style="text-align:center;padding:40px 0;color:var(--muted)">Carregando…</div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima questão →</button>
+</div></div>
 
-<!-- RANKING -->
-<div id="screen-ranking" class="screen">
-  <div class="topbar">
-    <span class="topbar-logo">🏆 Ranking</span>
-    <button onclick="loadRanking()" style="border:none;background:transparent;font-size:18px;cursor:pointer;">🔄</button>
+<!-- ══ GAMEOVER ══ -->
+<div id="screen-gameover" class="screen"><div class="screen-inner">
+  <div class="go-emoji">💀</div><div class="go-title">Game Over</div><div class="go-sub">Sem vidas restantes</div>
+  <div class="stats-card">
+    <div class="stat-row"><span>Questões</span><span id="go-total">0</span></div>
+    <div class="stat-row"><span>Acertos</span><span id="go-correct">0</span></div>
+    <div class="stat-row"><span>Erros</span><span id="go-wrong">0</span></div>
+    <div class="stat-row"><span>Streak máx.</span><span id="go-streak">🔥0</span></div>
+    <div class="stat-row"><span>XP ganho</span><span id="go-xp">+0</span></div>
   </div>
-  <div class="ranking-scroll">
-    <div class="ranking-podium" id="ranking-podium"></div>
-    <div class="rank-list" id="rank-list"><div class="spinner"></div></div>
-  </div>
-  <div class="bottom-nav">
-    <button class="nav-item" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
-    <button class="nav-item active" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
-    <button class="nav-item" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
-  </div>
-</div>
+  <button class="primary-btn" onclick="goHome()">Voltar ao início</button>
+</div></div>
 
-<!-- PROFILE -->
-<div id="screen-profile" class="screen">
-  <div class="topbar">
-    <button class="back-btn" onclick="goTo('home')">←</button>
-    <span class="topbar-logo">👤 Meu Perfil</span>
-    <div></div>
+<!-- ══ SESSION SCORE ══ -->
+<div id="screen-session-score" class="screen"><div class="screen-inner">
+  <div class="ss-header">
+    <span class="ss-emoji" id="ss-emoji">🏆</span>
+    <div class="ss-title" id="ss-title">Excelente!</div>
+    <div class="ss-sub"   id="ss-sub">Desempenho impressionante!</div>
   </div>
-  <div class="profile-scroll">
-    <div class="profile-hero">
-      <div class="profile-avatar-big" id="prof-avatar">🧠</div>
-      <div class="profile-username" id="prof-username">—</div>
-      <div class="profile-level" id="prof-level">Nível 1 — Iniciante</div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-card-val" id="ps-pts">0</div><div class="stat-card-lbl">Pontos</div></div>
-      <div class="stat-card"><div class="stat-card-val" id="ps-correct">0</div><div class="stat-card-lbl">Acertos</div></div>
-      <div class="stat-card"><div class="stat-card-val" id="ps-acc">—</div><div class="stat-card-lbl">Taxa</div></div>
-      <div class="stat-card"><div class="stat-card-val" id="ps-streak">0</div><div class="stat-card-lbl">Melhor 🔥</div></div>
-      <div class="stat-card"><div class="stat-card-val" id="ps-total">0</div><div class="stat-card-lbl">Tentativas</div></div>
-      <div class="stat-card"><div class="stat-card-val" id="ps-rank">—</div><div class="stat-card-lbl">Posição</div></div>
-    </div>
-    <div class="section-title" style="margin-bottom:10px;">Progresso por categoria</div>
-    <div class="cat-progress-list" id="cat-prog-list"></div>
-    <button class="logout-btn" onclick="doLogout()">Sair da conta</button>
+  <div class="ss-accuracy-ring">
+    <svg class="ss-ring-svg" width="140" height="140" viewBox="0 0 140 140">
+      <circle class="ss-ring-bg"   cx="70" cy="70" r="60"/>
+      <circle class="ss-ring-fill" id="ss-ring-fill" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
+    </svg>
+    <div class="ss-ring-text"><div class="ss-ring-pct" id="ss-ring-pct">0%</div><div class="ss-ring-lbl">ACURÁCIA</div></div>
   </div>
-  <div class="bottom-nav">
-    <button class="nav-item" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
-    <button class="nav-item" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
-    <button class="nav-item active" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
+  <div class="ss-grid">
+    <div class="ss-stat"><div class="ss-stat-val" id="ss-correct">0</div><div class="ss-stat-lbl">Acertos</div></div>
+    <div class="ss-stat"><div class="ss-stat-val" id="ss-wrong"  style="color:var(--red)">0</div><div class="ss-stat-lbl">Erros</div></div>
+    <div class="ss-stat"><div class="ss-stat-val" id="ss-xp">+0</div><div class="ss-stat-lbl">XP ganho</div></div>
+    <div class="ss-stat"><div class="ss-stat-val" id="ss-streak">🔥0</div><div class="ss-stat-lbl">Best Streak</div></div>
   </div>
-</div>
+  <div class="ss-perf-bar">
+    <div class="ss-perf-row"><div class="ss-perf-icon">✓</div><div class="ss-perf-info"><div class="ss-perf-label">Acertos</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-correct" style="background:var(--cyan);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-correct-num" style="color:var(--cyan)">0</div></div>
+    <div class="ss-perf-row"><div class="ss-perf-icon">✗</div><div class="ss-perf-info"><div class="ss-perf-label">Erros</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-wrong" style="background:var(--red);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-wrong-num" style="color:var(--red)">0</div></div>
+    <div class="ss-perf-row"><div class="ss-perf-icon">⏱</div><div class="ss-perf-info"><div class="ss-perf-label">Tempo esgotado</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-timeout" style="background:var(--yellow);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-timeout-num" style="color:var(--yellow)">0</div></div>
+  </div>
+  <div class="ss-btns">
+    <button class="primary-btn" onclick="replaySession()">Jogar novamente</button>
+    <button class="primary-btn outline" onclick="goHome()">Voltar ao início</button>
+  </div>
+</div></div>
 
-<!-- STREAK TOAST -->
-<div class="streak-toast" id="streak-toast"></div>
+<!-- ══ RANKING ══ -->
+<div id="screen-ranking" class="screen"><div class="screen-inner">
+  <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">🏆 Ranking NardIQ</div></div>
+  <div id="ranking-list"><div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div></div>
+  <div class="my-rank-bar">
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--violet)">Sua posição</span>
+    <span id="my-rank-pos" style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;color:var(--violet)">—</span>
+  </div>
+</div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- ══ HISTÓRICO ══ -->
+<div id="screen-history" class="screen"><div class="screen-inner">
+  <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">📊 Histórico</div></div>
+  <div id="history-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"></div>
+  <div id="history-list"></div>
+</div></div>
+
+<canvas id="cr-confetti" style="position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%"></canvas>
+<div id="xp-float-container"></div>
+
 <script>
-// ── CONFIG ──
-const SUPA_URL = 'https://glmakzmtklycnlolfybi.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk';
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+// ── HELPERS ──
+function $id(id){return document.getElementById(id)}
+function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
+function $cls(id){const el=$id(id);return el?el.classList:{add:()=>{},remove:()=>{},toggle:()=>{}}}
 
-const EMOJIS = ['🧠','🦁','🐯','🐧','🦊','🐸','🦋','🐉','🚀','⚡'];
-const ANOS = ['5°','6°','7°','8°','9°'];
-const CATS = [
-  {name:'Sequências', icon:'🔢', color:'#4C3BCF'},
-  {name:'Álgebra',    icon:'✖️',  color:'#7B6FE8'},
-  {name:'Equações',   icon:'⚖️',  color:'#0EA5E9'},
-  {name:'Lógica',     icon:'💡',  color:'#F59E0B'},
-  {name:'Geometria',  icon:'📐',  color:'#10B981'},
-];
-const LEVELS = [
-  {name:'Iniciante',   pts:0},
-  {name:'Curioso',     pts:100},
-  {name:'Pensador',    pts:300},
-  {name:'Calculista',  pts:600},
-  {name:'Gênio',       pts:1000},
-  {name:'NardIQ Pro',  pts:2000},
-];
-
-// ── PUZZLE BANK ──
-const ALL_PUZZLES = [
-// 5° ANO ──────────────────────────────────────
-{id:'5seq1',ano:'5°',cat:'Sequências',tag:'Encontre o padrão',
- q:'Qual o valor da interrogação?',
- visual:'sequence',data:{nums:[2,8,5,6,8,null,11]},
- opts:[1,4,3,29],correct:2,
- expl:'A sequência tem pares (+6,−3): 2→8(+6), 8→5(−3), 5→6(+1?). O padrão alternado coloca 3 na posição do ?, pois 8→11=+3.'},
-{id:'5log1',ano:'5°',cat:'Lógica',tag:'Enigma das palavras',
- q:'Se GATO = 16 e PEIXE = 125, quanto vale MACACO?',
- visual:'words',data:{rows:[{w:'GATO',n:4,v:'4² = 16'},{w:'PEIXE',n:5,v:'5³ = 125'},{w:'MACACO',n:6,v:'6³ = ?'}]},
- opts:[36,216,250,512],correct:1,
- expl:'A regra: letras³. GATO=4 letras→4²=16. PEIXE=5→5³=125. MACACO=6→6³=216.'},
-{id:'5eq1',ano:'5°',cat:'Equações',tag:'Sistema de pesos',
- q:'Coelho + Gato = 12 kg. A diferença entre eles é 6 kg. Quanto pesa o GATO?',
- visual:'system',data:{rows:['C + G = 12 kg','C − G = 6 kg']},
- opts:[9,7,3,5],correct:2,
- expl:'C+G=12 e C−G=6. Somando: 2C=18 → C=9. Logo G=12−9=3 kg.'},
-{id:'5alg1',ano:'5°',cat:'Álgebra',tag:'Flores e valores',
- q:'Descubra os valores e resolva a última linha!',
- visual:'flowers',data:{
-   rows:[
-     {a:'🌹',b:'🌹',c:'🌹',op:'+',res:'60'},
-     {a:'🌹',b:'🌼',c:'🌼',op:'+',res:'30'},
-     {a:'🌼',b:'🌻',c:'',op:'−',res:'3'},
-     {a:'🌻',b:'🌹',c:'🌼',op:'+',res:'?'},
-   ]},
- opts:[22,25,27,30],correct:2,
- expl:'🌹=20, 🌼=5, 🌻=2. Linha final: 2+20+5=27.'},
-{id:'5geo1',ano:'5°',cat:'Geometria',tag:'Formas e medidas',
- q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',
- visual:'shape',data:{type:'square',label:'5 cm'},
- opts:[10,15,20,25],correct:2,
- expl:'Perímetro de quadrado = 4 × lado = 4 × 5 = 20 cm.'},
-
-// 6° ANO ──────────────────────────────────────
-{id:'6seq1',ano:'6°',cat:'Sequências',tag:'Fibonacci!',
- q:'Qual número vem a seguir? 1, 1, 2, 3, 5, 8, 13, ?',
- visual:'sequence',data:{nums:[1,1,2,3,5,8,13,null]},
- opts:[18,20,21,26],correct:2,
- expl:'Fibonacci: cada número é a soma dos dois anteriores. 8+13=21.'},
-{id:'6alg1',ano:'6°',cat:'Álgebra',tag:'Encontre X',
- q:'Se 3x + 7 = 22, qual é o valor de x?',
- visual:'equation',data:{eq:'3x + 7 = 22'},
- opts:[3,4,5,6],correct:2,
- expl:'3x = 22−7 = 15. Dividindo por 3: x = 5.'},
-{id:'6eq1',ano:'6°',cat:'Equações',tag:'Sistema linear',
- q:'x + y = 10 e x − y = 4. Qual o valor de x?',
- visual:'system',data:{rows:['x + y = 10','x − y = 4']},
- opts:[5,6,7,8],correct:2,
- expl:'Somando as equações: 2x=14 → x=7. E y=10−7=3.'},
-{id:'6log1',ano:'6°',cat:'Lógica',tag:'Quem é mais velho?',
- q:'Ana > Bia > Carla. Carla tem 10 anos, Ana tem 15. Qual idade Bia pode ter?',
- visual:'none',data:{},
- opts:[8,12,15,16],correct:1,
- expl:'Bia deve estar entre Carla (10) e Ana (15). A única opção válida é 12.'},
-{id:'6geo1',ano:'6°',cat:'Geometria',tag:'Área do retângulo',
- q:'Um retângulo tem base 8 cm e altura 5 cm. Qual é a sua área?',
- visual:'shape',data:{type:'rect',w:8,h:5},
- opts:[13,26,40,80],correct:2,
- expl:'Área = base × altura = 8 × 5 = 40 cm².'},
-
-// 7° ANO ──────────────────────────────────────
-{id:'7seq1',ano:'7°',cat:'Sequências',tag:'Potências de 2',
- q:'Qual o próximo número? 2, 4, 8, 16, 32, ?',
- visual:'sequence',data:{nums:[2,4,8,16,32,null]},
- opts:[48,56,64,128],correct:2,
- expl:'Cada número é o dobro do anterior. 32 × 2 = 64.'},
-{id:'7alg1',ano:'7°',cat:'Álgebra',tag:'Produto notável',
- q:'Qual é o valor de (x+3)² quando x = 2?',
- visual:'equation',data:{eq:'(x+3)² , x=2'},
- opts:[10,15,25,35],correct:2,
- expl:'(2+3)² = 5² = 25.'},
-{id:'7eq1',ano:'7°',cat:'Equações',tag:'Equação com fração',
- q:'Se x/2 + 3 = 7, qual é x?',
- visual:'equation',data:{eq:'x/2 + 3 = 7'},
- opts:[2,4,8,12],correct:2,
- expl:'x/2 = 7−3 = 4. Então x = 4 × 2 = 8.'},
-{id:'7log1',ano:'7°',cat:'Lógica',tag:'Animais e valores',
- q:'🐱+🐱+🐱=30 e 🐱+🐶+🐶=20. Quanto vale 🐶?',
- visual:'animals',data:{rows:['🐱+🐱+🐱 = 30','🐱+🐶+🐶 = 20','🐶 = ?']},
- opts:[3,5,7,10],correct:1,
- expl:'3🐱=30 → 🐱=10. 10+2🐶=20 → 2🐶=10 → 🐶=5.'},
-{id:'7geo1',ano:'7°',cat:'Geometria',tag:'Triângulo',
- q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',
- visual:'shape',data:{type:'triangle',b:10,h:6},
- opts:[16,30,60,120],correct:1,
- expl:'Área do triângulo = (base × altura) / 2 = (10 × 6) / 2 = 30 cm².'},
-
-// 8° ANO ──────────────────────────────────────
-{id:'8seq1',ano:'8°',cat:'Sequências',tag:'Quadrados perfeitos',
- q:'1, 4, 9, 16, 25, ?',
- visual:'sequence',data:{nums:[1,4,9,16,25,null]},
- opts:[30,34,36,49],correct:2,
- expl:'São os quadrados perfeitos: 1², 2², 3², 4², 5², 6²=36.'},
-{id:'8alg1',ano:'8°',cat:'Álgebra',tag:'Potências',
- q:'Qual o valor de 2⁵ + 3³?',
- visual:'equation',data:{eq:'2⁵ + 3³'},
- opts:[35,55,59,64],correct:2,
- expl:'2⁵=32. 3³=27. 32+27=59.'},
-{id:'8eq1',ano:'8°',cat:'Equações',tag:'Equação do 2° grau',
- q:'Quais são as raízes de x² − 5x + 6 = 0?',
- visual:'equation',data:{eq:'x² − 5x + 6 = 0'},
- opts:['x=1 e x=6','x=2 e x=3','x=−2 e x=−3','x=3 e x=3'],correct:1,
- expl:'Δ=25−24=1. x=(5±1)/2. x₁=3, x₂=2.'},
-{id:'8geo1',ano:'8°',cat:'Geometria',tag:'Círculo',
- q:'Um círculo tem raio 7 cm. Qual é a área? (π≈3,14)',
- visual:'shape',data:{type:'circle',r:7},
- opts:['43,96','49','153,86','154'],correct:2,
- expl:'Área = π × r² = 3,14 × 7² = 3,14 × 49 ≈ 153,86 cm².'},
-
-// 9° ANO ──────────────────────────────────────
-{id:'9seq1',ano:'9°',cat:'Sequências',tag:'PA ou PG?',
- q:'3, 6, 12, 24, 48, ?',
- visual:'sequence',data:{nums:[3,6,12,24,48,null]},
- opts:[72,86,96,100],correct:2,
- expl:'É uma PG com razão 2. 48 × 2 = 96.'},
-{id:'9alg1',ano:'9°',cat:'Álgebra',tag:'Logaritmo básico',
- q:'Qual o valor de log₁₀(1000)?',
- visual:'equation',data:{eq:'log₁₀(1000)'},
- opts:[2,3,4,10],correct:1,
- expl:'log₁₀(1000) = log₁₀(10³) = 3.'},
-{id:'9geo1',ano:'9°',cat:'Geometria',tag:'Teorema de Pitágoras',
- q:'Um triângulo tem catetos 3 e 4. Qual a hipotenusa?',
- visual:'shape',data:{type:'pythagorean',a:3,b:4},
- opts:[5,6,7,8],correct:0,
- expl:'a²+b²=c². 9+16=25. √25=5. Hipotenusa=5.'},
-{id:'9log1',ano:'9°',cat:'Lógica',tag:'Raciocínio avançado',
- q:'Um produto custa R$120 com 25% de desconto. Qual o preço original?',
- visual:'none',data:{},
- opts:['R$ 144','R$ 148','R$ 160','R$ 150'],correct:2,
- expl:'120 = 75% do original. Original = 120 / 0,75 = R$ 160.'},
-];
+// ── SUPABASE ──
+const _sb = supabase.createClient(
+  'https://glmakzmtklycnlolfybi.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk'
+);
+let _sbUser = null;
+let _sbProfile = null;
 
 // ── STATE ──
-let currentUser = null;
-let profile = null;
-let selectedAno = '5°';
-let selectedCat = null;
-let quizPuzzles = [];
-let quizIdx = 0;
-let quizAnswered = false;
-let selectedEmoji = '🧠';
+const ANOS = ['5°','6°','7°','8°','9°'];
+const CATS = [
+  {key:'sequencias', name:'Sequências', icon:'🔢', color:'#6C63FF'},
+  {key:'algebra',    name:'Álgebra',    icon:'✖️',  color:'#A78BFA'},
+  {key:'equacoes',   name:'Equações',   icon:'⚖️',  color:'#00C6FF'},
+  {key:'logica',     name:'Lógica',     icon:'💡', color:'#FFD166'},
+  {key:'geometria',  name:'Geometria',  icon:'📐', color:'#00F5C4'},
+];
+const XP_THRESHOLDS = [0,100,300,600,1000,1800,3000,5000];
+const LEVEL_NAMES   = ['Iniciante','Curioso','Pensador','Calculista','Estrategista','Gênio','Mestre','NardIQ Pro'];
 
-// ── INIT ──
-window.addEventListener('load', async () => {
-  renderEmojiPicker();
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await loadProfile();
-    goTo('home');
-  }
-});
+let state = {
+  xp:0, bestStreak:0,
+  lives:3, streak:0, sessionXp:0, sessionCorrect:0, sessionWrong:0, sessionTotal:0,
+  questionCount:0, question:null, answered:false,
+  timerInterval:null, timeLeft:0, theme:'night',
+  category:null, ano:'5°',
+  sessionHistory:[],
+};
+let usedQuestions = {};
 
-// ── AUTH ──
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
-  document.getElementById('form-login').style.display = tab==='login' ? 'flex' : 'none';
-  document.getElementById('form-register').style.display = tab==='register' ? 'flex' : 'none';
-}
+// ── PUZZLE BANK ──
+const PUZZLES = {
+  '5°': {
+    sequencias: [
+      {q:'Qual o valor da interrogação? 2, 8, 5, 6, 8, ?, 11',visual:'seq',seq:[2,8,5,6,8,null,11],options:['A) 1','B) 4','C) 3','D) 29'],answer:'C',steps:['Analise os pares: 2→8(+6), 8→5(-3), 5→6(+1), 6→8(+2), 8→?(próximo), ?→11.','O padrão nos pares pares é: -3. Mas 8→? e ?→11(+3) sugere que ? = 3 pois 11-8=3.','Confirma: <code>?=3</code>, pois a diferença seguinte é exatamente 3.'],conclusion:'Resposta: 3'},
+      {q:'Qual o próximo número? 1, 2, 4, 8, 16, ___',visual:'seq',seq:[1,2,4,8,16,null],options:['A) 24','B) 28','C) 32','D) 36'],answer:'C',steps:['Cada termo é o dobro do anterior.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
+      {q:'Complete: 3, 6, 9, 12, ___',visual:'seq',seq:[3,6,9,12,null],options:['A) 14','B) 15','C) 16','D) 18'],answer:'B',steps:['Progressão aritmética com razão 3.','12 + 3 = <code>15</code>.'],conclusion:'Resposta: 15'},
+      {q:'Próximo: 100, 90, 80, 70, ___',visual:'seq',seq:[100,90,80,70,null],options:['A) 55','B) 60','C) 65','D) 50'],answer:'B',steps:['PA decrescente com razão -10.','70 - 10 = <code>60</code>.'],conclusion:'Resposta: 60'},
+    ],
+    algebra: [
+      {q:'Se GATO = 16 e PEIXE = 125, então MACACO = ?',visual:'words',words:[{w:'GATO',n:4,v:'4² = 16'},{w:'PEIXE',n:5,v:'5³ = 125'},{w:'MACACO',n:6,v:'6³ = ?'}],options:['A) 36','B) 216','C) 250','D) 512'],answer:'B',steps:['Regra: letras³. GATO=4 letras → 4²=16 (atenção: é cubo do nº de letras para 5).','PEIXE=5 letras → 5³=125. Logo MACACO=6 letras → <code>6³=216</code>.'],conclusion:'Resposta: 216'},
+      {q:'🌹+🌹+🌹=60. 🌹+🌼+🌼=30. 🌼-🌻=3. 🌻+🌹+🌼=?',visual:'flowers',flowers:[{a:'🌹',b:'🌹',c:'🌹',op:'+',res:'60'},{a:'🌹',b:'🌼',c:'🌼',op:'+',res:'30'},{a:'🌼',b:'🌻',c:'',op:'−',res:'3'},{a:'🌻',b:'🌹',c:'🌼',op:'+',res:'?'}],options:['A) 22','B) 25','C) 27','D) 30'],answer:'C',steps:['3🌹=60 → 🌹=20.','20+2🌼=30 → 🌼=5.','5−🌻=3 → 🌻=2.','🌻+🌹+🌼 = 2+20+5 = <code>27</code>.'],conclusion:'Resposta: 27'},
+      {q:'Se 2x = 14, qual o valor de x?',visual:'eq',eq:'2x = 14',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 14 ÷ 2 = <code>7</code>.'],conclusion:'Resposta: 7'},
+    ],
+    equacoes: [
+      {q:'Coelho + Gato = 12kg. A diferença entre eles é 6kg. Quanto pesa o GATO?',visual:'system',system:['C + G = 12 kg','C − G = 6 kg'],options:['A) 9 kg','B) 7 kg','C) 3 kg','D) 5 kg'],answer:'C',steps:['C+G=12 e C−G=6.','Somando: 2C=18 → C=9.','G = 12−9 = <code>3 kg</code>.'],conclusion:'Resposta: 3 kg'},
+      {q:'Um número somado com 8 resulta em 15. Qual é o número?',visual:'eq',eq:'x + 8 = 15',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 15 − 8 = <code>7</code>.'],conclusion:'Resposta: 7'},
+    ],
+    logica: [
+      {q:'Ana tem mais balas que Bia. Bia tem mais balas que Carla. Carla tem 10. Ana tem 20. Bia pode ter:',visual:null,options:['A) 8','B) 15','C) 20','D) 25'],answer:'B',steps:['Carla < Bia < Ana.','Carla=10, Ana=20. Logo Bia está entre 11 e 19.','Única opção válida: <code>15</code>.'],conclusion:'Resposta: 15'},
+      {q:'Em uma fila: Pedro está antes de João. João está antes de Maria. Quem está na frente?',visual:null,options:['A) João','B) Maria','C) Pedro','D) Todos empatados'],answer:'C',steps:['Pedro → João → Maria.','<code>Pedro</code> está primeiro.'],conclusion:'Resposta: Pedro'},
+    ],
+    geometria: [
+      {q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',visual:'shape',shape:{type:'square',label:'5 cm'},options:['A) 10','B) 15','C) 20','D) 25'],answer:'C',steps:['Perímetro = 4 × lado.','4 × 5 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
+      {q:'Um retângulo tem base 8 cm e altura 3 cm. Qual é a área?',visual:'shape',shape:{type:'rect',w:8,h:3},options:['A) 11','B) 22','C) 24','D) 32'],answer:'C',steps:['Área = base × altura.','8 × 3 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
+    ],
+  },
+  '6°': {
+    sequencias: [
+      {q:'Fibonacci: 1, 1, 2, 3, 5, 8, 13, ___',visual:'seq',seq:[1,1,2,3,5,8,13,null],options:['A) 18','B) 20','C) 21','D) 26'],answer:'C',steps:['Cada termo = soma dos dois anteriores.','8+13 = <code>21</code>.'],conclusion:'Resposta: 21'},
+      {q:'Próximo: 2, 6, 18, 54, ___',visual:'seq',seq:[2,6,18,54,null],options:['A) 108','B) 162','C) 180','D) 216'],answer:'B',steps:['PG com razão 3.','54 × 3 = <code>162</code>.'],conclusion:'Resposta: 162'},
+    ],
+    algebra: [
+      {q:'Se 3x + 7 = 22, qual é o valor de x?',visual:'eq',eq:'3x + 7 = 22',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['3x = 22−7 = 15.','x = 15÷3 = <code>5</code>.'],conclusion:'Resposta: 5'},
+      {q:'🐱+🐱+🐱=30. 🐱+🐶+🐶=20. Quanto vale 🐶?',visual:'animals',animals:['🐱+🐱+🐱 = 30','🐱+🐶+🐶 = 20','🐶 = ?'],options:['A) 3','B) 5','C) 7','D) 10'],answer:'B',steps:['3🐱=30 → 🐱=10.','10+2🐶=20 → 🐶=<code>5</code>.'],conclusion:'Resposta: 5'},
+    ],
+    equacoes: [
+      {q:'x + y = 10 e x − y = 4. Qual o valor de x?',visual:'system',system:['x + y = 10','x − y = 4'],options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['Somando: 2x=14 → x=<code>7</code>.','y = 10−7 = 3.'],conclusion:'Resposta: x = 7'},
+      {q:'2x + 3 = 11. Qual é x?',visual:'eq',eq:'2x + 3 = 11',options:['A) 3','B) 4','C) 5','D) 6'],answer:'B',steps:['2x=11−3=8.','x=8÷2=<code>4</code>.'],conclusion:'Resposta: 4'},
+    ],
+    logica: [
+      {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
+    ],
+    geometria: [
+      {q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',visual:'shape',shape:{type:'triangle',b:10,h:6},options:['A) 16','B) 30','C) 60','D) 120'],answer:'B',steps:['Área = (base × altura) / 2.','(10 × 6) / 2 = <code>30 cm²</code>.'],conclusion:'Resposta: 30 cm²'},
+    ],
+  },
+  '7°': {
+    sequencias: [
+      {q:'Quadrados perfeitos: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 49'],answer:'C',steps:['São n². O próximo é 6²=<code>36</code>.'],conclusion:'Resposta: 36'},
+      {q:'Próximo: 2, 4, 8, 16, 32, 64, ___',visual:'seq',seq:[2,4,8,16,32,64,null],options:['A) 96','B) 112','C) 128','D) 256'],answer:'C',steps:['PG com razão 2.','64×2=<code>128</code>.'],conclusion:'Resposta: 128'},
+    ],
+    algebra: [
+      {q:'(x+3)² quando x=2 vale:',visual:'eq',eq:'(x+3)², x=2',options:['A) 10','B) 15','C) 25','D) 35'],answer:'C',steps:['(2+3)² = 5² = <code>25</code>.'],conclusion:'Resposta: 25'},
+      {q:'Se 4x − 8 = 12, qual é x?',visual:'eq',eq:'4x − 8 = 12',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['4x = 12+8 = 20.','x = 20÷4 = <code>5</code>.'],conclusion:'Resposta: 5'},
+    ],
+    equacoes: [
+      {q:'x/2 + 3 = 7. Qual é x?',visual:'eq',eq:'x/2 + 3 = 7',options:['A) 2','B) 4','C) 8','D) 12'],answer:'C',steps:['x/2 = 7−3 = 4.','x = 4×2 = <code>8</code>.'],conclusion:'Resposta: 8'},
+    ],
+    logica: [
+      {q:'P→Q é verdadeiro. Q é falso. O que se conclui sobre P?',visual:null,options:['A) P é verdadeiro','B) P é falso','C) P pode ser V ou F','D) Nada'],answer:'B',steps:['Modus Tollens: P→Q e ¬Q implica <code>¬P</code>.'],conclusion:'Resposta: P é falso'},
+    ],
+    geometria: [
+      {q:'Um círculo tem raio 7 cm. Qual é a área? (π≈3,14)',visual:'shape',shape:{type:'circle',r:7},options:['A) 43,96','B) 49','C) 153,86','D) 154'],answer:'C',steps:['Área = π × r².','3,14 × 7² = 3,14 × 49 ≈ <code>153,86 cm²</code>.'],conclusion:'Resposta: ≈ 153,86 cm²'},
+    ],
+  },
+  '8°': {
+    sequencias: [
+      {q:'Cubos: 1, 8, 27, 64, ___',visual:'seq',seq:[1,8,27,64,null],options:['A) 100','B) 120','C) 125','D) 144'],answer:'C',steps:['São n³. O próximo é 5³=<code>125</code>.'],conclusion:'Resposta: 125'},
+    ],
+    algebra: [
+      {q:'Qual o valor de 2⁵ + 3³?',visual:'eq',eq:'2⁵ + 3³',options:['A) 35','B) 55','C) 59','D) 64'],answer:'C',steps:['2⁵=32. 3³=27.','32+27=<code>59</code>.'],conclusion:'Resposta: 59'},
+      {q:'log₁₀(1000) = ?',visual:'eq',eq:'log₁₀(1000)',options:['A) 2','B) 3','C) 4','D) 10'],answer:'B',steps:['log₁₀(10³) = <code>3</code>.'],conclusion:'Resposta: 3'},
+    ],
+    equacoes: [
+      {q:'x² − 5x + 6 = 0. Quais as raízes?',visual:'eq',eq:'x² − 5x + 6 = 0',options:['A) x=1 e x=6','B) x=2 e x=3','C) x=−2 e x=−3','D) x=3 e x=3'],answer:'B',steps:['Δ=25−24=1.','x=(5±1)/2 → x₁=3, x₂=<code>2</code>.'],conclusion:'Resposta: x=2 e x=3'},
+    ],
+    logica: [
+      {q:'¬(P ∧ Q) é equivalente a:',visual:null,options:['A) ¬P ∧ ¬Q','B) ¬P ∨ ¬Q','C) P ∨ Q','D) P ∧ ¬Q'],answer:'B',steps:['Lei de De Morgan: ¬(A∧B) = <code>¬A ∨ ¬B</code>.'],conclusion:'Resposta: ¬P ∨ ¬Q'},
+    ],
+    geometria: [
+      {q:'Catetos 3 e 4. Qual a hipotenusa? (Pitágoras)',visual:'shape',shape:{type:'pythagorean',a:3,b:4},options:['A) 5','B) 6','C) 7','D) 8'],answer:'A',steps:['a²+b²=c².','9+16=25. √25=<code>5</code>.'],conclusion:'Resposta: 5'},
+    ],
+  },
+  '9°': {
+    sequencias: [
+      {q:'PG: 3, 6, 12, 24, 48, ___',visual:'seq',seq:[3,6,12,24,48,null],options:['A) 72','B) 86','C) 96','D) 100'],answer:'C',steps:['Razão = 2.','48×2=<code>96</code>.'],conclusion:'Resposta: 96'},
+    ],
+    algebra: [
+      {q:'Um produto com 25% de desconto custa R$120. Qual o preço original?',visual:null,options:['A) R$144','B) R$148','C) R$160','D) R$150'],answer:'C',steps:['120 = 75% do original.','Original = 120 ÷ 0,75 = <code>R$160</code>.'],conclusion:'Resposta: R$160'},
+      {q:'√144 + √25 = ?',visual:'eq',eq:'√144 + √25',options:['A) 15','B) 17','C) 19','D) 21'],answer:'B',steps:['√144=12. √25=5.','12+5=<code>17</code>.'],conclusion:'Resposta: 17'},
+    ],
+    equacoes: [
+      {q:'2x² = 50. Qual o valor positivo de x?',visual:'eq',eq:'2x² = 50',options:['A) 4','B) 5','C) 6','D) 7'],answer:'B',steps:['x²=25.','x=<code>5</code>.'],conclusion:'Resposta: 5'},
+    ],
+    logica: [
+      {q:'Se P→Q e Q→R, então:',visual:null,options:['A) R→P','B) P→R','C) ¬P→¬R','D) R→Q'],answer:'B',steps:['Silogismo hipotético: P→Q e Q→R garantem <code>P→R</code>.'],conclusion:'Resposta: P→R'},
+    ],
+    geometria: [
+      {q:'Quadrado com perímetro 28cm. Qual a área?',visual:'shape',shape:{type:'square',label:'?'},options:['A) 28','B) 36','C) 49','D) 56'],answer:'C',steps:['Lado = 28÷4 = 7cm.','Área = 7² = <code>49 cm²</code>.'],conclusion:'Resposta: 49 cm²'},
+    ],
+  },
+};
 
-function renderEmojiPicker() {
-  document.getElementById('emoji-picker').innerHTML = EMOJIS.map(e =>
-    `<div class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}')">${e}</div>`
-  ).join('');
+// ── TEMA ──
+function setTheme(t) {
+  state.theme = t;
+  document.documentElement.setAttribute('data-theme', t==='night'?'':t);
+  ['night','black','white'].forEach(n => $cls('theme-'+n).toggle('active', n===t));
+  localStorage.setItem('nardiq-theme', t);
 }
-function selectEmoji(e) {
-  selectedEmoji = e;
-  renderEmojiPicker();
-}
+(function(){ setTheme(localStorage.getItem('nardiq-theme')||'night'); })();
 
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const err = document.getElementById('login-err');
-  err.textContent = '';
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { err.textContent = '❌ ' + (error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message); return; }
-  currentUser = data.user;
-  await loadProfile();
-  goTo('home');
-}
-
-async function doRegister() {
-  const username = document.getElementById('reg-username').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const err = document.getElementById('reg-err');
-  err.textContent = '';
-  if (!username || username.length < 3) { err.textContent = '❌ Apelido precisa ter pelo menos 3 caracteres.'; return; }
-  if (pass.length < 6) { err.textContent = '❌ Senha precisa ter pelo menos 6 caracteres.'; return; }
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  if (error) { err.textContent = '❌ ' + error.message; return; }
-  currentUser = data.user;
-  // Create profile
-  const { error: pe } = await sb.from('nardiq_profiles').insert({
-    id: currentUser.id, username, avatar_emoji: selectedEmoji,
-  });
-  if (pe && pe.code !== '23505') { err.textContent = '❌ Erro ao criar perfil: ' + pe.message; return; }
-  await loadProfile();
-  goTo('home');
-}
-
-async function doLogout() {
-  await sb.auth.signOut();
-  currentUser = null; profile = null;
-  goTo('auth');
-}
-
-// ── PROFILE ──
-async function loadProfile() {
-  if (!currentUser) return;
-  const { data } = await sb.from('nardiq_profiles').select('*').eq('id', currentUser.id).single();
-  profile = data;
-  updateUI();
-}
-
-function getLevel(pts) {
-  let lv = 0;
-  for (let i = 0; i < LEVELS.length; i++) { if (pts >= LEVELS[i].pts) lv = i; }
-  return lv;
-}
-function getLevelPct(pts) {
-  const lv = getLevel(pts);
-  const cur = LEVELS[lv].pts;
-  const next = LEVELS[lv+1] ? LEVELS[lv+1].pts : cur + 1000;
-  return Math.min(100, Math.round(((pts - cur) / (next - cur)) * 100));
-}
-
-function updateUI() {
-  if (!profile) return;
-  const pts = profile.total_points || 0;
-  const lv = getLevel(pts);
-  const lvName = `Nível ${lv+1} — ${LEVELS[lv].name}`;
-  const acc = profile.total_answered > 0 ? Math.round((profile.total_correct / profile.total_answered) * 100) + '%' : '—';
-  // Topbar
-  document.getElementById('topbar-pts').textContent = pts + ' pts';
-  document.getElementById('topbar-avatar').textContent = profile.avatar_emoji || '🧠';
-  // Hero
-  document.getElementById('hero-name').textContent = profile.username;
-  document.getElementById('hero-pts').textContent = pts;
-  document.getElementById('hero-streak').textContent = (profile.current_streak||0) + '🔥';
-  document.getElementById('hero-acc').textContent = acc;
-  document.getElementById('hero-level').textContent = lvName;
-  const pct = getLevelPct(pts);
-  document.getElementById('hero-level-pct').textContent = pct + '%';
-  document.getElementById('level-fill').style.width = pct + '%';
-  // Profile screen
-  document.getElementById('prof-avatar').textContent = profile.avatar_emoji || '🧠';
-  document.getElementById('prof-username').textContent = profile.username;
-  document.getElementById('prof-level').textContent = lvName;
-  document.getElementById('ps-pts').textContent = pts;
-  document.getElementById('ps-correct').textContent = profile.total_correct || 0;
-  document.getElementById('ps-acc').textContent = acc;
-  document.getElementById('ps-streak').textContent = profile.best_streak || 0;
-  document.getElementById('ps-total').textContent = profile.total_answered || 0;
-}
-
-// ── NAVIGATION ──
-function goTo(screen) {
+// ── SCREENS ──
+function showScreen(id) {
+  const elId = id.startsWith('screen-') ? id : 'screen-' + id;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + screen).classList.add('active');
-  if (screen === 'home') renderHome();
-  if (screen === 'ranking') loadRanking();
-  if (screen === 'profile') loadProfileScreen();
-  if (screen === 'auth') {
-    document.getElementById('screen-auth').classList.add('active');
+  const el = document.getElementById(elId);
+  if(el){ el.classList.add('active'); el.scrollTop=0; }
+}
+
+// ── XP / NÍVEL ──
+function getLevel(xp) {
+  let l=0;
+  for(let i=0;i<XP_THRESHOLDS.length;i++) if(xp>=XP_THRESHOLDS[i]) l=i;
+  return l;
+}
+function updateHomeXP() {
+  const xp=state.xp, lvl=getLevel(xp);
+  const xpIn=xp-XP_THRESHOLDS[lvl];
+  const xpTo=lvl<XP_THRESHOLDS.length-1?XP_THRESHOLDS[lvl+1]-XP_THRESHOLDS[lvl]:1;
+  $set('home-level-num','textContent','NÍVEL '+(lvl+1));
+  $set('home-level-name','textContent',LEVEL_NAMES[lvl]);
+  $set('home-xp','textContent',xp+' XP');
+  $set('home-best-streak','textContent','melhor streak: 🔥'+state.bestStreak);
+  $set('home-xp-bar','style.width',Math.min((xpIn/xpTo)*100,100)+'%');
+  // user bar
+  if(_sbProfile) {
+    const initial = (_sbProfile.username||'?').charAt(0).toUpperCase();
+    $set('home-avatar','textContent',initial);
+    $set('home-username','textContent',_sbProfile.username||'Jogador');
+    $set('home-usersub','textContent',LEVEL_NAMES[lvl]+' · '+xp+' XP');
   }
 }
 
-// ── HOME ──
+// ── HOME RENDER ──
 function renderHome() {
-  // Ano chips
-  document.getElementById('ano-row').innerHTML = ANOS.map(a =>
-    `<div class="ano-chip${a===selectedAno?' active':''}" onclick="selectAno('${a}')">${a} ano</div>`
+  // Anos
+  const anoRow = $id('ano-row');
+  if(anoRow) anoRow.innerHTML = ANOS.map(a =>
+    `<button class="ano-chip${a===state.ano?' active':''}" onclick="selectAno('${a}')">${a} ano</button>`
   ).join('');
-  // Categories
-  const puzzlesForAno = ALL_PUZZLES.filter(p => p.ano === selectedAno);
-  document.getElementById('cat-grid').innerHTML = CATS.map(c => {
-    const count = puzzlesForAno.filter(p => p.cat === c.name).length;
-    return `<div class="cat-card" onclick="startQuiz('${c.name}')">
-      <div class="cat-icon">${c.icon}</div>
-      <div class="cat-name">${c.name}</div>
-      <div class="cat-count">${count} questões</div>
-      <div class="cat-badge">${selectedAno} ano</div>
-    </div>`;
+  // Cats
+  const catGrid = $id('cat-grid');
+  if(catGrid) catGrid.innerHTML = CATS.map(c => {
+    const puzzlesForCat = (PUZZLES[state.ano]||{})[c.key]||[];
+    return `<button class="cat-btn" style="border-color:${c.color}" onclick="startQuiz('${c.key}')">
+      <span class="cat-icon">${c.icon}</span>
+      <span class="cat-name">${c.name}</span>
+      <span class="cat-count">${puzzlesForCat.length} questões</span>
+      <div class="cat-glow" style="background:${c.color}12"></div>
+    </button>`;
   }).join('');
 }
-function selectAno(a) { selectedAno = a; renderHome(); }
+function selectAno(a) { state.ano=a; renderHome(); }
 
 // ── QUIZ ──
-function startQuiz(cat) {
-  selectedCat = cat;
-  quizPuzzles = ALL_PUZZLES.filter(p => p.ano === selectedAno && p.cat === cat);
-  if (!quizPuzzles.length) return;
-  // Shuffle
-  quizPuzzles = quizPuzzles.sort(() => Math.random() - .5);
-  quizIdx = 0;
-  goTo('quiz');
-  loadQuizPuzzle();
+function startQuiz(catKey) {
+  state.category = catKey;
+  state.lives=3; state.streak=0;
+  state.sessionXp=0; state.sessionCorrect=0;
+  state.sessionWrong=0; state.sessionTotal=0;
+  state.questionCount=0;
+  [1,2,3].forEach(i => $cls('life-'+i).remove('lost'));
+  $cls('streak-badge').remove('visible');
+  const catInfo = CATS.find(c=>c.key===catKey);
+  const cp=$id('cat-pill'), dp=$id('diff-pill');
+  if(cp){cp.textContent=catInfo.icon+' '+catInfo.name;cp.style.cssText=`border-color:${catInfo.color};color:${catInfo.color}`}
+  if(dp){dp.textContent=state.ano+' ano';dp.style.cssText='border-color:var(--violet);color:var(--violet)'}
+  const key=catKey+'_'+state.ano;
+  usedQuestions[key]=[];
+  showScreen('quiz');
+  loadQuestion();
 }
 
-function loadQuizPuzzle() {
-  const p = quizPuzzles[quizIdx];
-  quizAnswered = false;
-  const pct = Math.round((quizIdx / quizPuzzles.length) * 100);
-  document.getElementById('quiz-progress').style.width = pct + '%';
-  document.getElementById('quiz-prog-text').textContent = `Questão ${quizIdx+1} de ${quizPuzzles.length}`;
-  document.getElementById('quiz-cat-label').textContent = `${selectedAno} ano • ${selectedCat}`;
-  document.getElementById('quiz-pts-top').textContent = (profile?.total_points || 0) + ' pts';
-  document.getElementById('p-tag').textContent = p.tag;
-  document.getElementById('p-question').textContent = p.q;
-  document.getElementById('p-feedback').className = 'feedback-box';
-  document.getElementById('p-expl').className = 'expl-box';
-  document.getElementById('next-btn').className = 'next-btn';
-  // Visual
-  document.getElementById('p-visual').innerHTML = renderVisual(p);
-  // Options
-  const letters = ['a','b','c','d'];
-  document.getElementById('p-options').innerHTML = p.opts.map((o, i) =>
-    `<button class="opt-btn" id="opt-${i}" onclick="answerQuiz(${i})">
-      <span class="opt-letter">${letters[i]})</span>${o}
-    </button>`
-  ).join('');
-  // Scroll to top
-  document.getElementById('quiz-scroll').scrollTo(0, 0);
+function loadQuestion() {
+  const key = state.category+'_'+state.ano;
+  const pool = (PUZZLES[state.ano]||{})[state.category]||[];
+  if(!pool.length){ goHome(); return; }
+  if(!usedQuestions[key]) usedQuestions[key]=[];
+  if(usedQuestions[key].length>=pool.length) usedQuestions[key]=[];
+  let q;
+  do { q=pool[Math.floor(Math.random()*pool.length)]; } while(usedQuestions[key].includes(q.q) && usedQuestions[key].length<pool.length);
+  usedQuestions[key].push(q.q);
+  state.question=q; state.answered=false;
+  state.questionCount++;
+  $set('q-counter','textContent','#'+state.questionCount);
+  $set('quiz-xp','textContent',state.sessionXp+' XP');
+  // Render question
+  const area=$id('question-area');
+  if(!area) return;
+  area.innerHTML = `
+    <div class="q-text">${escHtml(q.q)}</div>
+    ${renderVisual(q)}
+    <div class="options-list">${(q.options||[]).map((o,i)=>`
+      <button class="opt-btn" id="opt-${i}" onclick="selectOption(${i})">
+        <span class="opt-letter">${o.charAt(0)}</span>
+        <span>${escHtml(o.slice(3))}</span>
+      </button>`).join('')}
+    </div>
+    <div id="explanation-box"></div>
+  `;
+  $cls('next-btn').remove('visible');
+  // Timer (30s)
+  clearInterval(state.timerInterval);
+  state.timeLeft=30;
+  updateTimer();
+  state.timerInterval=setInterval(()=>{
+    state.timeLeft--;
+    updateTimer();
+    if(state.timeLeft<=0){clearInterval(state.timerInterval);handleTimeout();}
+  },1000);
 }
 
-function renderVisual(p) {
-  if (p.visual === 'sequence') {
-    return p.data.nums.map((n, i) => {
-      const delay = i * 0.07;
-      if (n === null) return `<div class="anim-seq anim-q" style="animation-delay:${delay}s;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:10px;background:var(--pri);color:#fff;font-size:22px;font-weight:800;margin:4px;">?</div>`;
-      return `<div class="anim-seq" style="animation-delay:${delay}s;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:10px;background:#EEF0FF;color:var(--pri);font-size:18px;font-weight:700;margin:4px;">${n}</div>`;
-    }).join('');
+function renderVisual(q) {
+  if(q.visual==='seq') {
+    return `<div class="puzzle-visual">${q.seq.map((n,i)=>`<div class="seq-box${n===null?' missing':''}" style="animation-delay:${i*0.05}s">${n===null?'?':n}</div>`).join('')}</div>`;
   }
-  if (p.visual === 'flowers') {
-    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
-      `<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;animation:flower-grow .5s ${ri*0.1}s backwards">
-        <span>${r.a}</span>${r.c?`<span style="font-size:14px;color:var(--muted)">+</span><span>${r.b}</span><span style="font-size:14px;color:var(--muted)">+</span><span>${r.c}</span>`:`<span style="font-size:14px;color:var(--muted)">${r.op}</span><span>${r.b}</span>`}
-        <span style="font-size:14px;color:var(--muted)">=</span>
-        <span style="font-size:16px;font-weight:700;color:${r.res==='?'?'var(--pri)':'var(--text)'}">${r.res}</span>
-      </div>`
-    ).join('')}</div>`;
+  if(q.visual==='flowers') {
+    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px">${q.flowers.map(r=>`<div class="visual-row"><span>${r.a}</span>${r.c?`<span class="visual-eq">+</span><span>${r.b}</span><span class="visual-eq">+</span><span>${r.c}</span>`:`<span class="visual-eq">${r.op}</span><span>${r.b}</span>`}<span class="visual-eq">=</span><span class="visual-res${r.res==='?'?' unknown':''}">${r.res}</span></div>`).join('')}</div>`;
   }
-  if (p.visual === 'words') {
-    return `<div style="display:flex;flex-direction:column;gap:6px;width:100%">${p.data.rows.map((r,ri) =>
-      `<div class="anim-seq" style="animation-delay:${ri*.1}s;display:flex;justify-content:space-between;align-items:center;background:var(--pri-light);border-radius:8px;padding:10px 14px">
-        <span style="font-weight:700;color:var(--pri)">${r.w}</span>
-        <span style="font-size:12px;color:var(--muted)">${r.n} letras</span>
-        <span style="font-weight:700;color:${r.v.includes('?')?'var(--sec)':'var(--text)'}">${r.v}</span>
-      </div>`
-    ).join('')}</div>`;
+  if(q.visual==='words') {
+    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.words.map(r=>`<div class="visual-word-row"><span class="visual-word">${r.w}</span><span style="color:var(--muted);font-size:12px">${r.n} letras</span><span class="visual-val${r.v.includes('?')?' unknown':''}">${r.v}</span></div>`).join('')}</div>`;
   }
-  if (p.visual === 'system') {
-    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
-      `<div class="anim-seq" style="animation-delay:${ri*.12}s;background:var(--pri-light);border-radius:8px;padding:12px 16px;text-align:center;font-size:16px;font-weight:700;color:var(--pri)">${r}</div>`
-    ).join('')}</div>`;
+  if(q.visual==='system') {
+    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.system.map(r=>`<div class="visual-eq-box">${r}</div>`).join('')}</div>`;
   }
-  if (p.visual === 'equation') {
-    return `<div style="background:var(--pri-light);border-radius:12px;padding:18px 24px;font-size:22px;font-weight:800;color:var(--pri);text-align:center;animation:seq-pop .4s backwards">${p.data.eq}</div>`;
+  if(q.visual==='animals') {
+    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.animals.map(r=>`<div class="visual-eq-box" style="font-size:18px">${r}</div>`).join('')}</div>`;
   }
-  if (p.visual === 'animals') {
-    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
-      `<div class="anim-seq" style="animation-delay:${ri*.1}s;background:var(--sec-light);border-radius:8px;padding:12px;text-align:center;font-size:18px;font-weight:600;color:var(--text)">${r}</div>`
-    ).join('')}</div>`;
+  if(q.visual==='eq') {
+    return `<div class="puzzle-visual"><div class="visual-eq-box">${q.eq}</div></div>`;
   }
-  if (p.visual === 'shape') {
-    const d = p.data;
-    if (d.type === 'square') return `<svg viewBox="0 0 140 120" width="140" height="120"><rect x="20" y="20" width="100" height="100" rx="4" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="70" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.label}</text></svg>`;
-    if (d.type === 'rect') return `<svg viewBox="0 0 180 120" width="180" height="120"><rect x="10" y="25" width="160" height="70" rx="4" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="90" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.w}×${d.h} cm</text></svg>`;
-    if (d.type === 'circle') return `<svg viewBox="0 0 140 140" width="140" height="140"><circle cx="70" cy="70" r="55" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><line x1="70" y1="70" x2="125" y2="70" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="4"/><text x="98" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="var(--pri)">r=${d.r}</text></svg>`;
-    if (d.type === 'triangle') return `<svg viewBox="0 0 160 130" width="160" height="130"><polygon points="80,15 150,115 10,115" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="80" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pri)">base=${d.b}</text><text x="12" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pri)" transform="rotate(-60,12,70)">h=${d.h}</text></svg>`;
-    if (d.type === 'pythagorean') return `<svg viewBox="0 0 140 130" width="140" height="130"><polygon points="20,110 20,30 100,110" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><rect x="20" y="100" width="10" height="10" fill="none" stroke="var(--pri)" stroke-width="1.5"/><text x="12" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.a}</text><text x="58" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.b}</text><text x="72" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="var(--sec)">?</text></svg>`;
+  if(q.visual==='shape') {
+    const s=q.shape;
+    if(s.type==='square') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 120" width="140" height="120"><rect x="20" y="10" width="100" height="100" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="70" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#6C63FF">${s.label}</text></svg></div>`;
+    if(s.type==='rect') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 180 120" width="180" height="120"><rect x="10" y="20" width="160" height="80" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="90" y="67" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.w}×${s.h} cm</text></svg></div>`;
+    if(s.type==='circle') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 140" width="140" height="140"><circle cx="70" cy="70" r="55" fill="color-mix(in srgb,#00F5C4 12%,transparent)" stroke="#00F5C4" stroke-width="2.5"/><line x1="70" y1="70" x2="125" y2="70" stroke="#00F5C4" stroke-width="1.5" stroke-dasharray="4"/><text x="98" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#00F5C4">r=${s.r}</text></svg></div>`;
+    if(s.type==='triangle') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 160 130" width="160" height="130"><polygon points="80,10 150,120 10,120" fill="color-mix(in srgb,#A78BFA 15%,transparent)" stroke="#A78BFA" stroke-width="2.5"/><text x="80" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#A78BFA">base=${s.b}</text></svg></div>`;
+    if(s.type==='pythagorean') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 130" width="140" height="130"><polygon points="20,115 20,25 110,115" fill="color-mix(in srgb,#6C63FF 12%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><rect x="20" y="105" width="10" height="10" fill="none" stroke="#6C63FF" stroke-width="1.5"/><text x="10" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.a}</text><text x="63" y="128" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.b}</text><text x="72" y="65" text-anchor="middle" font-size="15" font-weight="800" fill="#00F5C4">?</text></svg></div>`;
   }
   return '';
 }
 
-async function answerQuiz(chosen) {
-  if (quizAnswered) return;
-  quizAnswered = true;
-  const p = quizPuzzles[quizIdx];
-  const correct = chosen === p.correct;
-  const btns = document.querySelectorAll('.opt-btn');
-  btns.forEach(b => b.disabled = true);
-  btns[p.correct].classList.add('correct');
-  if (!correct) btns[chosen].classList.add('wrong');
-
-  const fb = document.getElementById('p-feedback');
-  const ex = document.getElementById('p-expl');
-  if (correct) {
-    fb.textContent = '✅ Correto! Muito bem!';
-    fb.className = 'feedback-box show ok';
-  } else {
-    fb.textContent = '❌ Não foi dessa vez. Veja a explicação!';
-    fb.className = 'feedback-box show nok';
-  }
-  ex.textContent = '💡 ' + p.expl;
-  ex.className = 'expl-box show';
-  document.getElementById('next-btn').className = 'next-btn show';
-
-  // Save to Supabase
-  if (currentUser && profile) {
-    const pts = correct ? 10 + (profile.current_streak || 0) * 2 : 0;
-    const newStreak = correct ? (profile.current_streak || 0) + 1 : 0;
-    const newBest = Math.max(profile.best_streak || 0, newStreak);
-    if (newStreak >= 3) showStreakToast(newStreak);
-    // Insert progress
-    await sb.from('nardiq_progress').insert({
-      user_id: currentUser.id,
-      puzzle_id: p.id,
-      ano: p.ano,
-      categoria: p.cat,
-      correct,
-      points_earned: pts,
-    });
-    // Update profile
-    const updates = {
-      total_points: (profile.total_points || 0) + pts,
-      total_correct: (profile.total_correct || 0) + (correct ? 1 : 0),
-      total_answered: (profile.total_answered || 0) + 1,
-      current_streak: newStreak,
-      best_streak: newBest,
-      level: getLevel((profile.total_points || 0) + pts) + 1,
-    };
-    await sb.from('nardiq_profiles').update(updates).eq('id', currentUser.id);
-    profile = { ...profile, ...updates };
-    updateUI();
-    document.getElementById('quiz-pts-top').textContent = profile.total_points + ' pts';
-  }
+function updateTimer() {
+  const t=state.timeLeft;
+  $set('timer-val','textContent',t+'s');
+  const fill=$id('timer-fill');
+  if(fill){fill.style.width=(t/30*100)+'%';fill.style.background=t>15?'#00F5C4':t>8?'#FFD166':'#FF4D6D';}
+  const tv=$id('timer-val');
+  if(tv) tv.classList.toggle('pulse',t<=8);
 }
 
-function nextPuzzle() {
-  quizIdx++;
-  if (quizIdx >= quizPuzzles.length) {
-    // Finished — go home
-    goTo('home');
+function selectOption(i) {
+  if(state.answered) return;
+  state.answered=true;
+  clearInterval(state.timerInterval);
+  const q=state.question;
+  const chosen=q.options[i].charAt(0);
+  const correct=chosen===q.answer;
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  $cls('opt-'+i).add(correct?'correct':'wrong');
+  if(!correct){
+    const ci=(q.options||[]).findIndex(o=>o.charAt(0)===q.answer);
+    if(ci>=0) $cls('opt-'+ci).add('correct');
+  }
+  state.sessionTotal++;
+  if(correct){
+    state.sessionCorrect++; state.streak++;
+    if(state.streak>state.bestStreak) state.bestStreak=state.streak;
+    const xpEarned=25+Math.min(state.streak-1,5)*5;
+    state.sessionXp+=xpEarned; state.xp+=xpEarned;
+    $set('quiz-xp','textContent',state.sessionXp+' XP');
+    if(state.streak>=3){$cls('streak-badge').add('visible');$set('streak-num','textContent',state.streak);}
+    showXpFloat('+'+xpEarned+' XP');
+  } else {
+    state.sessionWrong++; state.streak=0;
+    $cls('streak-badge').remove('visible');
+    state.lives--;
+    $cls('life-'+state.lives).add('lost');
+  }
+  const box=$id('explanation-box');
+  if(box) box.innerHTML=buildExplHTML(q,correct?'correct':'wrong');
+  $cls('next-btn').add('visible');
+  const nb=$id('next-btn');
+  if(nb) nb.onclick=nextQuestion;
+  if(state.lives<=0){if(nb){nb.textContent='Ver resultado →';nb.onclick=showGameOver;}}
+  if(correct) saveProgress(q,true);
+  else saveProgress(q,false);
+}
+
+function handleTimeout() {
+  if(state.answered) return;
+  state.answered=true;
+  state.sessionTotal++; state.sessionWrong++; state.streak=0;
+  $cls('streak-badge').remove('visible');
+  state.lives--;
+  $cls('life-'+state.lives).add('lost');
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const q=state.question;
+  const ci=(q.options||[]).findIndex(o=>o.charAt(0)===q.answer);
+  if(ci>=0) $cls('opt-'+ci).add('correct');
+  const box=$id('explanation-box');
+  if(box) box.innerHTML=buildExplHTML(q,'timeout');
+  $cls('next-btn').add('visible');
+  const nb=$id('next-btn');
+  if(nb){ nb.onclick=nextQuestion; }
+  if(state.lives<=0){if(nb){nb.textContent='Ver resultado →';nb.onclick=showGameOver;}}
+  saveProgress(q,false);
+}
+
+function nextQuestion() {
+  if(state.lives<=0){showGameOver();return;}
+  loadQuestion();
+}
+
+function buildExplHTML(q,type) {
+  const correct=type==='correct';
+  const borderColor=correct?'var(--cyan)':type==='timeout'?'var(--yellow)':'var(--red)';
+  const icon=correct?'✓':type==='timeout'?'⏱':'✗';
+  const label=correct?'Correto!':type==='timeout'?'Tempo esgotado!':'Incorreto';
+  const headerBg=correct?'color-mix(in srgb,var(--cyan) 10%,transparent)':type==='timeout'?'color-mix(in srgb,var(--yellow) 10%,transparent)':'color-mix(in srgb,var(--red) 10%,transparent)';
+  const correctOpt=(q.options||[]).find(o=>o.charAt(0)===q.answer)||'';
+  const correctText=correctOpt?correctOpt.slice(3):'';
+  const stepsHtml=(q.steps||[]).map((s,i)=>`<div class="expl-step"><span class="step-num">${i+1}</span><span class="step-text">${s}</span></div>`).join('');
+  const conclusionHtml=q.conclusion?`<div class="expl-answer${correct?'':' wrong-ans'}">✦ ${escHtml(q.conclusion)}</div>`:'';
+  return `<div class="explanation${correct?'':type==='timeout'?' timeout':' wrong'}" style="border-left-color:${borderColor}">
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${headerBg};border-radius:8px;margin-bottom:14px">
+      <span style="font-size:20px;font-family:'Space Grotesk',sans-serif;font-weight:800;color:${borderColor}">${icon}</span>
+      <div><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:${borderColor}">${label}</div>
+      ${!correct&&correctText?`<div style="font-size:12px;color:var(--muted);margin-top:2px">Resposta: <strong style="color:var(--cyan)">${escHtml(correctText)}</strong></div>`:''}</div>
+    </div>
+    <div class="how-label">RACIOCÍNIO PASSO A PASSO</div>
+    <div class="expl-steps">${stepsHtml}</div>
+    ${conclusionHtml}
+  </div>`;
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showXpFloat(txt) {
+  const el=document.createElement('div');
+  el.className='xp-float'; el.textContent=txt;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1300);
+}
+
+function showGameOver() {
+  clearInterval(state.timerInterval);
+  if(state.streak>state.bestStreak) state.bestStreak=state.streak;
+  saveData();
+  $set('go-total','textContent',state.sessionTotal);
+  $set('go-correct','textContent',state.sessionCorrect);
+  $set('go-wrong','textContent',state.sessionWrong);
+  $set('go-streak','textContent','🔥'+state.bestStreak);
+  $set('go-xp','textContent','+'+state.sessionXp);
+  showScreen('gameover');
+}
+
+function showSessionScore() {
+  clearInterval(state.timerInterval);
+  if(state.streak>state.bestStreak) state.bestStreak=state.streak;
+  saveData();
+  const total=state.sessionTotal,correct=state.sessionCorrect,wrong=state.sessionWrong;
+  const timeout=total-correct-wrong,accuracy=total>0?Math.round((correct/total)*100):0,xp=state.sessionXp;
+  let emoji,title,sub;
+  if(accuracy>=90){emoji='🏆';title='Excelente!';sub='Domínio total — desempenho impressionante!';}
+  else if(accuracy>=75){emoji='🎯';title='Muito bom!';sub='Você está no caminho certo!';}
+  else if(accuracy>=60){emoji='💪';title='Bom trabalho!';sub='Continue praticando!';}
+  else{emoji='📚';title='Continue treinando!';sub='A prática leva à perfeição.';}
+  $set('ss-emoji','textContent',emoji);$set('ss-title','textContent',title);$set('ss-sub','textContent',sub);
+  $set('ss-correct','textContent',correct);$set('ss-wrong','textContent',wrong);
+  $set('ss-xp','textContent','+'+xp);$set('ss-streak','textContent','🔥'+state.bestStreak);
+  const ringColor=accuracy>=75?'var(--cyan)':accuracy>=50?'var(--yellow)':'var(--red)';
+  const ring=$id('ss-ring-fill');
+  if(ring){ring.style.stroke=ringColor;setTimeout(()=>{ring.style.strokeDashoffset=377-(accuracy/100)*377;},200);}
+  setTimeout(()=>{let c=0;const iv=setInterval(()=>{c=Math.min(c+2,accuracy);$set('ss-ring-pct','textContent',c+'%');if(c>=accuracy)clearInterval(iv);},20);},300);
+  setTimeout(()=>{
+    const pC=total>0?(correct/total)*100:0,pW=total>0?(wrong/total)*100:0,pT=total>0?(timeout/total)*100:0;
+    const bc=$id('ss-bar-correct');if(bc)bc.style.width=pC+'%';
+    const bw=$id('ss-bar-wrong');if(bw)bw.style.width=pW+'%';
+    const bt=$id('ss-bar-timeout');if(bt)bt.style.width=pT+'%';
+    $set('ss-bar-correct-num','textContent',correct);$set('ss-bar-wrong-num','textContent',wrong);$set('ss-bar-timeout-num','textContent',timeout);
+  },400);
+  showScreen('screen-session-score');
+}
+
+function replaySession(){
+  const cat=state.category;
+  state.lives=3;state.streak=0;state.sessionXp=0;state.sessionCorrect=0;state.sessionWrong=0;state.sessionTotal=0;state.questionCount=0;
+  const key=cat+'_'+state.ano;
+  usedQuestions[key]=[];
+  [1,2,3].forEach(i=>$cls('life-'+i).remove('lost'));
+  $cls('streak-badge').remove('visible');
+  showScreen('quiz');loadQuestion();
+}
+
+function goHome(){
+  clearInterval(state.timerInterval);
+  loadData();updateHomeXP();renderHome();showScreen('home');
+}
+
+// ── SUPABASE AUTH ──
+async function onSplashStart() {
+  const { data } = await _sb.auth.getSession();
+  const user = data?.session?.user;
+  if(user){ _sbUser=user; await sbLoadAndGo(user); }
+  else showScreen('screen-auth');
+}
+
+function authSwitchTab(tab) {
+  $id('form-login').style.display = tab==='login'?'block':'none';
+  $id('form-signup').style.display = tab==='signup'?'block':'none';
+  $cls('tab-login').toggle('active', tab==='login');
+  $cls('tab-signup').toggle('active', tab==='signup');
+  $id('auth-error').textContent='';
+  const s=$id('auth-success');if(s)s.style.display='none';
+}
+
+async function doLogin() {
+  const email=($id('login-email')||{}).value?.trim();
+  const password=($id('login-password')||{}).value;
+  const btn=$id('login-btn');
+  if(!email||!password){$id('auth-error').textContent='Preencha e-mail e senha.';return;}
+  if(btn){btn.disabled=true;btn.textContent='Entrando...';}
+  $id('auth-error').textContent='';
+  const{data,error}=await _sb.auth.signInWithPassword({email,password});
+  if(error){
+    $id('auth-error').textContent=error.message.includes('Invalid')?'E-mail ou senha incorretos.':error.message;
+    if(btn){btn.disabled=false;btn.textContent='Entrar';}
     return;
   }
-  loadQuizPuzzle();
+  _sbUser=data.user;
+  await sbLoadAndGo(data.user);
+  if(btn){btn.disabled=false;btn.textContent='Entrar';}
 }
 
-function showStreakToast(n) {
-  const t = document.getElementById('streak-toast');
-  t.textContent = `🔥 ${n}x sequência! +${n*2} bônus!`;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+async function doSignup() {
+  const username=($id('signup-username')||{}).value?.trim();
+  const email=($id('signup-email')||{}).value?.trim();
+  const password=($id('signup-password')||{}).value;
+  const btn=$id('signup-btn');
+  $id('auth-error').textContent='';
+  if(!username||username.length<3){$id('auth-error').textContent='Username precisa ter ao menos 3 caracteres.';return;}
+  if(!email){$id('auth-error').textContent='Preencha o e-mail.';return;}
+  if(!password||password.length<6){$id('auth-error').textContent='Senha precisa ter ao menos 6 caracteres.';return;}
+  if(btn){btn.disabled=true;btn.textContent='Criando conta...';}
+  // Checar username único
+  const{data:ex}=await _sb.from('nardiq_profiles').select('id').eq('username',username).maybeSingle();
+  if(ex){$id('auth-error').textContent='Username já em uso. Escolha outro.';if(btn){btn.disabled=false;btn.textContent='Criar conta';}return;}
+  const{data,error}=await _sb.auth.signUp({email,password});
+  if(error){
+    // Rate limit: offer Google login instead
+    if(error.message.toLowerCase().includes('rate limit')||error.message.toLowerCase().includes('email rate')){
+      $id('auth-error').textContent='Muitos cadastros detectados. Use o botão "Cadastrar com Google" abaixo — sem limite!';
+    } else {
+      $id('auth-error').textContent=error.message;
+    }
+    if(btn){btn.disabled=false;btn.textContent='Criar conta';}
+    return;
+  }
+  await _sb.from('nardiq_profiles').insert({id:data.user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
+  _sbUser=data.user;
+  const s=$id('auth-success');if(s){s.style.display='block';s.textContent='Conta criada! Entrando...';}
+  await sbLoadAndGo(data.user);
+  if(btn){btn.disabled=false;btn.textContent='Criar conta';}
+}
+
+async function doGoogleLogin() {
+  const{error}=await _sb.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo:window.location.href}
+  });
+  if(error) { $id('auth-error').textContent='Erro ao abrir Google: '+error.message; }
+}
+
+// Handle OAuth redirect
+_sb.auth.onAuthStateChange(async(event,session)=>{
+  if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session?.user&&!_sbUser){
+    _sbUser=session.user;
+    await sbLoadAndGo(session.user);
+  }
+});
+
+async function sbLoadAndGo(user) {
+  let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+  if(!data){
+    // Auto-create profile for Google users
+    const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
+    await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
+    const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+    data=d2;
+  }
+  _sbProfile=data;
+  if(data){state.xp=data.xp||0;state.bestStreak=data.best_streak||0;}
+  loadData();updateHomeXP();renderHome();
+  showScreen('home');
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  _sbUser=null;_sbProfile=null;
+  state.xp=0;state.bestStreak=0;
+  showScreen('screen-auth');
+}
+
+// ── SAVE/LOAD ──
+function loadData() {
+  if(!_sbProfile){state.xp=parseInt(localStorage.getItem('nardiq-xp')||'0');state.bestStreak=parseInt(localStorage.getItem('nardiq-streak')||'0');}
+}
+function saveData() {
+  localStorage.setItem('nardiq-xp',state.xp);
+  localStorage.setItem('nardiq-streak',state.bestStreak);
+  if(_sbUser&&_sbProfile){
+    _sb.from('nardiq_profiles').update({xp:state.xp,best_streak:state.bestStreak,updated_at:new Date().toISOString()}).eq('id',_sbUser.id).then(()=>{});
+  }
+}
+async function saveProgress(q,correct) {
+  if(!_sbUser) return;
+  const xp=correct?25:0;
+  await _sb.from('nardiq_progress').insert({user_id:_sbUser.id,puzzle_id:q.q.slice(0,60),ano:state.ano,categoria:state.category,correct,points_earned:xp}).then(()=>{});
+  if(correct){
+    _sb.from('nardiq_profiles').update({total_correct:(_sbProfile?.total_correct||0)+1,total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+    if(_sbProfile) _sbProfile.total_correct=(_sbProfile.total_correct||0)+1;
+  } else {
+    _sb.from('nardiq_profiles').update({total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+  }
+  if(_sbProfile) _sbProfile.total_questions=(_sbProfile?.total_questions||0)+1;
 }
 
 // ── RANKING ──
 async function loadRanking() {
-  const list = document.getElementById('rank-list');
-  const podium = document.getElementById('ranking-podium');
-  list.innerHTML = '<div class="spinner"></div>';
-  const { data } = await sb.from('nardiq_ranking').select('*').limit(50);
-  if (!data || !data.length) {
-    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px">Nenhum jogador ainda. Seja o primeiro!</div>';
-    podium.innerHTML = '';
-    return;
-  }
-  // Podium top 3
-  const medals = ['🥇','🥈','🥉'];
-  const pClasses = ['p1','p2','p3'];
-  const heights = ['p1','p2','p3'];
-  const order = data.length >= 3 ? [1,0,2] : [0,1,2]; // 2nd, 1st, 3rd visual order
-  podium.innerHTML = order.filter(i => data[i]).map(i => {
-    const r = data[i];
-    return `<div class="podium-place">
-      <div class="podium-avatar ${pClasses[i]}">${r.avatar_emoji||'🧠'}</div>
-      <div class="podium-name">${r.username}</div>
-      <div class="podium-pts">${r.total_points} pts</div>
-      <div class="podium-bar ${heights[i]}">${medals[i]}</div>
+  const list=$id('ranking-list');
+  if(!list) return;
+  list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div>';
+  const{data}=await _sb.from('nardiq_profiles').select('*').order('xp',{ascending:false}).limit(50);
+  if(!data||!data.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum jogador ainda.</div>';return;}
+  const medals=['🥇','🥈','🥉'];
+  const myId=_sbUser?.id;
+  list.innerHTML=data.map((p,i)=>{
+    const lv=getLevel(p.xp||0);
+    const isMe=p.id===myId;
+    const initial=(p.username||'?').charAt(0).toUpperCase();
+    const pos=i<3?medals[i]:(i+1)+'°';
+    return `<div class="rank-row${isMe?' me':''}">
+      <div class="rank-pos">${pos}</div>
+      <div class="rank-avatar" style="background:linear-gradient(135deg,var(--violet),var(--violetL))">${initial}</div>
+      <div class="rank-info"><div class="rank-name">${escHtml(p.username||'Jogador')}${isMe?' (você)':''}</div><div class="rank-level">${LEVEL_NAMES[lv]}</div></div>
+      <div class="rank-xp">${p.xp||0} XP</div>
     </div>`;
   }).join('');
-  // List from 4th
-  const myId = currentUser?.id;
-  list.innerHTML = data.slice(3).map(r =>
-    `<div class="rank-row${r.id===myId?' me':''}">
-      <div class="rank-pos">${r.position}</div>
-      <div class="rank-avatar">${r.avatar_emoji||'🧠'}</div>
-      <div class="rank-info">
-        <div class="rank-name">${r.username}${r.id===myId?' (você)':''}</div>
-        <div class="rank-sub">${r.total_correct||0} acertos • ${r.accuracy||0}% taxa</div>
-      </div>
-      <div class="rank-pts">${r.total_points} pts</div>
-    </div>`
-  ).join('');
-  // Find user position if not in top 50 display
-  if (myId) {
-    const me = data.find(r => r.id === myId);
-    document.getElementById('ps-rank').textContent = me ? '#' + me.position : '—';
-  }
+  const me=data.find(p=>p.id===myId);
+  $set('my-rank-pos','textContent',me?'#'+(data.indexOf(me)+1)+'°':'—');
 }
 
-// ── PROFILE SCREEN ──
-async function loadProfileScreen() {
-  if (!profile) return;
-  updateUI();
-  // Category progress
-  const { data: prog } = await sb.from('nardiq_progress')
-    .select('categoria, correct')
-    .eq('user_id', currentUser.id);
-  if (prog) {
-    const bycat = {};
-    prog.forEach(p => {
-      if (!bycat[p.categoria]) bycat[p.categoria] = {total:0,correct:0};
-      bycat[p.categoria].total++;
-      if (p.correct) bycat[p.categoria].correct++;
-    });
-    document.getElementById('cat-prog-list').innerHTML = CATS.map(c => {
-      const s = bycat[c.name] || {total:0,correct:0};
-      const pct = s.total > 0 ? Math.round((s.correct/s.total)*100) : 0;
-      return `<div class="cat-prog-row">
-        <div class="cat-prog-header">
-          <span>${c.icon} ${c.name}</span>
-          <span style="color:var(--pri)">${pct}% (${s.correct}/${s.total})</span>
-        </div>
-        <div class="cat-prog-track"><div class="cat-prog-fill" style="width:${pct}%"></div></div>
-      </div>`;
-    }).join('');
+// ── HISTORY ──
+function showHistory() {
+  const hist=JSON.parse(localStorage.getItem('nardiq-history')||'[]');
+  const summary=$id('history-summary');
+  if(summary){
+    const totalQ=hist.reduce((a,h)=>a+(h.total||0),0);
+    const totalC=hist.reduce((a,h)=>a+(h.correct||0),0);
+    const totalXP=hist.reduce((a,h)=>a+(h.xp||0),0);
+    const acc=totalQ>0?Math.round((totalC/totalQ)*100):0;
+    summary.innerHTML=[['Sessões',hist.length],['Questões',totalQ],['Precisão',acc+'%'],['XP total',totalXP]].map(([l,v])=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:22px;color:var(--violet)">${v}</div><div style="font-size:11px;color:var(--muted);margin-top:4px">${l}</div></div>`).join('');
   }
+  const list=$id('history-list');
+  if(!list) return;
+  if(!hist.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhuma sessão ainda.</div>';return;}
+  list.innerHTML=hist.map(h=>{
+    const cat=CATS.find(c=>c.key===h.category);
+    const acc=h.total>0?Math.round((h.correct/h.total)*100):0;
+    const accColor=acc>=80?'var(--cyan)':acc>=50?'var(--yellow)':'var(--red)';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px">
+      <div style="font-size:22px;width:32px;text-align:center">${cat?cat.icon:'📚'}</div>
+      <div style="flex:1"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--text)">${cat?cat.name:h.category} · ${h.ano||''} ano</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">${h.correct||0}/${h.total||0} acertos</div></div>
+      <div style="text-align:right"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:${accColor}">${acc}%</div>
+      <div style="font-size:12px;color:var(--muted)">+${h.xp||0} XP</div></div>
+    </div>`;
+  }).join('');
 }
+
+document.querySelectorAll('.quick-btn').forEach(b=>{
+  if(b.querySelector('.quick-label')?.textContent.includes('Histórico')){
+    b.onclick=()=>{showHistory();showScreen('screen-history');};
+  }
+});
 </script>
 </body>
 </html>
