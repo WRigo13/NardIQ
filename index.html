@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>NardIQ — Desafio Mental</title>
+<title>NardIQ — Multiplayer</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#6C63FF">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,34 +14,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ── TEMAS ── */
-:root {
-  --bg: #0D0D1A;
-  --surface: #13112B;
-  --surfaceHi: #1A1836;
-  --border: #2A2744;
-  --border2: #1E1B3A;
-  --violet: #6C63FF;
-  --violetL: #A78BFA;
-  --cyan: #00F5C4;
-  --yellow: #FFD166;
-  --red: #FF4D6D;
-  --text: #E8E6F0;
-  --muted: #7C7A9C;
-  --bodyMuted: #B8B6D4;
-}
-[data-theme="black"] { --bg:#000; --surface:#0A0A0A; --surfaceHi:#111; --border:#222; --border2:#181818; --muted:#555577; --bodyMuted:#9995BB; }
-[data-theme="white"] { --bg:#F5F4FF; --surface:#FFF; --surfaceHi:#EDEDFF; --border:#DDD9FF; --border2:#EEEAFF; --violet:#5A52E0; --violetL:#8B7CF8; --cyan:#00B89C; --yellow:#E6A800; --red:#E63B5A; --text:#1A1733; --muted:#7770AA; --bodyMuted:#5A5588; }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background .3s,color .3s}
+:root{--bg:#0D0D1A;--surface:#13112B;--surfaceHi:#1A1836;--border:#2A2744;--border2:#1E1B3A;--violet:#6C63FF;--violetL:#A78BFA;--cyan:#00F5C4;--yellow:#FFD166;--red:#FF4D6D;--text:#E8E6F0;--muted:#7C7A9C;--bodyMuted:#B8B6D4}
+[data-theme="black"]{--bg:#000;--surface:#0A0A0A;--surfaceHi:#111;--border:#222;--border2:#181818;--muted:#555577;--bodyMuted:#9995BB}
+[data-theme="white"]{--bg:#F5F4FF;--surface:#FFF;--surfaceHi:#EDEDFF;--border:#DDD9FF;--border2:#EEEAFF;--violet:#5A52E0;--violetL:#8B7CF8;--cyan:#00B89C;--yellow:#E6A800;--red:#E63B5A;--text:#1A1733;--muted:#7770AA;--bodyMuted:#5A5588}
 #app{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden}
 .screen{position:absolute;top:0;left:0;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;background:var(--bg);display:none}
 .screen.active{display:block;z-index:10}
-#screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-/* ── SPLASH ── */
-#screen-splash{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+/* Splash */
+#screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .splash-brain-wrap{position:relative;width:180px;height:180px;margin-bottom:28px}
 .splash-brain{width:180px;height:180px}
 .splash-pulse{position:absolute;inset:-20px;border-radius:50%;border:2px solid var(--violet);opacity:0;animation:splashPulse 2.4s ease-out infinite}
@@ -55,13 +39,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes splashPulse{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.6);opacity:0}}
 @keyframes splashFadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes brainFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes brainGlow{0%,100%{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--violet) 50%,transparent))}50%{filter:drop-shadow(0 0 24px color-mix(in srgb,var(--violet) 80%,transparent))}}
 
-/* ── AUTH ── */
+/* Auth */
 #screen-auth.active{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;min-height:100%}
 .auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px 24px}
-.auth-brain-wrap{display:flex;justify-content:center;margin-bottom:16px}
-.auth-brain-mini{width:64px;height:64px;animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite}
 .auth-logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:32px;color:var(--text);letter-spacing:-1px;text-align:center;margin-bottom:4px}
 .auth-logo span{color:var(--violet)}
 .auth-subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
@@ -80,21 +61,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .auth-google-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
 .google-icon{width:18px;height:18px;flex-shrink:0}
 .auth-error{color:var(--red);font-size:13px;text-align:center;margin-bottom:10px;min-height:18px}
-.auth-success{color:var(--cyan);font-size:13px;text-align:center;margin-bottom:10px}
-.auth-note{font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
 
-/* ── LOGO / TOPBAR ── */
+/* Home */
 .logo{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;color:var(--text);letter-spacing:-2px;text-align:center}
 .logo span{color:var(--violet)}
 .tagline{color:var(--muted);font-size:12px;letter-spacing:3px;text-align:center;margin-top:4px;margin-bottom:20px}
-
-/* ── THEME TOGGLE ── */
 .theme-row{display:flex;justify-content:center;gap:8px;margin-bottom:28px}
 .theme-btn{display:flex;align-items:center;gap:6px;border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;background:transparent;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;color:var(--muted);transition:all .2s}
 .theme-btn.active{border-color:var(--violet);color:var(--violet);background:color-mix(in srgb,var(--violet) 12%,transparent)}
 .theme-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-
-/* ── XP CARD ── */
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violetL));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.user-info{flex:1;margin:0 12px}
+.user-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
+.user-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;padding:6px 12px;cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 .xp-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px}
 .xp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .level-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
@@ -103,18 +85,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .xp-streak-text{font-size:12px;color:var(--muted);text-align:right}
 .progress-track{height:6px;background:var(--border2);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--violetL));border-radius:3px;transition:width .5s ease}
-
-/* ── SECTION ── */
 .section{margin-bottom:22px}
 .section-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
-
-/* ── ANO CHIPS ── */
-.ano-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:0}
+.ano-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .ano-row::-webkit-scrollbar{display:none}
 .ano-chip{padding:9px 18px;border-radius:50px;border:1.5px solid var(--border);font-size:13px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;white-space:nowrap;background:transparent;color:var(--muted);transition:all .2s;flex-shrink:0}
 .ano-chip.active{background:var(--violet);color:#fff;border-color:var(--violet)}
-
-/* ── CATEGORY GRID ── */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cat-btn{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px 16px;cursor:pointer;text-align:center;transition:transform .15s,box-shadow .2s;overflow:hidden}
 .cat-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,.15)}
@@ -122,29 +98,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .cat-btn .cat-name{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--text);font-size:14px}
 .cat-btn .cat-count{font-size:11px;color:var(--muted);margin-top:4px}
 .cat-glow{position:absolute;inset:0;border-radius:13px;pointer-events:none}
-
-/* ── QUICK NAV ── */
 .quick-nav{display:flex;flex-direction:column;gap:8px}
 .quick-btn{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;cursor:pointer;transition:border-color .2s,background .2s}
 .quick-btn:hover{border-color:var(--violet);background:var(--surfaceHi)}
 .quick-label{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--text)}
 
-/* ── USER BAR ── */
-.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--violetL));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
-.user-info{flex:1;margin:0 12px}
-.user-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--text)}
-.user-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;padding:6px 12px;cursor:pointer;transition:all .2s}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
-
-/* ── PAGE HEADER ── */
-.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
-.page-back{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:color .2s}
-.page-back:hover{color:var(--text)}
-.page-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:22px;color:var(--text)}
-
-/* ── QUIZ ── */
+/* Quiz */
 .quiz-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .back-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;padding:4px 0;transition:color .2s}
 .back-btn:hover{color:var(--text)}
@@ -177,8 +136,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .explanation{margin-top:18px;padding:14px 16px;background:var(--border2);border-radius:10px;border-left:3px solid var(--cyan)}
 .explanation.wrong{border-left-color:var(--red)}
 .explanation.timeout{border-left-color:var(--yellow)}
-.expl-label{font-size:12px;color:var(--muted);margin-bottom:5px}
-.expl-divider{height:1px;background:var(--border);margin:10px 0}
 .how-label{font-size:11px;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;font-family:'Inter',sans-serif}
 .expl-steps{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
 .expl-step{display:flex;gap:10px;align-items:flex-start}
@@ -191,8 +148,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .next-btn:hover{opacity:.9;transform:translateY(-1px)}
 .next-btn.visible{display:block}
 .xp-float{position:fixed;top:38%;left:50%;transform:translateX(-50%);color:var(--cyan);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;pointer-events:none;z-index:200;text-shadow:0 0 20px var(--cyan);animation:floatUp 1.2s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes streakPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+@keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 
-/* ── PUZZLE VISUAL ── */
+/* Puzzle Visual */
 .puzzle-visual{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:16px 0 8px;min-height:60px;align-items:center}
 .seq-box{width:46px;height:46px;border-radius:10px;background:color-mix(in srgb,var(--violet) 15%,var(--border2));border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text);animation:seqPop .3s backwards}
 .seq-box.missing{background:var(--violet);color:#fff;border-color:var(--violetL);animation:seqPop .3s backwards,seqPulse 1.2s .3s ease-in-out infinite}
@@ -206,11 +168,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .visual-val.unknown{color:var(--cyan);animation:seqPulse 1.2s ease-in-out infinite}
 .visual-eq-box{background:color-mix(in srgb,var(--violet) 12%,var(--surface));border-radius:8px;padding:14px 20px;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:20px;color:var(--violet);text-align:center;border:1.5px solid var(--border);animation:seqPop .4s backwards}
 .visual-shape{animation:seqPop .4s backwards}
-.visual-image{max-width:100%;border-radius:12px;margin:12px auto;display:block;border:2px solid var(--border)}
-@keyframes seqPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-@keyframes seqPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.quiz-progress{display:flex;gap:4px;margin-bottom:16px;justify-content:center}
+.progress-dot{width:12px;height:12px;border-radius:50%;background:var(--border2);transition:all .3s}
+.progress-dot.done{background:var(--cyan)}
+.progress-dot.wrong{background:var(--red)}
+.progress-dot.current{background:var(--violet);transform:scale(1.3)}
 
-/* ── GAMEOVER ── */
+/* Ranking */
+.page-header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.page-back{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;line-height:1;transition:color .2s}
+.page-back:hover{color:var(--text)}
+.page-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:22px;color:var(--text)}
+.rank-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color .2s}
+.rank-row.me{border-color:var(--violet);background:color-mix(in srgb,var(--violet) 6%,var(--surface))}
+.rank-pos{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:16px;width:32px;text-align:center;flex-shrink:0}
+.rank-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
+.rank-info{flex:1}
+.rank-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.rank-level{font-size:12px;color:var(--muted);margin-top:2px}
+.rank-xp{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--violet)}
+.my-rank-bar{margin-top:16px;padding:14px 16px;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border:1.5px solid var(--violet);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+
+/* Game Over */
 .go-emoji{font-size:62px;text-align:center;margin-bottom:10px}
 .go-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;color:var(--red);text-align:center}
 .go-sub{color:var(--muted);text-align:center;margin-top:6px;margin-bottom:28px}
@@ -223,22 +202,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .primary-btn:hover{opacity:.9;transform:translateY(-1px)}
 .primary-btn.outline{background:var(--surface);border:1px solid var(--border);color:var(--text)}
 
-/* ── RANKING ── */
-.rank-tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:20px;gap:4px}
-.rank-tab{flex:1;padding:9px;border:none;background:transparent;border-radius:9px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--muted);transition:all .2s}
-.rank-tab.active{background:var(--violet);color:#fff}
-.rank-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;transition:border-color .2s}
-.rank-row.me{border-color:var(--violet);background:color-mix(in srgb,var(--violet) 6%,var(--surface))}
-.rank-pos{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:16px;width:32px;text-align:center;flex-shrink:0}
-.rank-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
-.rank-info{flex:1}
-.rank-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
-.rank-level{font-size:12px;color:var(--muted);margin-top:2px}
-.rank-xp{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--violet)}
-.rank-medal{font-size:20px}
-.my-rank-bar{margin-top:16px;padding:14px 16px;background:color-mix(in srgb,var(--violet) 8%,var(--surface));border:1.5px solid var(--violet);border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-
-/* ── SESSION SCORE ── */
+/* Session Score */
 .ss-header{text-align:center;padding:32px 0 24px}
 .ss-emoji{font-size:72px;display:block;margin-bottom:14px;animation:crEmojiPop .5s .1s both}
 .ss-title{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:30px;color:var(--text);animation:crFadeUp .4s .25s both}
@@ -266,44 +230,40 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ss-btns{display:flex;flex-direction:column;gap:10px;animation:crFadeUp .4s .75s both}
 @keyframes crEmojiPop{0%{transform:scale(0) rotate(-10deg);opacity:0}70%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes crFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatUp{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-@keyframes streakPop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 
-/* ── CONFETTI ── */
-#cr-confetti{position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%}
-.quiz-progress{display:flex;gap:4px;margin-bottom:16px;justify-content:center}
-.progress-dot{width:12px;height:12px;border-radius:50%;background:var(--border2);transition:all .3s}
-.progress-dot.done{background:var(--cyan)}
-.progress-dot.wrong{background:var(--red)}
-.progress-dot.current{background:var(--violet);transform:scale(1.3)}
+/* Share */
+.share-section{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+.share-btn{padding:10px 20px;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:transform .2s,opacity .2s}
+.share-btn:hover{transform:scale(1.05);opacity:.9}
+.share-btn.whatsapp{background:#25D366;color:#fff}
+.share-btn.twitter{background:#1DA1F2;color:#fff}
+.share-btn.copy{background:var(--violet);color:#fff}
 
-/* ── MULTIPLAYER ── */
+/* Multiplayer */
 .multiplayer-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
-.multiplayer-section .section-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
 .friend-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--border2);border-radius:10px;margin-bottom:6px}
 .friend-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--text)}
 .friend-status{font-size:12px;color:var(--muted)}
 .challenge-btn{padding:4px 14px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .2s}
 .challenge-btn:hover{opacity:.8}
-.challenge-btn:disabled{opacity:.4;cursor:not-allowed}
 .invite-input-wrap{display:flex;gap:8px;margin-top:10px}
 .invite-input-wrap input{flex:1;padding:10px 12px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none}
 .invite-input-wrap input:focus{border-color:var(--violet)}
 .invite-input-wrap button{padding:10px 18px;background:var(--violet);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:opacity .2s}
 .invite-input-wrap button:hover{opacity:.8}
+#cr-confetti{position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- ══ SPLASH ══ -->
+<!-- SPLASH -->
 <div id="screen-splash" class="screen active">
   <div class="splash-brain-wrap">
     <div class="splash-pulse"></div>
     <div class="splash-pulse"></div>
     <div class="splash-pulse"></div>
-    <svg class="splash-brain" viewBox="0 0 200 200" style="animation:brainFloat 3s ease-in-out infinite,brainGlow 3s ease-in-out infinite">
+    <svg class="splash-brain" viewBox="0 0 200 200" style="animation:brainFloat 3s ease-in-out infinite">
       <defs>
         <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6C63FF"/><stop offset="100%" style="stop-color:#A78BFA"/></linearGradient>
         <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A78BFA"/><stop offset="100%" style="stop-color:#00F5C4"/></linearGradient>
@@ -312,24 +272,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
       <path d="M95 55 C75 48, 45 52, 38 72 C30 88, 35 108, 45 120 C52 130, 60 138, 70 142 C75 144, 80 143, 82 138 L85 100 Z" fill="url(#bg2)" opacity="0.9"/>
       <path d="M85 50 C85 40, 95 34, 100 34 C105 34, 115 40, 115 50 L118 138 C115 148, 108 152, 100 152 C92 152, 85 148, 82 138 Z" fill="url(#bg1)" opacity="0.85"/>
       <path d="M120 70 C130 75, 148 78, 152 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
-      <path d="M122 88 C132 92, 148 95, 150 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
-      <path d="M118 106 C128 110, 140 114, 142 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
       <path d="M80 70 C70 75, 52 78, 48 90" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
-      <path d="M78 88 C68 92, 52 95, 50 108" stroke="white" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round"/>
-      <path d="M82 106 C72 110, 60 114, 58 124" stroke="white" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
       <line x1="100" y1="52" x2="100" y2="148" stroke="white" stroke-width="1.5" opacity="0.3"/>
-      <ellipse cx="130" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(-20 130 65)"/>
-      <ellipse cx="70" cy="65" rx="8" ry="5" fill="white" opacity="0.25" transform="rotate(20 70 65)"/>
-      <circle cx="168" cy="95" r="4" fill="#00F5C4" opacity="0.7"/>
-      <line x1="164" y1="95" x2="156" y2="95" stroke="#00F5C4" stroke-width="1.5" opacity="0.5"/>
-      <circle cx="32" cy="95" r="4" fill="#A78BFA" opacity="0.7"/>
-      <line x1="36" y1="95" x2="44" y2="95" stroke="#A78BFA" stroke-width="1.5" opacity="0.5"/>
-      <circle cx="100" cy="22" r="4" fill="#6C63FF" opacity="0.7"/>
-      <line x1="100" y1="26" x2="100" y2="34" stroke="#6C63FF" stroke-width="1.5" opacity="0.5"/>
-      <circle cx="155" cy="145" r="3" fill="#FFD166" opacity="0.6"/>
-      <line x1="152" y1="143" x2="145" y2="138" stroke="#FFD166" stroke-width="1.2" opacity="0.4"/>
-      <circle cx="45" cy="145" r="3" fill="#FF4D6D" opacity="0.6"/>
-      <line x1="48" y1="143" x2="55" y2="138" stroke="#FF4D6D" stroke-width="1.2" opacity="0.4"/>
     </svg>
   </div>
   <div class="splash-logo">Nard<span>IQ</span></div>
@@ -337,34 +281,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="splash-btn" onclick="onSplashStart()">Começar →</button>
 </div>
 
-<!-- ══ AUTH ══ -->
+<!-- AUTH -->
 <div id="screen-auth" class="screen">
   <div class="auth-card">
-    <div class="auth-brain-wrap">
-      <svg class="auth-brain-mini" viewBox="0 0 200 200">
-        <defs>
-          <linearGradient id="abg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6C63FF"/><stop offset="100%" style="stop-color:#A78BFA"/></linearGradient>
-          <linearGradient id="abg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#A78BFA"/><stop offset="100%" style="stop-color:#00F5C4"/></linearGradient>
-        </defs>
-        <path d="M105 55 C125 48, 155 52, 162 72 C170 88, 165 108, 155 120 C148 130, 140 138, 130 142 C125 144, 120 143, 118 138 L115 100 Z" fill="url(#abg1)" opacity="0.9"/>
-        <path d="M95 55 C75 48, 45 52, 38 72 C30 88, 35 108, 45 120 C52 130, 60 138, 70 142 C75 144, 80 143, 82 138 L85 100 Z" fill="url(#abg2)" opacity="0.9"/>
-        <path d="M85 50 C85 40, 95 34, 100 34 C105 34, 115 40, 115 50 L118 138 C115 148, 108 152, 100 152 C92 152, 85 148, 82 138 Z" fill="url(#abg1)" opacity="0.85"/>
-        <path d="M120 70 C130 75, 148 78, 152 90" stroke="white" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
-        <path d="M80 70 C70 75, 52 78, 48 90" stroke="white" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
-        <line x1="100" y1="52" x2="100" y2="148" stroke="white" stroke-width="1.5" opacity="0.3"/>
-      </svg>
-    </div>
     <div class="auth-logo">Nard<span>IQ</span></div>
     <div class="auth-subtitle">Entre para competir no ranking global</div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login"  onclick="authSwitchTab('login')">Entrar</button>
-      <button class="auth-tab"        id="tab-signup" onclick="authSwitchTab('signup')">Criar conta</button>
+      <button class="auth-tab active" id="tab-login" onclick="authSwitchTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-signup" onclick="authSwitchTab('signup')">Criar conta</button>
     </div>
-    <div id="auth-error"   class="auth-error"></div>
-    <div id="auth-success" class="auth-success" style="display:none"></div>
+    <div id="auth-error" class="auth-error"></div>
     <div id="form-login">
-      <input class="auth-input" id="login-email"    type="email"    placeholder="E-mail" autocomplete="email">
-      <input class="auth-input" id="login-password" type="password" placeholder="Senha"  autocomplete="current-password">
+      <input class="auth-input" id="login-email" type="email" placeholder="E-mail">
+      <input class="auth-input" id="login-password" type="password" placeholder="Senha">
       <button class="auth-btn" id="login-btn" onclick="doLogin()">Entrar</button>
       <div class="auth-divider">ou</div>
       <button class="auth-google-btn" onclick="doGoogleLogin()">
@@ -373,21 +302,20 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
       </button>
     </div>
     <div id="form-signup" style="display:none">
-      <input class="auth-input" id="signup-username" type="text"     placeholder="Username (visível no ranking)" autocomplete="off" maxlength="20">
-      <input class="auth-input" id="signup-email"    type="email"    placeholder="E-mail" autocomplete="email">
-      <input class="auth-input" id="signup-password" type="password" placeholder="Senha (mín. 6 caracteres)" autocomplete="new-password">
+      <input class="auth-input" id="signup-username" type="text" placeholder="Username (visível no ranking)" maxlength="20">
+      <input class="auth-input" id="signup-email" type="email" placeholder="E-mail">
+      <input class="auth-input" id="signup-password" type="password" placeholder="Senha (mín. 6 caracteres)">
       <button class="auth-btn" id="signup-btn" onclick="doSignup()">Criar conta</button>
       <div class="auth-divider">ou</div>
       <button class="auth-google-btn" onclick="doGoogleLogin()">
         <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Cadastrar com Google
       </button>
-      <div class="auth-note">Com Google, seu username será definido automaticamente.<br>Você pode alterar depois no perfil.</div>
     </div>
   </div>
 </div>
 
-<!-- ══ HOME ══ -->
+<!-- HOME -->
 <div id="screen-home" class="screen"><div class="screen-inner">
   <div class="logo">Nard<span>IQ</span></div>
   <div class="tagline">PENSE · APRENDA · EVOLUA</div>
@@ -412,12 +340,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     <div class="progress-track"><div class="progress-fill" id="home-xp-bar" style="width:0%"></div></div>
   </div>
 
-  <!-- ══ MULTIPLAYER ══ -->
+  <!-- MULTIPLAYER -->
   <div class="multiplayer-section">
     <div class="section-label">👥 Jogar com amigos</div>
-    <div id="friends-list">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Convide amigos para desafios!</div>
-    </div>
     <div class="invite-input-wrap">
       <input id="invite-input" placeholder="Nome do amigo para desafiar..." maxlength="20">
       <button onclick="challengeFriend()">Desafiar</button>
@@ -439,7 +364,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- ══ QUIZ ══ -->
+<!-- QUIZ -->
 <div id="screen-quiz" class="screen"><div class="screen-inner">
   <div class="quiz-topbar">
     <button class="back-btn" onclick="goHome()">← Sair</button>
@@ -461,7 +386,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima questão →</button>
 </div></div>
 
-<!-- ══ GAMEOVER ══ -->
+<!-- GAMEOVER -->
 <div id="screen-gameover" class="screen"><div class="screen-inner">
   <div class="go-emoji">💀</div><div class="go-title">Game Over</div><div class="go-sub">Sem vidas restantes</div>
   <div class="stats-card">
@@ -474,38 +399,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <button class="primary-btn" onclick="goHome()">Voltar ao início</button>
 </div></div>
 
-<!-- ══ SESSION SCORE ══ -->
+<!-- SESSION SCORE -->
 <div id="screen-session-score" class="screen"><div class="screen-inner">
   <div class="ss-header">
     <span class="ss-emoji" id="ss-emoji">🏆</span>
     <div class="ss-title" id="ss-title">Excelente!</div>
-    <div class="ss-sub"   id="ss-sub">Desempenho impressionante!</div>
+    <div class="ss-sub" id="ss-sub">Desempenho impressionante!</div>
   </div>
   <div class="ss-accuracy-ring">
     <svg class="ss-ring-svg" width="140" height="140" viewBox="0 0 140 140">
-      <circle class="ss-ring-bg"   cx="70" cy="70" r="60"/>
+      <circle class="ss-ring-bg" cx="70" cy="70" r="60"/>
       <circle class="ss-ring-fill" id="ss-ring-fill" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="377"/>
     </svg>
     <div class="ss-ring-text"><div class="ss-ring-pct" id="ss-ring-pct">0%</div><div class="ss-ring-lbl">ACURÁCIA</div></div>
   </div>
   <div class="ss-grid">
     <div class="ss-stat"><div class="ss-stat-val" id="ss-correct">0</div><div class="ss-stat-lbl">Acertos</div></div>
-    <div class="ss-stat"><div class="ss-stat-val" id="ss-wrong"  style="color:var(--red)">0</div><div class="ss-stat-lbl">Erros</div></div>
+    <div class="ss-stat"><div class="ss-stat-val" id="ss-wrong" style="color:var(--red)">0</div><div class="ss-stat-lbl">Erros</div></div>
     <div class="ss-stat"><div class="ss-stat-val" id="ss-xp">+0</div><div class="ss-stat-lbl">XP ganho</div></div>
     <div class="ss-stat"><div class="ss-stat-val" id="ss-streak">🔥0</div><div class="ss-stat-lbl">Best Streak</div></div>
   </div>
   <div class="ss-perf-bar">
     <div class="ss-perf-row"><div class="ss-perf-icon">✓</div><div class="ss-perf-info"><div class="ss-perf-label">Acertos</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-correct" style="background:var(--cyan);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-correct-num" style="color:var(--cyan)">0</div></div>
     <div class="ss-perf-row"><div class="ss-perf-icon">✗</div><div class="ss-perf-info"><div class="ss-perf-label">Erros</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-wrong" style="background:var(--red);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-wrong-num" style="color:var(--red)">0</div></div>
-    <div class="ss-perf-row"><div class="ss-perf-icon">⏱</div><div class="ss-perf-info"><div class="ss-perf-label">Tempo esgotado</div><div class="ss-perf-track"><div class="ss-perf-fill" id="ss-bar-timeout" style="background:var(--yellow);width:0%"></div></div></div><div class="ss-perf-num" id="ss-bar-timeout-num" style="color:var(--yellow)">0</div></div>
   </div>
-  <div class="ss-btns">
+  
+  <!-- SHARE SECTION -->
+  <div class="share-section">
+    <button class="share-btn whatsapp" onclick="shareResult('whatsapp')">📱 WhatsApp</button>
+    <button class="share-btn twitter" onclick="shareResult('twitter')">🐦 Twitter</button>
+    <button class="share-btn copy" onclick="shareResult('copy')">📋 Copiar</button>
+  </div>
+  
+  <div class="ss-btns" style="margin-top:16px">
     <button class="primary-btn" onclick="replaySession()">Jogar novamente</button>
     <button class="primary-btn outline" onclick="goHome()">Voltar ao início</button>
   </div>
 </div></div>
 
-<!-- ══ RANKING ══ -->
+<!-- RANKING -->
 <div id="screen-ranking" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">🏆 Ranking NardIQ</div></div>
   <div id="ranking-list"><div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div></div>
@@ -515,33 +447,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   </div>
 </div></div>
 
-<!-- ══ HISTÓRICO ══ -->
+<!-- HISTORY -->
 <div id="screen-history" class="screen"><div class="screen-inner">
   <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">📊 Histórico</div></div>
   <div id="history-summary" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"></div>
   <div id="history-list"></div>
-</div></div>
-
-<!-- ══ MULTIPLAYER CHALLENGE ══ -->
-<div id="screen-challenge" class="screen"><div class="screen-inner">
-  <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">⚔️ Desafio</div></div>
-  <div id="challenge-info" style="text-align:center;padding:20px;background:var(--surface);border-radius:14px;border:1px solid var(--border)">
-    <div style="font-size:28px;margin-bottom:8px">🏁</div>
-    <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text)" id="challenge-title">Desafio contra amigo</div>
-    <div style="color:var(--muted);font-size:14px;margin:8px 0" id="challenge-sub">Responda as 10 questões!</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0">
-      <div style="background:var(--border2);padding:12px;border-radius:10px">
-        <div style="font-size:11px;color:var(--muted)">VOCÊ</div>
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--violet)" id="challenge-my-score">0</div>
-      </div>
-      <div style="background:var(--border2);padding:12px;border-radius:10px">
-        <div style="font-size:11px;color:var(--muted)" id="challenge-opponent-label">OPONENTE</div>
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--cyan)" id="challenge-opp-score">0</div>
-      </div>
-    </div>
-    <div style="font-size:13px;color:var(--muted)" id="challenge-status-text">Aguardando oponente...</div>
-    <button class="primary-btn" style="margin-top:16px" onclick="startChallengeGame()">Começar desafio!</button>
-  </div>
 </div></div>
 
 <canvas id="cr-confetti"></canvas>
@@ -571,7 +481,7 @@ const CATS = [
   {key:'geometria',  name:'Geometria',  icon:'📐',  color:'#00F5C4'},
 ];
 const XP_THRESHOLDS = [0,100,300,600,1000,1800,3000,5000];
-const LEVEL_NAMES   = ['Iniciante','Curioso','Pensador','Calculista','Estrategista','Gênio','Mestre','NardIQ Pro'];
+const LEVEL_NAMES = ['Iniciante','Curioso','Pensador','Calculista','Estrategista','Gênio','Mestre','NardIQ Pro'];
 
 let state = {
   xp:0, bestStreak:0,
@@ -582,186 +492,88 @@ let state = {
   currentQuestions: [],
   currentIndex: 0,
   answeredResults: [],
-  isChallenge: false,
-  challengeId: null,
-  challengeOpponent: null,
 };
 
-// ── BANCO DE QUESTÕES POR ANO ──
+// ── BANCO DE QUESTÕES ──
 function getPuzzlesFor(ano, cat) {
-  const allPuzzles = {
-    '5°': {
-      'sequencias': [
-        {q:'Qual o próximo? 2, 4, 6, 8, ___',visual:'seq',seq:[2,4,6,8,null],options:['A) 9','B) 10','C) 11','D) 12'],answer:'B',steps:['PA com razão 2.','8 + 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
-        {q:'Complete: 5, 10, 15, 20, ___',visual:'seq',seq:[5,10,15,20,null],options:['A) 21','B) 22','C) 23','D) 25'],answer:'D',steps:['PA com razão 5.','20 + 5 = <code>25</code>.'],conclusion:'Resposta: 25'},
-        {q:'Próximo: 50, 45, 40, 35, ___',visual:'seq',seq:[50,45,40,35,null],options:['A) 28','B) 30','C) 32','D) 34'],answer:'B',steps:['PA decrescente com razão -5.','35 - 5 = <code>30</code>.'],conclusion:'Resposta: 30'},
-        {q:'Qual o próximo? 7, 14, 21, 28, ___',visual:'seq',seq:[7,14,21,28,null],options:['A) 32','B) 33','C) 34','D) 35'],answer:'D',steps:['PA com razão 7.','28 + 7 = <code>35</code>.'],conclusion:'Resposta: 35'},
-        {q:'Complete: 11, 22, 33, 44, ___',visual:'seq',seq:[11,22,33,44,null],options:['A) 50','B) 55','C) 60','D) 65'],answer:'B',steps:['PA com razão 11.','44 + 11 = <code>55</code>.'],conclusion:'Resposta: 55'},
-        {q:'Próximo: 1, 3, 5, 7, 9, ___',visual:'seq',seq:[1,3,5,7,9,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'B',steps:['PA com razão 2.','9 + 2 = <code>11</code>.'],conclusion:'Resposta: 11'},
-        {q:'Qual o próximo? 3, 6, 9, 12, ___',visual:'seq',seq:[3,6,9,12,null],options:['A) 13','B) 14','C) 15','D) 16'],answer:'C',steps:['PA com razão 3.','12 + 3 = <code>15</code>.'],conclusion:'Resposta: 15'},
-        {q:'Complete: 4, 8, 12, 16, ___',visual:'seq',seq:[4,8,12,16,null],options:['A) 18','B) 19','C) 20','D) 22'],answer:'C',steps:['PA com razão 4.','16 + 4 = <code>20</code>.'],conclusion:'Resposta: 20'},
-      ],
-      'algebra': [
-        {q:'Se 2x = 14, qual o valor de x?',visual:'eq',eq:'2x = 14',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 14 ÷ 2 = <code>7</code>.'],conclusion:'Resposta: 7'},
-        {q:'Se x + 5 = 12, qual é x?',visual:'eq',eq:'x + 5 = 12',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 12 - 5 = <code>7</code>.'],conclusion:'Resposta: 7'},
-        {q:'Se x - 3 = 10, qual é x?',visual:'eq',eq:'x - 3 = 10',options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['x = 10 + 3 = <code>13</code>.'],conclusion:'Resposta: 13'},
-        {q:'Se 3x = 21, qual é x?',visual:'eq',eq:'3x = 21',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 21 ÷ 3 = <code>7</code>.'],conclusion:'Resposta: 7'},
-        {q:'Se 4x = 32, qual é x?',visual:'eq',eq:'4x = 32',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['x = 32 ÷ 4 = <code>8</code>.'],conclusion:'Resposta: 8'},
-        {q:'Se 2x + 3 = 15, qual é x?',visual:'eq',eq:'2x + 3 = 15',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['2x = 15 - 3 = 12','x = 12 ÷ 2 = <code>6</code>.'],conclusion:'Resposta: 6'},
-      ],
-      'equacoes': [
-        {q:'Coelho + Gato = 12kg. A diferença entre eles é 6kg. Quanto pesa o GATO?',visual:'system',system:['C + G = 12 kg','C − G = 6 kg'],options:['A) 9 kg','B) 7 kg','C) 3 kg','D) 5 kg'],answer:'C',steps:['C+G=12 e C−G=6.','Somando: 2C=18 → C=9.','G = 12−9 = <code>3 kg</code>.'],conclusion:'Resposta: 3 kg'},
-        {q:'Um número somado com 8 resulta em 15. Qual é o número?',visual:'eq',eq:'x + 8 = 15',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 15 − 8 = <code>7</code>.'],conclusion:'Resposta: 7'},
-        {q:'x + y = 10 e x = 4. Qual o valor de y?',visual:'system',system:['x + y = 10','x = 4'],options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['4 + y = 10','y = 10 - 4 = <code>6</code>.'],conclusion:'Resposta: 6'},
-        {q:'Ana tem o dobro de balas de Bia. Juntas têm 18 balas. Quantas balas tem Bia?',visual:null,options:['A) 4','B) 5','C) 6','D) 8'],answer:'C',steps:['Ana = 2B, 2B + B = 18','3B = 18 → B = <code>6</code>.'],conclusion:'Resposta: 6'},
-      ],
-      'logica': [
-        {q:'Ana tem mais balas que Bia. Bia tem mais balas que Carla. Carla tem 10. Ana tem 20. Bia pode ter:',visual:null,options:['A) 8','B) 15','C) 20','D) 25'],answer:'B',steps:['Carla < Bia < Ana.','Carla=10, Ana=20. Logo Bia está entre 11 e 19.','Única opção válida: <code>15</code>.'],conclusion:'Resposta: 15'},
-        {q:'Em uma fila: Pedro está antes de João. João está antes de Maria. Quem está na frente?',visual:null,options:['A) João','B) Maria','C) Pedro','D) Todos empatados'],answer:'C',steps:['Pedro → João → Maria.','<code>Pedro</code> está primeiro.'],conclusion:'Resposta: Pedro'},
-        {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
-        {q:'Se hoje é sexta-feira, amanhã será:',visual:null,options:['A) Quinta','B) Sábado','C) Domingo','D) Segunda'],answer:'B',steps:['A sequência dos dias da semana é: ... Quinta → Sexta → <code>Sábado</code>.'],conclusion:'Resposta: Sábado'},
-      ],
-      'geometria': [
-        {q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',visual:'shape',shape:{type:'square',label:'5 cm'},options:['A) 10','B) 15','C) 20','D) 25'],answer:'C',steps:['Perímetro = 4 × lado.','4 × 5 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
-        {q:'Um retângulo tem base 8 cm e altura 3 cm. Qual é a área?',visual:'shape',shape:{type:'rect',w:8,h:3},options:['A) 11','B) 22','C) 24','D) 32'],answer:'C',steps:['Área = base × altura.','8 × 3 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
-        {q:'Qual a área de um quadrado de lado 4 cm?',visual:'shape',shape:{type:'square',label:'4 cm'},options:['A) 12','B) 14','C) 16','D) 18'],answer:'C',steps:['Área = lado².','4² = <code>16 cm²</code>.'],conclusion:'Resposta: 16 cm²'},
-        {q:'Qual o perímetro de um retângulo de base 6 cm e altura 4 cm?',visual:'shape',shape:{type:'rect',w:6,h:4},options:['A) 18','B) 20','C) 22','D) 24'],answer:'B',steps:['Perímetro = 2×(base+altura).','2×(6+4) = 2×10 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
-      ],
-    },
-    '6°': {
-      'sequencias': [
-        {q:'Fibonacci: 1, 1, 2, 3, 5, 8, 13, ___',visual:'seq',seq:[1,1,2,3,5,8,13,null],options:['A) 18','B) 20','C) 21','D) 26'],answer:'C',steps:['Cada termo = soma dos dois anteriores.','8+13 = <code>21</code>.'],conclusion:'Resposta: 21'},
-        {q:'Próximo: 2, 6, 18, 54, ___',visual:'seq',seq:[2,6,18,54,null],options:['A) 108','B) 162','C) 180','D) 216'],answer:'B',steps:['PG com razão 3.','54 × 3 = <code>162</code>.'],conclusion:'Resposta: 162'},
-        {q:'Complete: 10, 20, 40, 80, ___',visual:'seq',seq:[10,20,40,80,null],options:['A) 120','B) 140','C) 160','D) 180'],answer:'C',steps:['PG com razão 2.','80 × 2 = <code>160</code>.'],conclusion:'Resposta: 160'},
-        {q:'Próximo: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 40'],answer:'C',steps:['Quadrados perfeitos: 1²,2²,3²,4²,5².','Próximo: 6² = <code>36</code>.'],conclusion:'Resposta: 36'},
-      ],
-      'algebra': [
-        {q:'Se 3x + 7 = 22, qual é o valor de x?',visual:'eq',eq:'3x + 7 = 22',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['3x = 22−7 = 15.','x = 15÷3 = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'Se 5x - 3 = 12, qual é x?',visual:'eq',eq:'5x - 3 = 12',options:['A) 1','B) 2','C) 3','D) 4'],answer:'C',steps:['5x = 12 + 3 = 15.','x = 15÷5 = <code>3</code>.'],conclusion:'Resposta: 3'},
-        {q:'Se 2x + 5 = 19, qual é x?',visual:'eq',eq:'2x + 5 = 19',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['2x = 19 - 5 = 14.','x = 14÷2 = <code>7</code>.'],conclusion:'Resposta: 7'},
-        {q:'Se x/2 + 3 = 7, qual é x?',visual:'eq',eq:'x/2 + 3 = 7',options:['A) 4','B) 6','C) 8','D) 10'],answer:'C',steps:['x/2 = 7 - 3 = 4.','x = 4 × 2 = <code>8</code>.'],conclusion:'Resposta: 8'},
-        {q:'Se 4x - 8 = 12, qual é x?',visual:'eq',eq:'4x - 8 = 12',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['4x = 12 + 8 = 20.','x = 20÷4 = <code>5</code>.'],conclusion:'Resposta: 5'},
-      ],
-      'equacoes': [
-        {q:'x + y = 10 e x − y = 4. Qual o valor de x?',visual:'system',system:['x + y = 10','x − y = 4'],options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['Somando: 2x=14 → x=<code>7</code>.','y = 10−7 = 3.'],conclusion:'Resposta: x = 7'},
-        {q:'2x + 3 = 11. Qual é x?',visual:'eq',eq:'2x + 3 = 11',options:['A) 3','B) 4','C) 5','D) 6'],answer:'B',steps:['2x=11−3=8.','x=8÷2=<code>4</code>.'],conclusion:'Resposta: 4'},
-        {q:'x + y = 15 e x = 2y. Quanto vale y?',visual:'system',system:['x + y = 15','x = 2y'],options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['2y + y = 15 → 3y = 15.','y = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'A soma de dois números é 20. Um é o triplo do outro. Quais são os números?',visual:null,options:['A) 4 e 16','B) 5 e 15','C) 6 e 14','D) 8 e 12'],answer:'B',steps:['x + 3x = 20 → 4x = 20 → x=5.','Os números são <code>5 e 15</code>.'],conclusion:'Resposta: 5 e 15'},
-      ],
-      'logica': [
-        {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
-        {q:'Se 2 + 2 = 5 é falso, o que podemos dizer?',visual:null,options:['A) 2+2=4 é falso','B) 2+2=4 é verdadeiro','C) Nada','D) 2+2=5 é verdadeiro'],answer:'B',steps:['A afirmação 2+2=5 é falsa.','Logo a negação, 2+2=4, é <code>verdadeira</code>.'],conclusion:'Resposta: 2+2=4 é verdadeiro'},
-        {q:'Se hoje é segunda, daqui a 5 dias será:',visual:null,options:['A) Sexta','B) Sábado','C) Domingo','D) Segunda'],answer:'B',steps:['Segunda + 5 dias = <code>Sábado</code>.'],conclusion:'Resposta: Sábado'},
-        {q:'Qual número falta? 2, 4, 8, 16, ___',visual:'seq',seq:[2,4,8,16,null],options:['A) 24','B) 28','C) 30','D) 32'],answer:'D',steps:['PG com razão 2.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
-      ],
-      'geometria': [
-        {q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',visual:'shape',shape:{type:'triangle',b:10,h:6},options:['A) 16','B) 30','C) 60','D) 120'],answer:'B',steps:['Área = (base × altura) / 2.','(10 × 6) / 2 = <code>30 cm²</code>.'],conclusion:'Resposta: 30 cm²'},
-        {q:'Qual a área de um círculo de raio 5 cm? (use π=3,14)',visual:'shape',shape:{type:'circle',r:5},options:['A) 25,12','B) 78,5','C) 157','D) 314'],answer:'B',steps:['Área = π × r².','3,14 × 5² = 3,14 × 25 = <code>78,5 cm²</code>.'],conclusion:'Resposta: 78,5 cm²'},
-        {q:'Qual o perímetro de um triângulo equilátero de lado 6 cm?',visual:null,options:['A) 12','B) 15','C) 18','D) 21'],answer:'C',steps:['Perímetro = 3 × lado.','3 × 6 = <code>18 cm</code>.'],conclusion:'Resposta: 18 cm'},
-        {q:'Qual a área de um retângulo de base 7 cm e altura 4 cm?',visual:'shape',shape:{type:'rect',w:7,h:4},options:['A) 22','B) 24','C) 26','D) 28'],answer:'D',steps:['Área = base × altura.','7 × 4 = <code>28 cm²</code>.'],conclusion:'Resposta: 28 cm²'},
-      ],
-    },
-    '7°': {
-      'sequencias': [
-        {q:'Quadrados perfeitos: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 49'],answer:'C',steps:['São n². O próximo é 6²=<code>36</code>.'],conclusion:'Resposta: 36'},
-        {q:'Próximo: 2, 4, 8, 16, 32, 64, ___',visual:'seq',seq:[2,4,8,16,32,64,null],options:['A) 96','B) 112','C) 128','D) 256'],answer:'C',steps:['PG com razão 2.','64×2=<code>128</code>.'],conclusion:'Resposta: 128'},
-        {q:'Cubos: 1, 8, 27, 64, ___',visual:'seq',seq:[1,8,27,64,null],options:['A) 100','B) 120','C) 125','D) 144'],answer:'C',steps:['São n³. O próximo é 5³=<code>125</code>.'],conclusion:'Resposta: 125'},
-        {q:'Complete: 3, 6, 12, 24, ___',visual:'seq',seq:[3,6,12,24,null],options:['A) 36','B) 42','C) 48','D) 54'],answer:'C',steps:['PG com razão 2.','24 × 2 = <code>48</code>.'],conclusion:'Resposta: 48'},
-      ],
-      'algebra': [
-        {q:'(x+3)² quando x=2 vale:',visual:'eq',eq:'(x+3)², x=2',options:['A) 10','B) 15','C) 25','D) 35'],answer:'C',steps:['(2+3)² = 5² = <code>25</code>.'],conclusion:'Resposta: 25'},
-        {q:'Se 4x − 8 = 12, qual é x?',visual:'eq',eq:'4x − 8 = 12',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['4x = 12+8 = 20.','x = 20÷4 = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'Se 2x² = 32, qual é x (positivo)?',visual:'eq',eq:'2x² = 32',options:['A) 2','B) 3','C) 4','D) 5'],answer:'C',steps:['x² = 16.','x = <code>4</code>.'],conclusion:'Resposta: 4'},
-        {q:'Se 3x - 4 = 14, qual é x?',visual:'eq',eq:'3x - 4 = 14',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['3x = 14 + 4 = 18.','x = 18÷3 = <code>6</code>.'],conclusion:'Resposta: 6'},
-      ],
-      'equacoes': [
-        {q:'x/2 + 3 = 7. Qual é x?',visual:'eq',eq:'x/2 + 3 = 7',options:['A) 2','B) 4','C) 8','D) 12'],answer:'C',steps:['x/2 = 7−3 = 4.','x = 4×2 = <code>8</code>.'],conclusion:'Resposta: 8'},
-        {q:'3x + 2y = 16 e x = 2. Qual é y?',visual:'system',system:['3x + 2y = 16','x = 2'],options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['3(2) + 2y = 16 → 6 + 2y = 16.','2y = 10 → y = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'x + y = 12 e x - y = 4. Qual é x?',visual:'system',system:['x + y = 12','x - y = 4'],options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['Somando: 2x = 16 → x = <code>8</code>.'],conclusion:'Resposta: 8'},
-        {q:'Um número mais sua metade é igual a 21. Qual é o número?',visual:null,options:['A) 10','B) 12','C) 14','D) 16'],answer:'C',steps:['x + x/2 = 21 → 3x/2 = 21.','3x = 42 → x = <code>14</code>.'],conclusion:'Resposta: 14'},
-      ],
-      'logica': [
-        {q:'P→Q é verdadeiro. Q é falso. O que se conclui sobre P?',visual:null,options:['A) P é verdadeiro','B) P é falso','C) P pode ser V ou F','D) Nada'],answer:'B',steps:['Modus Tollens: P→Q e ¬Q implica <code>¬P</code>.'],conclusion:'Resposta: P é falso'},
-        {q:'Se P∧Q é falso, o que podemos afirmar?',visual:null,options:['A) P é falso','B) Q é falso','C) P ou Q é falso','D) P e Q são falsos'],answer:'C',steps:['Para P∧Q ser falso, pelo menos um dos dois deve ser falso.','Logo: <code>P ou Q é falso</code>.'],conclusion:'Resposta: P ou Q é falso'},
-        {q:'Se todos os A são B e todos os B são C, então:',visual:null,options:['A) Todos os A são C','B) Todos os C são A','C) Alguns A são C','D) Nenhum A é C'],answer:'A',steps:['Silogismo: A⊂B e B⊂C implica <code>A⊂C</code>.'],conclusion:'Resposta: Todos os A são C'},
-      ],
-      'geometria': [
-        {q:'Um círculo tem raio 7 cm. Qual é a área? (π≈3,14)',visual:'shape',shape:{type:'circle',r:7},options:['A) 43,96','B) 49','C) 153,86','D) 154'],answer:'C',steps:['Área = π × r².','3,14 × 7² = 3,14 × 49 ≈ <code>153,86 cm²</code>.'],conclusion:'Resposta: ≈ 153,86 cm²'},
-        {q:'Catetos 3 e 4. Qual a hipotenusa? (Pitágoras)',visual:'shape',shape:{type:'pythagorean',a:3,b:4},options:['A) 5','B) 6','C) 7','D) 8'],answer:'A',steps:['a²+b²=c².','9+16=25. √25=<code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'Qual a área de um losango com diagonais 8 cm e 6 cm?',visual:null,options:['A) 14','B) 20','C) 24','D) 48'],answer:'C',steps:['Área = (D × d) / 2.','(8 × 6) / 2 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
-        {q:'Qual o volume de um cubo de aresta 3 cm?',visual:null,options:['A) 9','B) 18','C) 27','D) 36'],answer:'C',steps:['Volume = aresta³.','3³ = <code>27 cm³</code>.'],conclusion:'Resposta: 27 cm³'},
-      ],
-    },
-    '8°': {
-      'sequencias': [
-        {q:'Cubos: 1, 8, 27, 64, ___',visual:'seq',seq:[1,8,27,64,null],options:['A) 100','B) 120','C) 125','D) 144'],answer:'C',steps:['São n³. O próximo é 5³=<code>125</code>.'],conclusion:'Resposta: 125'},
-        {q:'Progressão: 1, 2, 4, 8, 16, ___',visual:'seq',seq:[1,2,4,8,16,null],options:['A) 24','B) 28','C) 30','D) 32'],answer:'D',steps:['PG com razão 2.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
-        {q:'Complete: 81, 27, 9, 3, ___',visual:'seq',seq:[81,27,9,3,null],options:['A) 1','B) 2','C) 0','D) -1'],answer:'A',steps:['PG com razão 1/3.','3 ÷ 3 = <code>1</code>.'],conclusion:'Resposta: 1'},
-        {q:'Próximo: 2, 6, 12, 20, 30, ___',visual:'seq',seq:[2,6,12,20,30,null],options:['A) 38','B) 40','C) 42','D) 44'],answer:'C',steps:['Diferenças: 4,6,8,10. Próxima diferença: 12.','30 + 12 = <code>42</code>.'],conclusion:'Resposta: 42'},
-      ],
-      'algebra': [
-        {q:'Qual o valor de 2⁵ + 3³?',visual:'eq',eq:'2⁵ + 3³',options:['A) 35','B) 55','C) 59','D) 64'],answer:'C',steps:['2⁵=32. 3³=27.','32+27=<code>59</code>.'],conclusion:'Resposta: 59'},
-        {q:'log₁₀(1000) = ?',visual:'eq',eq:'log₁₀(1000)',options:['A) 2','B) 3','C) 4','D) 10'],answer:'B',steps:['log₁₀(10³) = <code>3</code>.'],conclusion:'Resposta: 3'},
-        {q:'√144 + √25 = ?',visual:'eq',eq:'√144 + √25',options:['A) 15','B) 17','C) 19','D) 21'],answer:'B',steps:['√144=12. √25=5.','12+5=<code>17</code>.'],conclusion:'Resposta: 17'},
-        {q:'Se 2x² = 50, qual é x (positivo)?',visual:'eq',eq:'2x² = 50',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['x² = 25.','x = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'(2x + 3)(x - 1) = 0. Quais as raízes?',visual:'eq',eq:'(2x+3)(x-1)=0',options:['A) x=1 e x=-1,5','B) x=1 e x=-3','C) x=1 e x=3','D) x=1 e x=2'],answer:'A',steps:['2x+3=0 → x=-1,5.','x-1=0 → x=1.'],conclusion:'Resposta: x=1 e x=-1,5'},
-      ],
-      'equacoes': [
-        {q:'x² − 5x + 6 = 0. Quais as raízes?',visual:'eq',eq:'x² − 5x + 6 = 0',options:['A) x=1 e x=6','B) x=2 e x=3','C) x=−2 e x=−3','D) x=3 e x=3'],answer:'B',steps:['Δ=25−24=1.','x=(5±1)/2 → x₁=3, x₂=<code>2</code>.'],conclusion:'Resposta: x=2 e x=3'},
-        {q:'x² - 16 = 0. Qual é x (positivo)?',visual:'eq',eq:'x² - 16 = 0',options:['A) 2','B) 3','C) 4','D) 5'],answer:'C',steps:['x² = 16.','x = <code>4</code>.'],conclusion:'Resposta: 4'},
-        {q:'x² - 3x - 10 = 0. Quais as raízes?',visual:'eq',eq:'x² - 3x - 10 = 0',options:['A) x=-2 e x=5','B) x=2 e x=-5','C) x=-2 e x=-5','D) x=2 e x=5'],answer:'A',steps:['Δ=9+40=49.','x=(3±7)/2 → x₁=5, x₂=<code>-2</code>.'],conclusion:'Resposta: -2 e 5'},
-      ],
-      'logica': [
-        {q:'¬(P ∧ Q) é equivalente a:',visual:null,options:['A) ¬P ∧ ¬Q','B) ¬P ∨ ¬Q','C) P ∨ Q','D) P ∧ ¬Q'],answer:'B',steps:['Lei de De Morgan: ¬(A∧B) = <code>¬A ∨ ¬B</code>.'],conclusion:'Resposta: ¬P ∨ ¬Q'},
-        {q:'Se P→Q e Q→R, então:',visual:null,options:['A) R→P','B) P→R','C) ¬P→¬R','D) R→Q'],answer:'B',steps:['Silogismo hipotético: P→Q e Q→R garantem <code>P→R</code>.'],conclusion:'Resposta: P→R'},
-        {q:'¬(P ∨ Q) é equivalente a:',visual:null,options:['A) ¬P ∧ ¬Q','B) ¬P ∨ ¬Q','C) P ∨ Q','D) P ∧ Q'],answer:'A',steps:['Lei de De Morgan: ¬(A∨B) = <code>¬A ∧ ¬B</code>.'],conclusion:'Resposta: ¬P ∧ ¬Q'},
-      ],
-      'geometria': [
-        {q:'Quadrado com perímetro 28cm. Qual a área?',visual:'shape',shape:{type:'square',label:'?'},options:['A) 28','B) 36','C) 49','D) 56'],answer:'C',steps:['Lado = 28÷4 = 7cm.','Área = 7² = <code>49 cm²</code>.'],conclusion:'Resposta: 49 cm²'},
-        {q:'Qual o volume de um cilindro de raio 3cm e altura 5cm? (π=3,14)',visual:null,options:['A) 94,2','B) 113,04','C) 141,3','D) 188,4'],answer:'C',steps:['Volume = π × r² × h.','3,14 × 3² × 5 = 3,14 × 9 × 5 = <code>141,3 cm³</code>.'],conclusion:'Resposta: 141,3 cm³'},
-        {q:'Qual a área de um trapézio de bases 6cm e 10cm e altura 4cm?',visual:null,options:['A) 20','B) 24','C) 28','D) 32'],answer:'D',steps:['Área = (B+b)×h/2.','(10+6)×4/2 = 16×4/2 = <code>32 cm²</code>.'],conclusion:'Resposta: 32 cm²'},
-        {q:'Qual o perímetro de um círculo de raio 5cm? (π=3,14)',visual:'shape',shape:{type:'circle',r:5},options:['A) 25,12','B) 30,24','C) 31,4','D) 34,5'],answer:'C',steps:['Perímetro = 2×π×r.','2×3,14×5 = <code>31,4 cm</code>.'],conclusion:'Resposta: 31,4 cm'},
-      ],
-    },
-    '9°': {
-      'sequencias': [
-        {q:'PG: 3, 6, 12, 24, 48, ___',visual:'seq',seq:[3,6,12,24,48,null],options:['A) 72','B) 86','C) 96','D) 100'],answer:'C',steps:['Razão = 2.','48×2=<code>96</code>.'],conclusion:'Resposta: 96'},
-        {q:'Progressão: 1, 1, 2, 3, 5, 8, ___',visual:'seq',seq:[1,1,2,3,5,8,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['Fibonacci: cada termo é a soma dos dois anteriores.','8+5 = <code>13</code>.'],conclusion:'Resposta: 13'},
-        {q:'Complete: 2, 6, 18, 54, ___',visual:'seq',seq:[2,6,18,54,null],options:['A) 108','B) 152','C) 162','D) 172'],answer:'C',steps:['PG com razão 3.','54×3 = <code>162</code>.'],conclusion:'Resposta: 162'},
-        {q:'Próximo: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 40'],answer:'C',steps:['São n². Próximo: 6² = <code>36</code>.'],conclusion:'Resposta: 36'},
-      ],
-      'algebra': [
-        {q:'Um produto com 25% de desconto custa R$120. Qual o preço original?',visual:null,options:['A) R$144','B) R$148','C) R$160','D) R$150'],answer:'C',steps:['120 = 75% do original.','Original = 120 ÷ 0,75 = <code>R$160</code>.'],conclusion:'Resposta: R$160'},
-        {q:'√144 + √25 = ?',visual:'eq',eq:'√144 + √25',options:['A) 15','B) 17','C) 19','D) 21'],answer:'B',steps:['√144=12. √25=5.','12+5=<code>17</code>.'],conclusion:'Resposta: 17'},
-        {q:'Se log₂(8) = x, qual é x?',visual:'eq',eq:'log₂(8) = x',options:['A) 2','B) 3','C) 4','D) 5'],answer:'B',steps:['2³ = 8.','log₂(8) = <code>3</code>.'],conclusion:'Resposta: 3'},
-        {q:'(x+2)(x-3) = 0. Quais as raízes?',visual:'eq',eq:'(x+2)(x-3)=0',options:['A) x=2 e x=3','B) x=-2 e x=3','C) x=2 e x=-3','D) x=-2 e x=-3'],answer:'B',steps:['x+2=0 → x=-2.','x-3=0 → x=3.'],conclusion:'Resposta: -2 e 3'},
-        {q:'Se 2^x = 256, qual é x?',visual:'eq',eq:'2^x = 256',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['2⁸ = 256.','x = <code>8</code>.'],conclusion:'Resposta: 8'},
-      ],
-      'equacoes': [
-        {q:'2x² = 50. Qual o valor positivo de x?',visual:'eq',eq:'2x² = 50',options:['A) 4','B) 5','C) 6','D) 7'],answer:'B',steps:['x²=25.','x=<code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'x² - 7x + 12 = 0. Quais as raízes?',visual:'eq',eq:'x² - 7x + 12 = 0',options:['A) x=2 e x=6','B) x=3 e x=4','C) x=4 e x=5','D) x=2 e x=5'],answer:'B',steps:['Δ=49-48=1.','x=(7±1)/2 → x₁=4, x₂=<code>3</code>.'],conclusion:'Resposta: 3 e 4'},
-        {q:'x² + 6x + 9 = 0. Qual a raiz?',visual:'eq',eq:'x² + 6x + 9 = 0',options:['A) -3','B) 3','C) -9','D) 9'],answer:'A',steps:['(x+3)² = 0.','x = <code>-3</code>.'],conclusion:'Resposta: -3'},
-        {q:'x² - 4 = 0. Quais as raízes?',visual:'eq',eq:'x² - 4 = 0',options:['A) x=2','B) x=-2','C) x=2 e x=-2','D) x=4 e x=-4'],answer:'C',steps:['x² = 4.','x = <code>2 e -2</code>.'],conclusion:'Resposta: 2 e -2'},
-      ],
-      'logica': [
-        {q:'Se P→Q e Q→R, então:',visual:null,options:['A) R→P','B) P→R','C) ¬P→¬R','D) R→Q'],answer:'B',steps:['Silogismo hipotético: P→Q e Q→R garantem <code>P→R</code>.'],conclusion:'Resposta: P→R'},
-        {q:'¬(P → Q) é equivalente a:',visual:null,options:['A) P ∧ ¬Q','B) ¬P ∧ Q','C) ¬P ∨ Q','D) P ∨ ¬Q'],answer:'A',steps:['A negação de P→Q é <code>P ∧ ¬Q</code>.'],conclusion:'Resposta: P ∧ ¬Q'},
-        {q:'Se P∨Q é falso, o que podemos afirmar?',visual:null,options:['A) P é falso e Q é falso','B) P é verdadeiro e Q é falso','C) P é falso e Q é verdadeiro','D) P e Q são verdadeiros'],answer:'A',steps:['Para P∨Q ser falso, ambos devem ser falsos.','Logo: <code>P é falso e Q é falso</code>.'],conclusion:'Resposta: P e Q são falsos'},
-      ],
-      'geometria': [
-        {q:'Quadrado com perímetro 28cm. Qual a área?',visual:'shape',shape:{type:'square',label:'?'},options:['A) 28','B) 36','C) 49','D) 56'],answer:'C',steps:['Lado = 28÷4 = 7cm.','Área = 7² = <code>49 cm²</code>.'],conclusion:'Resposta: 49 cm²'},
-        {q:'Qual a distância entre os pontos (1,2) e (4,6)?',visual:null,options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['d = √((4-1)² + (6-2)²) = √(9+16) = √25 = <code>5</code>.'],conclusion:'Resposta: 5'},
-        {q:'Qual o volume de uma esfera de raio 3cm? (π=3,14)',visual:null,options:['A) 37,68','B) 75,36','C) 113,04','D) 150,72'],answer:'C',steps:['Volume = 4/3 × π × r³.','4/3 × 3,14 × 27 = 4 × 3,14 × 9 = <code>113,04 cm³</code>.'],conclusion:'Resposta: 113,04 cm³'},
-        {q:'Qual a área de um setor circular de raio 6cm e ângulo 60°? (π=3,14)',visual:null,options:['A) 9,42','B) 18,84','C) 28,26','D) 37,68'],answer:'B',steps:['Área = (θ/360) × π × r².','(60/360) × 3,14 × 36 = 1/6 × 113,04 = <code>18,84 cm²</code>.'],conclusion:'Resposta: 18,84 cm²'},
-      ],
-    },
+  const baseQuestions = {
+    'sequencias': [
+      {q:'Qual o próximo? 2, 4, 6, 8, ___',visual:'seq',seq:[2,4,6,8,null],options:['A) 9','B) 10','C) 11','D) 12'],answer:'B',steps:['PA com razão 2.','8 + 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
+      {q:'Complete: 5, 10, 15, 20, ___',visual:'seq',seq:[5,10,15,20,null],options:['A) 21','B) 22','C) 23','D) 25'],answer:'D',steps:['PA com razão 5.','20 + 5 = <code>25</code>.'],conclusion:'Resposta: 25'},
+      {q:'Próximo: 50, 45, 40, 35, ___',visual:'seq',seq:[50,45,40,35,null],options:['A) 28','B) 30','C) 32','D) 34'],answer:'B',steps:['PA decrescente com razão -5.','35 - 5 = <code>30</code>.'],conclusion:'Resposta: 30'},
+      {q:'Qual o próximo? 7, 14, 21, 28, ___',visual:'seq',seq:[7,14,21,28,null],options:['A) 32','B) 33','C) 34','D) 35'],answer:'D',steps:['PA com razão 7.','28 + 7 = <code>35</code>.'],conclusion:'Resposta: 35'},
+      {q:'Complete: 11, 22, 33, 44, ___',visual:'seq',seq:[11,22,33,44,null],options:['A) 50','B) 55','C) 60','D) 65'],answer:'B',steps:['PA com razão 11.','44 + 11 = <code>55</code>.'],conclusion:'Resposta: 55'},
+      {q:'Próximo: 1, 3, 5, 7, 9, ___',visual:'seq',seq:[1,3,5,7,9,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'B',steps:['PA com razão 2.','9 + 2 = <code>11</code>.'],conclusion:'Resposta: 11'},
+    ],
+    'algebra': [
+      {q:'Se 2x = 14, qual o valor de x?',visual:'eq',eq:'2x = 14',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 14 ÷ 2 = <code>7</code>.'],conclusion:'Resposta: 7'},
+      {q:'Se x + 5 = 12, qual é x?',visual:'eq',eq:'x + 5 = 12',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 12 - 5 = <code>7</code>.'],conclusion:'Resposta: 7'},
+      {q:'Se x - 3 = 10, qual é x?',visual:'eq',eq:'x - 3 = 10',options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['x = 10 + 3 = <code>13</code>.'],conclusion:'Resposta: 13'},
+      {q:'Se 3x = 21, qual é x?',visual:'eq',eq:'3x = 21',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 21 ÷ 3 = <code>7</code>.'],conclusion:'Resposta: 7'},
+      {q:'Se 4x = 32, qual é x?',visual:'eq',eq:'4x = 32',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['x = 32 ÷ 4 = <code>8</code>.'],conclusion:'Resposta: 8'},
+    ],
+    'equacoes': [
+      {q:'Coelho + Gato = 12kg. A diferença entre eles é 6kg. Quanto pesa o GATO?',visual:'system',system:['C + G = 12 kg','C − G = 6 kg'],options:['A) 9 kg','B) 7 kg','C) 3 kg','D) 5 kg'],answer:'C',steps:['C+G=12 e C−G=6.','Somando: 2C=18 → C=9.','G = 12−9 = <code>3 kg</code>.'],conclusion:'Resposta: 3 kg'},
+      {q:'Um número somado com 8 resulta em 15. Qual é o número?',visual:'eq',eq:'x + 8 = 15',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 15 − 8 = <code>7</code>.'],conclusion:'Resposta: 7'},
+      {q:'x + y = 10 e x = 4. Qual o valor de y?',visual:'system',system:['x + y = 10','x = 4'],options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['4 + y = 10','y = 10 - 4 = <code>6</code>.'],conclusion:'Resposta: 6'},
+    ],
+    'logica': [
+      {q:'Ana tem mais balas que Bia. Bia tem mais balas que Carla. Carla tem 10. Ana tem 20. Bia pode ter:',visual:null,options:['A) 8','B) 15','C) 20','D) 25'],answer:'B',steps:['Carla < Bia < Ana.','Carla=10, Ana=20. Logo Bia está entre 11 e 19.','Única opção válida: <code>15</code>.'],conclusion:'Resposta: 15'},
+      {q:'Em uma fila: Pedro está antes de João. João está antes de Maria. Quem está na frente?',visual:null,options:['A) João','B) Maria','C) Pedro','D) Todos empatados'],answer:'C',steps:['Pedro → João → Maria.','<code>Pedro</code> está primeiro.'],conclusion:'Resposta: Pedro'},
+      {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
+    ],
+    'geometria': [
+      {q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',visual:'shape',shape:{type:'square',label:'5 cm'},options:['A) 10','B) 15','C) 20','D) 25'],answer:'C',steps:['Perímetro = 4 × lado.','4 × 5 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
+      {q:'Um retângulo tem base 8 cm e altura 3 cm. Qual é a área?',visual:'shape',shape:{type:'rect',w:8,h:3},options:['A) 11','B) 22','C) 24','D) 32'],answer:'C',steps:['Área = base × altura.','8 × 3 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
+      {q:'Qual a área de um quadrado de lado 4 cm?',visual:'shape',shape:{type:'square',label:'4 cm'},options:['A) 12','B) 14','C) 16','D) 18'],answer:'C',steps:['Área = lado².','4² = <code>16 cm²</code>.'],conclusion:'Resposta: 16 cm²'},
+    ],
   };
-  return allPuzzles[ano]?.[cat] || [];
+  return baseQuestions[cat] || [];
 }
 
-// ── FUNÇÕES DE MULTIPLAYER ──
-let pendingChallenge = null;
+// ── SHARE FUNCTIONS ──
+function shareResult(platform) {
+  const total = state.sessionTotal;
+  const correct = state.sessionCorrect;
+  const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const xp = state.sessionXp;
+  const level = getLevel(state.xp);
+  const playerName = _sbProfile?.username || 'Jogador';
+  
+  const message = `🏆 *NardIQ - Desafio Mental!*\n\n` +
+                  `👤 ${playerName}\n` +
+                  `📊 Acertos: ${correct}/${total} (${accuracy}%)\n` +
+                  `⭐ XP ganho: +${xp}\n` +
+                  `🏅 Nível: ${LEVEL_NAMES[level]}\n\n` +
+                  `🎯 Desafie seus amigos em https://wirgo13.github.io/NardiQ/`;
+  
+  const encoded = encodeURIComponent(message);
+  
+  switch(platform) {
+    case 'whatsapp':
+      window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+      break;
+    case 'twitter':
+      window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
+      break;
+    case 'copy':
+      navigator.clipboard.writeText(message).then(() => {
+        showXpFloat('📋 Copiado!');
+      }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showXpFloat('📋 Copiado!');
+      });
+      break;
+  }
+}
 
+// ── CHALLENGE FUNCTIONS ──
 function challengeFriend() {
   const input = $id('invite-input');
   const friendName = input.value.trim();
@@ -790,7 +602,7 @@ function challengeFriend() {
         return;
       }
       
-      // Criar desafio
+      // Salvar desafio no banco
       _sb.from('nardiq_challenges').insert({
         challenger_id: _sbUser.id,
         opponent_id: data.id,
@@ -798,40 +610,15 @@ function challengeFriend() {
         opponent_name: data.username,
         status: 'pending',
         created_at: new Date().toISOString()
-      }).then(({data: challengeData, error: err2}) => {
-        if (err2) {
-          $id('challenge-status').textContent = '❌ Erro ao criar desafio: ' + err2.message;
-          return;
+      }).then(({error: err}) => {
+        if (err) {
+          $id('challenge-status').textContent = '❌ Erro: ' + err.message;
+        } else {
+          $id('challenge-status').textContent = '✅ Desafio enviado para ' + friendName + '!';
+          input.value = '';
         }
-        $id('challenge-status').textContent = '✅ Desafio enviado para ' + friendName + '! Aguarde resposta.';
-        input.value = '';
-        
-        // Mostrar tela de desafio
-        pendingChallenge = { opponent: data, challengeId: challengeData?.[0]?.id };
-        showChallengeScreen(data);
       });
     });
-}
-
-function showChallengeScreen(opponent) {
-  $set('challenge-opponent-label', 'textContent', opponent.username.toUpperCase());
-  $set('challenge-title', 'textContent', '⚔️ Desafio contra ' + opponent.username);
-  state.isChallenge = true;
-  state.challengeOpponent = opponent;
-  showScreen('screen-challenge');
-}
-
-function startChallengeGame() {
-  if (!state.challengeOpponent) {
-    alert('Nenhum desafio ativo.');
-    return;
-  }
-  // Iniciar quiz com as mesmas questões para ambos
-  const cat = state.category || 'sequencias';
-  const ano = state.ano || '5°';
-  state.category = cat;
-  state.ano = ano;
-  startQuiz(cat);
 }
 
 // ── TEMA ──
@@ -883,10 +670,11 @@ function renderHome() {
   const catGrid = $id('cat-grid');
   if(catGrid) catGrid.innerHTML = CATS.map(c => {
     const puzzlesForCat = getPuzzlesFor(state.ano, c.key);
+    const count = puzzlesForCat.length;
     return `<button class="cat-btn" style="border-color:${c.color}" onclick="startQuiz('${c.key}')">
       <span class="cat-icon">${c.icon}</span>
       <span class="cat-name">${c.name}</span>
-      <span class="cat-count">${Math.min(puzzlesForCat.length, 10)} questões</span>
+      <span class="cat-count">${count > 0 ? count + ' questões' : 'Em breve'}</span>
       <div class="cat-glow" style="background:${c.color}12"></div>
     </button>`;
   }).join('');
@@ -907,16 +695,12 @@ function startQuiz(catKey) {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   state.currentQuestions = shuffled.slice(0, Math.min(10, shuffled.length));
   
-  while (state.currentQuestions.length < 10) {
+  if (state.currentQuestions.length === 0) {
     const fallback = [
       {q:'Qual o próximo? 1, 2, 3, 4, ___',visual:'seq',seq:[1,2,3,4,null],options:['A) 4','B) 5','C) 6','D) 7'],answer:'B',steps:['PA com razão 1.','4 + 1 = <code>5</code>.'],conclusion:'Resposta: 5'},
       {q:'Se 2 + 2 = 4, qual é 3 + 3?',visual:'eq',eq:'3 + 3 = ?',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['3 + 3 = <code>6</code>.'],conclusion:'Resposta: 6'},
     ];
-    for (const q of fallback) {
-      if (state.currentQuestions.length < 10 && !state.currentQuestions.find(p => p.q === q.q)) {
-        state.currentQuestions.push(q);
-      }
-    }
+    state.currentQuestions = fallback;
   }
 
   [1,2,3].forEach(i => $cls('life-'+i).remove('lost'));
@@ -924,7 +708,7 @@ function startQuiz(catKey) {
   
   const catInfo = CATS.find(c=>c.key===catKey);
   const cp=$id('cat-pill'), dp=$id('diff-pill');
-  if(cp){cp.textContent=catInfo.icon+' '+catInfo.name;cp.style.cssText=`border-color:${catInfo.color};color:${catInfo.color}`}
+  if(cp && catInfo){cp.textContent=catInfo.icon+' '+catInfo.name;cp.style.cssText=`border-color:${catInfo.color};color:${catInfo.color}`}
   if(dp){dp.textContent=state.ano+' ano';dp.style.cssText='border-color:var(--violet);color:var(--violet)'}
   
   showScreen('quiz');
@@ -947,72 +731,70 @@ function renderProgress() {
 }
 
 function loadQuestion() {
-  const total = state.currentQuestions.length;
-  if (state.currentIndex >= total) {
-    showSessionScore();
-    return;
-  }
-  
-  const q = state.currentQuestions[state.currentIndex];
-  state.question = q;
-  state.answered = false;
-  state.questionCount++;
-  
-  $set('q-counter','textContent','#' + (state.currentIndex + 1) + ' / ' + total);
-  $set('quiz-xp','textContent',state.sessionXp+' XP');
-  renderProgress();
-  
-  const area=$id('question-area');
-  if(!area) return;
-  area.innerHTML = `
-    <div class="q-text">${escHtml(q.q)}</div>
-    ${renderVisual(q)}
-    <div class="options-list">${(q.options||[]).map((o,i)=>`
-      <button class="opt-btn" id="opt-${i}" onclick="selectOption(${i})">
-        <span class="opt-letter">${o.charAt(0)}</span>
-        <span>${escHtml(o.slice(3))}</span>
-      </button>`).join('')}
-    </div>
-    <div id="explanation-box"></div>
-  `;
-  $cls('next-btn').remove('visible');
-  
-  clearInterval(state.timerInterval);
-  state.timeLeft=30;
-  updateTimer();
-  state.timerInterval=setInterval(()=>{
-    state.timeLeft--;
+  try {
+    const total = state.currentQuestions.length;
+    if (state.currentIndex >= total) {
+      showSessionScore();
+      return;
+    }
+    
+    const q = state.currentQuestions[state.currentIndex];
+    if (!q) {
+      showSessionScore();
+      return;
+    }
+    
+    state.question = q;
+    state.answered = false;
+    state.questionCount++;
+    
+    $set('q-counter','textContent','#' + (state.currentIndex + 1) + ' / ' + total);
+    $set('quiz-xp','textContent',state.sessionXp+' XP');
+    renderProgress();
+    
+    const area=$id('question-area');
+    if(!area) return;
+    area.innerHTML = `
+      <div class="q-text">${escHtml(q.q)}</div>
+      ${renderVisual(q)}
+      <div class="options-list">${(q.options||[]).map((o,i)=>`
+        <button class="opt-btn" id="opt-${i}" onclick="selectOption(${i})">
+          <span class="opt-letter">${o.charAt(0)}</span>
+          <span>${escHtml(o.slice(3))}</span>
+        </button>`).join('')}
+      </div>
+      <div id="explanation-box"></div>
+    `;
+    $cls('next-btn').remove('visible');
+    
+    clearInterval(state.timerInterval);
+    state.timeLeft=30;
     updateTimer();
-    if(state.timeLeft<=0){clearInterval(state.timerInterval);handleTimeout();}
-  },1000);
+    state.timerInterval=setInterval(()=>{
+      state.timeLeft--;
+      updateTimer();
+      if(state.timeLeft<=0){clearInterval(state.timerInterval);handleTimeout();}
+    },1000);
+  } catch (e) {
+    showSessionScore();
+  }
 }
 
 function renderVisual(q) {
-  if(q.visual==='seq') {
+  if(!q) return '';
+  if(q.visual==='seq' && q.seq) {
     return `<div class="puzzle-visual">${q.seq.map((n,i)=>`<div class="seq-box${n===null?' missing':''}" style="animation-delay:${i*0.05}s">${n===null?'?':n}</div>`).join('')}</div>`;
   }
-  if(q.visual==='flowers') {
-    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px">${q.flowers.map(r=>`<div class="visual-row"><span>${r.a}</span>${r.c?`<span class="visual-eq">+</span><span>${r.b}</span><span class="visual-eq">+</span><span>${r.c}</span>`:`<span class="visual-eq">${r.op}</span><span>${r.b}</span>`}<span class="visual-eq">=</span><span class="visual-res${r.res==='?'?' unknown':''}">${r.res}</span></div>`).join('')}</div>`;
-  }
-  if(q.visual==='words') {
-    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.words.map(r=>`<div class="visual-word-row"><span class="visual-word">${r.w}</span><span style="color:var(--muted);font-size:12px">${r.n} letras</span><span class="visual-val${r.v.includes('?')?' unknown':''}">${r.v}</span></div>`).join('')}</div>`;
-  }
-  if(q.visual==='system') {
+  if(q.visual==='system' && q.system) {
     return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.system.map(r=>`<div class="visual-eq-box">${r}</div>`).join('')}</div>`;
   }
-  if(q.visual==='animals') {
-    return `<div class="puzzle-visual" style="flex-direction:column;gap:6px;width:100%">${q.animals.map(r=>`<div class="visual-eq-box" style="font-size:18px">${r}</div>`).join('')}</div>`;
-  }
-  if(q.visual==='eq') {
+  if(q.visual==='eq' && q.eq) {
     return `<div class="puzzle-visual"><div class="visual-eq-box">${q.eq}</div></div>`;
   }
-  if(q.visual==='shape') {
+  if(q.visual==='shape' && q.shape) {
     const s=q.shape;
-    if(s.type==='square') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 120" width="140" height="120"><rect x="20" y="10" width="100" height="100" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="70" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#6C63FF">${s.label}</text></svg></div>`;
-    if(s.type==='rect') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 180 120" width="180" height="120"><rect x="10" y="20" width="160" height="80" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="90" y="67" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.w}×${s.h} cm</text></svg></div>`;
-    if(s.type==='circle') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 140" width="140" height="140"><circle cx="70" cy="70" r="55" fill="color-mix(in srgb,#00F5C4 12%,transparent)" stroke="#00F5C4" stroke-width="2.5"/><line x1="70" y1="70" x2="125" y2="70" stroke="#00F5C4" stroke-width="1.5" stroke-dasharray="4"/><text x="98" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="#00F5C4">r=${s.r}</text></svg></div>`;
-    if(s.type==='triangle') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 160 130" width="160" height="130"><polygon points="80,10 150,120 10,120" fill="color-mix(in srgb,#A78BFA 15%,transparent)" stroke="#A78BFA" stroke-width="2.5"/><text x="80" y="135" text-anchor="middle" font-size="11" font-weight="700" fill="#A78BFA">base=${s.b}</text></svg></div>`;
-    if(s.type==='pythagorean') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 130" width="140" height="130"><polygon points="20,115 20,25 110,115" fill="color-mix(in srgb,#6C63FF 12%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><rect x="20" y="105" width="10" height="10" fill="none" stroke="#6C63FF" stroke-width="1.5"/><text x="10" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.a}</text><text x="63" y="128" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.b}</text><text x="72" y="65" text-anchor="middle" font-size="15" font-weight="800" fill="#00F5C4">?</text></svg></div>`;
+    if(s.type==='square') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 140 120" width="140" height="120"><rect x="20" y="10" width="100" height="100" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="70" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#6C63FF">${s.label||''}</text></svg></div>`;
+    if(s.type==='rect') return `<div class="puzzle-visual"><svg class="visual-shape" viewBox="0 0 180 120" width="180" height="120"><rect x="10" y="20" width="160" height="80" rx="4" fill="color-mix(in srgb,#6C63FF 15%,transparent)" stroke="#6C63FF" stroke-width="2.5"/><text x="90" y="67" text-anchor="middle" font-size="13" font-weight="700" fill="#6C63FF">${s.w||''}×${s.h||''} cm</text></svg></div>`;
   }
   return '';
 }
@@ -1022,8 +804,6 @@ function updateTimer() {
   $set('timer-val','textContent',t+'s');
   const fill=$id('timer-fill');
   if(fill){fill.style.width=(t/30*100)+'%';fill.style.background=t>15?'#00F5C4':t>8?'#FFD166':'#FF4D6D';}
-  const tv=$id('timer-val');
-  if(tv) tv.classList.toggle('pulse',t<=8);
 }
 
 function selectOption(i) {
@@ -1031,6 +811,7 @@ function selectOption(i) {
   state.answered=true;
   clearInterval(state.timerInterval);
   const q=state.question;
+  if(!q) return;
   const chosen=q.options[i].charAt(0);
   const correct=chosen===q.answer;
   state.answeredResults[state.currentIndex] = correct;
@@ -1076,15 +857,17 @@ function handleTimeout() {
   $cls('life-'+state.lives).add('lost');
   document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
   const q=state.question;
-  const ci=(q.options||[]).findIndex(o=>o.charAt(0)===q.answer);
-  if(ci>=0) $cls('opt-'+ci).add('correct');
+  if(q){
+    const ci=(q.options||[]).findIndex(o=>o.charAt(0)===q.answer);
+    if(ci>=0) $cls('opt-'+ci).add('correct');
+  }
   const box=$id('explanation-box');
-  if(box) box.innerHTML=buildExplHTML(q,'timeout');
+  if(box && q) box.innerHTML=buildExplHTML(q,'timeout');
   $cls('next-btn').add('visible');
   const nb=$id('next-btn');
   if(nb){ nb.onclick=nextQuestion; }
   if(state.lives<=0){if(nb){nb.textContent='Ver resultado →';nb.onclick=showGameOver;}}
-  saveProgress(q,false);
+  if(q) saveProgress(q,false);
 }
 
 function nextQuestion() {
@@ -1098,20 +881,19 @@ function nextQuestion() {
 }
 
 function buildExplHTML(q,type) {
+  if(!q) return '';
   const correct=type==='correct';
   const borderColor=correct?'var(--cyan)':type==='timeout'?'var(--yellow)':'var(--red)';
   const icon=correct?'✓':type==='timeout'?'⏱':'✗';
   const label=correct?'Correto!':type==='timeout'?'Tempo esgotado!':'Incorreto';
-  const headerBg=correct?'color-mix(in srgb,var(--cyan) 10%,transparent)':type==='timeout'?'color-mix(in srgb,var(--yellow) 10%,transparent)':'color-mix(in srgb,var(--red) 10%,transparent)';
   const correctOpt=(q.options||[]).find(o=>o.charAt(0)===q.answer)||'';
   const correctText=correctOpt?correctOpt.slice(3):'';
   const stepsHtml=(q.steps||[]).map((s,i)=>`<div class="expl-step"><span class="step-num">${i+1}</span><span class="step-text">${s}</span></div>`).join('');
   const conclusionHtml=q.conclusion?`<div class="expl-answer${correct?'':' wrong-ans'}">✦ ${escHtml(q.conclusion)}</div>`:'';
   return `<div class="explanation${correct?'':type==='timeout'?' timeout':' wrong'}" style="border-left-color:${borderColor}">
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${headerBg};border-radius:8px;margin-bottom:14px">
-      <span style="font-size:20px;font-family:'Space Grotesk',sans-serif;font-weight:800;color:${borderColor}">${icon}</span>
-      <div><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:${borderColor}">${label}</div>
-      ${!correct&&correctText?`<div style="font-size:12px;color:var(--muted);margin-top:2px">Resposta: <strong style="color:var(--cyan)">${escHtml(correctText)}</strong></div>`:''}</div>
+    <div style="padding:10px 14px;background:color-mix(in srgb,${borderColor} 10%,transparent);border-radius:8px;margin-bottom:14px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:${borderColor}">${icon} ${label}</div>
+      ${!correct&&correctText?`<div style="font-size:12px;color:var(--muted);margin-top:2px">Resposta: <strong style="color:var(--cyan)">${escHtml(correctText)}</strong></div>`:''}
     </div>
     <div class="how-label">RACIOCÍNIO PASSO A PASSO</div>
     <div class="expl-steps">${stepsHtml}</div>
@@ -1175,11 +957,11 @@ function showSessionScore() {
   if(ring){ring.style.stroke=ringColor;setTimeout(()=>{ring.style.strokeDashoffset=377-(accuracy/100)*377;},200);}
   setTimeout(()=>{let c=0;const iv=setInterval(()=>{c=Math.min(c+2,accuracy);$set('ss-ring-pct','textContent',c+'%');if(c>=accuracy)clearInterval(iv);},20);},300);
   setTimeout(()=>{
-    const pC=total>0?(correct/total)*100:0,pW=total>0?(wrong/total)*100:0,pT=total>0?(timeout/total)*100:0;
+    const pC=total>0?(correct/total)*100:0,pW=total>0?(wrong/total)*100:0;
     const bc=$id('ss-bar-correct');if(bc)bc.style.width=pC+'%';
     const bw=$id('ss-bar-wrong');if(bw)bw.style.width=pW+'%';
-    const bt=$id('ss-bar-timeout');if(bt)bt.style.width=pT+'%';
-    $set('ss-bar-correct-num','textContent',correct);$set('ss-bar-wrong-num','textContent',wrong);$set('ss-bar-timeout-num','textContent',timeout);
+    $set('ss-bar-correct-num','textContent',correct);
+    $set('ss-bar-wrong-num','textContent',wrong);
   },400);
   
   launchConfetti(accuracy);
@@ -1188,6 +970,7 @@ function showSessionScore() {
 
 function launchConfetti(score) {
   const canvas = document.getElementById('cr-confetti');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -1207,7 +990,6 @@ function launchConfetti(score) {
       vy: Math.random() * 4 + 2,
       rotation: Math.random() * 360,
       rv: (Math.random() - 0.5) * 10,
-      opacity: 1
     });
   }
   
@@ -1224,7 +1006,6 @@ function launchConfetti(score) {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rotation * Math.PI / 180);
-      ctx.globalAlpha = Math.min(1, p.opacity);
       ctx.fillStyle = p.color;
       ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
       ctx.restore();
@@ -1249,10 +1030,14 @@ function goHome(){
 
 // ── SUPABASE AUTH ──
 async function onSplashStart() {
-  const { data } = await _sb.auth.getSession();
-  const user = data?.session?.user;
-  if(user){ _sbUser=user; await sbLoadAndGo(user); }
-  else showScreen('screen-auth');
+  try {
+    const { data } = await _sb.auth.getSession();
+    const user = data?.session?.user;
+    if(user){ _sbUser=user; await sbLoadAndGo(user); }
+    else showScreen('screen-auth');
+  } catch(e) {
+    showScreen('screen-auth');
+  }
 }
 
 function authSwitchTab(tab) {
@@ -1261,7 +1046,6 @@ function authSwitchTab(tab) {
   $cls('tab-login').toggle('active', tab==='login');
   $cls('tab-signup').toggle('active', tab==='signup');
   $id('auth-error').textContent='';
-  const s=$id('auth-success');if(s)s.style.display='none';
 }
 
 async function doLogin() {
@@ -1296,39 +1080,38 @@ async function doSignup() {
   if(ex){$id('auth-error').textContent='Username já em uso. Escolha outro.';if(btn){btn.disabled=false;btn.textContent='Criar conta';}return;}
   const{data,error}=await _sb.auth.signUp({email,password});
   if(error){
-    if(error.message.toLowerCase().includes('rate limit')||error.message.toLowerCase().includes('email rate')){
-      $id('auth-error').textContent='Muitos cadastros detectados. Use o botão "Cadastrar com Google" abaixo — sem limite!';
-    } else {
-      $id('auth-error').textContent=error.message;
-    }
+    $id('auth-error').textContent=error.message;
     if(btn){btn.disabled=false;btn.textContent='Criar conta';}
     return;
   }
   await _sb.from('nardiq_profiles').insert({id:data.user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
   _sbUser=data.user;
-  const s=$id('auth-success');if(s){s.style.display='block';s.textContent='Conta criada! Entrando...';}
   await sbLoadAndGo(data.user);
   if(btn){btn.disabled=false;btn.textContent='Criar conta';}
 }
 
 async function doGoogleLogin() {
   const msg = document.getElementById('auth-error');
-  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar ou peça ao admin para ativar.';
+  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar.';
   msg.style.color = 'var(--yellow)';
 }
 
 async function sbLoadAndGo(user) {
-  let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
-  if(!data){
-    const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
-    await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
-    const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
-    data=d2;
+  try {
+    let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+    if(!data){
+      const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
+      await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
+      const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+      data=d2;
+    }
+    _sbProfile=data;
+    if(data){state.xp=data.xp||0;state.bestStreak=data.best_streak||0;}
+    loadData();updateHomeXP();renderHome();
+    showScreen('home');
+  } catch(e) {
+    showScreen('home');
   }
-  _sbProfile=data;
-  if(data){state.xp=data.xp||0;state.bestStreak=data.best_streak||0;}
-  loadData();updateHomeXP();renderHome();
-  showScreen('home');
 }
 
 async function doLogout() {
@@ -1338,7 +1121,6 @@ async function doLogout() {
   showScreen('screen-auth');
 }
 
-// ── SAVE/LOAD ──
 function loadData() {
   if(!_sbProfile){state.xp=parseInt(localStorage.getItem('nardiq-xp')||'0');state.bestStreak=parseInt(localStorage.getItem('nardiq-streak')||'0');}
 }
@@ -1352,12 +1134,18 @@ function saveData() {
 async function saveProgress(q,correct) {
   if(!_sbUser) return;
   const xp=correct?25:0;
-  await _sb.from('nardiq_progress').insert({user_id:_sbUser.id,puzzle_id:q.q.slice(0,60),ano:state.ano,categoria:state.category,correct,points_earned:xp}).then(()=>{});
+  try {
+    await _sb.from('nardiq_progress').insert({user_id:_sbUser.id,puzzle_id:q.q.slice(0,60),ano:state.ano,categoria:state.category,correct,points_earned:xp}).then(()=>{});
+  } catch(e) {}
   if(correct){
-    _sb.from('nardiq_profiles').update({total_correct:(_sbProfile?.total_correct||0)+1,total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+    try {
+      _sb.from('nardiq_profiles').update({total_correct:(_sbProfile?.total_correct||0)+1,total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+    } catch(e) {}
     if(_sbProfile) _sbProfile.total_correct=(_sbProfile.total_correct||0)+1;
   } else {
-    _sb.from('nardiq_profiles').update({total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+    try {
+      _sb.from('nardiq_profiles').update({total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
+    } catch(e) {}
   }
   if(_sbProfile) _sbProfile.total_questions=(_sbProfile.total_questions||0)+1;
 }
@@ -1367,24 +1155,28 @@ async function loadRanking() {
   const list=$id('ranking-list');
   if(!list) return;
   list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Carregando…</div>';
-  const{data}=await _sb.from('nardiq_profiles').select('*').order('xp',{ascending:false}).limit(50);
-  if(!data||!data.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum jogador ainda.</div>';return;}
-  const medals=['🥇','🥈','🥉'];
-  const myId=_sbUser?.id;
-  list.innerHTML=data.map((p,i)=>{
-    const lv=getLevel(p.xp||0);
-    const isMe=p.id===myId;
-    const initial=(p.username||'?').charAt(0).toUpperCase();
-    const pos=i<3?medals[i]:(i+1)+'°';
-    return `<div class="rank-row${isMe?' me':''}">
-      <div class="rank-pos">${pos}</div>
-      <div class="rank-avatar" style="background:linear-gradient(135deg,var(--violet),var(--violetL))">${initial}</div>
-      <div class="rank-info"><div class="rank-name">${escHtml(p.username||'Jogador')}${isMe?' (você)':''}</div><div class="rank-level">${LEVEL_NAMES[lv]}</div></div>
-      <div class="rank-xp">${p.xp||0} XP</div>
-    </div>`;
-  }).join('');
-  const me=data.find(p=>p.id===myId);
-  $set('my-rank-pos','textContent',me?'#'+(data.indexOf(me)+1)+'°':'—');
+  try {
+    const{data}=await _sb.from('nardiq_profiles').select('*').order('xp',{ascending:false}).limit(50);
+    if(!data||!data.length){list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum jogador ainda.</div>';return;}
+    const medals=['🥇','🥈','🥉'];
+    const myId=_sbUser?.id;
+    list.innerHTML=data.map((p,i)=>{
+      const lv=getLevel(p.xp||0);
+      const isMe=p.id===myId;
+      const initial=(p.username||'?').charAt(0).toUpperCase();
+      const pos=i<3?medals[i]:(i+1)+'°';
+      return `<div class="rank-row${isMe?' me':''}">
+        <div class="rank-pos">${pos}</div>
+        <div class="rank-avatar" style="background:linear-gradient(135deg,var(--violet),var(--violetL))">${initial}</div>
+        <div class="rank-info"><div class="rank-name">${escHtml(p.username||'Jogador')}${isMe?' (você)':''}</div><div class="rank-level">${LEVEL_NAMES[lv]}</div></div>
+        <div class="rank-xp">${p.xp||0} XP</div>
+      </div>`;
+    }).join('');
+    const me=data.find(p=>p.id===myId);
+    $set('my-rank-pos','textContent',me?'#'+(data.indexOf(me)+1)+'°':'—');
+  } catch(e) {
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Erro ao carregar ranking.</div>';
+  }
 }
 
 // ── HISTORY ──
@@ -1416,8 +1208,7 @@ function loadHistory() {
   }).join('');
 }
 
-// Inicialização
-console.log('🚀 NardIQ iniciado!');
+console.log('🚀 NardIQ Multiplayer iniciado!');
 </script>
 </body>
 </html>
