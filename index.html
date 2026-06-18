@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#4C3BCF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NardIQ — Desafio Mental</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --pri: #4C3BCF;
+    --pri-light: #EEF0FF;
+    --pri-mid: #7B6FE8;
+    --sec: #F97316;
+    --sec-light: #FFF4EC;
+    --ok: #16A34A;
+    --ok-light: #DCFCE7;
+    --err: #DC2626;
+    --err-light: #FEE2E2;
+    --warn: #CA8A04;
+    --warn-light: #FEF9C3;
+    --bg: #F5F4FF;
+    --surface: #ffffff;
+    --text: #1a1a2e;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(76,59,207,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; flex-direction: column; height: 100%; overflow-y: auto; }
+  .screen.active { display: flex; }
+
+  /* ── AUTH ── */
+  #screen-auth {
+    background: linear-gradient(160deg, #4C3BCF 0%, #7B6FE8 55%, #F97316 100%);
+    align-items: center; justify-content: center; padding: 32px 24px; gap: 0;
+  }
+  .auth-logo { font-size: 72px; margin-bottom: 8px; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .auth-title { font-size: 38px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+  .auth-sub { font-size: 15px; color: rgba(255,255,255,.75); margin-top: 4px; margin-bottom: 36px; }
+  .auth-card {
+    background: #fff; border-radius: var(--radius); padding: 28px 24px;
+    width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  }
+  .auth-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid var(--border); }
+  .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; background: #fff; color: var(--muted); border: none; transition: all .2s; }
+  .auth-tab.active { background: var(--pri); color: #fff; }
+  .auth-form { display: flex; flex-direction: column; gap: 12px; }
+  .auth-form input {
+    padding: 13px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+    font-size: 15px; outline: none; transition: border .2s; background: #fafafa;
+  }
+  .auth-form input:focus { border-color: var(--pri); background: #fff; }
+  .btn-primary {
+    padding: 14px; border-radius: var(--radius-sm); border: none;
+    background: var(--pri); color: #fff; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity .15s, transform .1s;
+  }
+  .btn-primary:active { opacity: .85; transform: scale(.98); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .auth-err { font-size: 13px; color: var(--err); text-align: center; min-height: 18px; }
+  .emoji-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 4px 0; }
+  .emoji-opt { font-size: 26px; padding: 8px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; text-align: center; transition: all .15s; }
+  .emoji-opt.selected { border-color: var(--pri); background: var(--pri-light); }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border); flex-shrink: 0; position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-logo { font-size: 20px; font-weight: 800; color: var(--pri); letter-spacing: -0.5px; }
+  .topbar-user { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--pri-light); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid var(--pri); }
+  .topbar-pts { font-size: 13px; font-weight: 700; color: var(--pri); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    display: flex; background: var(--surface); border-top: 1px solid var(--border);
+    flex-shrink: 0; position: sticky; bottom: 0;
+  }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 0 12px; gap: 3px; cursor: pointer; border: none; background: transparent; }
+  .nav-icon { font-size: 22px; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--muted); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 4px var(--pri)); }
+  .nav-item.active .nav-label { color: var(--pri); }
+
+  /* ── HOME ── */
+  #screen-home { padding: 0; }
+  .home-scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .hero-card {
+    background: linear-gradient(135deg, var(--pri) 0%, var(--pri-mid) 100%);
+    border-radius: var(--radius); padding: 20px; color: #fff; position: relative; overflow: hidden;
+  }
+  .hero-card::after { content:'🧠'; position:absolute; right:-8px; bottom:-12px; font-size:80px; opacity:.15; }
+  .hero-greeting { font-size: 13px; opacity: .8; }
+  .hero-name { font-size: 22px; font-weight: 800; margin: 2px 0 12px; }
+  .hero-stats { display: flex; gap: 16px; }
+  .hero-stat { display: flex; flex-direction: column; }
+  .hero-stat-val { font-size: 22px; font-weight: 800; }
+  .hero-stat-lbl { font-size: 11px; opacity: .75; }
+  .level-bar-wrap { margin-top: 14px; }
+  .level-bar-label { font-size: 11px; opacity: .8; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .level-bar { height: 6px; background: rgba(255,255,255,.25); border-radius: 3px; }
+  .level-bar-fill { height: 100%; background: #fff; border-radius: 3px; transition: width .6s; }
+
+  .section-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .ano-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .ano-row::-webkit-scrollbar { display: none; }
+  .ano-chip {
+    padding: 10px 18px; border-radius: 50px; border: 1.5px solid var(--border);
+    font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    background: var(--surface); color: var(--muted); transition: all .2s; flex-shrink: 0;
+  }
+  .ano-chip.active { background: var(--pri); color: #fff; border-color: var(--pri); }
+
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat-card {
+    background: var(--surface); border-radius: var(--radius); padding: 16px;
+    border: 1.5px solid var(--border); cursor: pointer; transition: all .15s;
+    display: flex; flex-direction: column; gap: 6px; position: relative; overflow: hidden;
+  }
+  .cat-card:active { transform: scale(.97); }
+  .cat-card.locked { opacity: .5; cursor: not-allowed; }
+  .cat-icon { font-size: 28px; }
+  .cat-name { font-size: 13px; font-weight: 700; color: var(--text); }
+  .cat-count { font-size: 11px; color: var(--muted); }
+  .cat-badge {
+    position: absolute; top: 10px; right: 10px; background: var(--pri-light);
+    color: var(--pri); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+  }
+
+  /* ── QUIZ ── */
+  #screen-quiz { padding: 0; }
+  .quiz-scroll { flex: 1; overflow-y: auto; padding: 16px; }
+  .quiz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .back-btn { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .quiz-meta { flex: 1; }
+  .quiz-cat { font-size: 12px; font-weight: 700; color: var(--pri); text-transform: uppercase; letter-spacing: .4px; }
+  .quiz-progress-text { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .progress-track { height: 5px; background: var(--border); border-radius: 3px; margin-bottom: 20px; }
+  .progress-thumb { height: 100%; background: var(--pri); border-radius: 3px; transition: width .4s cubic-bezier(.4,0,.2,1); }
+
+  .puzzle-card {
+    background: var(--surface); border-radius: var(--radius); border: 1.5px solid var(--border);
+    padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .puzzle-tag { display: inline-block; background: var(--pri-light); color: var(--pri); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .puzzle-question { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.5; text-align: center; margin-bottom: 16px; }
+  .puzzle-visual { display: flex; justify-content: center; margin-bottom: 20px; min-height: 80px; align-items: center; }
+
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  .opt-btn {
+    padding: 14px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--text); font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all .15s; text-align: center; position: relative;
+  }
+  .opt-btn:hover { border-color: var(--pri); background: var(--pri-light); }
+  .opt-btn.correct { background: var(--ok-light); border-color: var(--ok); color: var(--ok); }
+  .opt-btn.wrong { background: var(--err-light); border-color: var(--err); color: var(--err); }
+  .opt-btn:disabled { cursor: not-allowed; }
+  .opt-letter { font-size: 11px; font-weight: 800; opacity: .5; display: block; margin-bottom: 2px; }
+
+  .feedback-box {
+    border-radius: var(--radius-sm); padding: 14px 16px; margin-top: 12px;
+    font-size: 14px; font-weight: 500; display: none; line-height: 1.5;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.ok { background: var(--ok-light); color: var(--ok); border-left: 3px solid var(--ok); }
+  .feedback-box.nok { background: var(--err-light); color: var(--err); border-left: 3px solid var(--err); }
+  .expl-box {
+    background: var(--pri-light); border-radius: var(--radius-sm); padding: 14px 16px;
+    margin-top: 10px; font-size: 13px; color: var(--pri); line-height: 1.6; display: none;
+  }
+  .expl-box.show { display: block; }
+  .next-btn {
+    width: 100%; padding: 15px; border-radius: var(--radius-sm); border: none;
+    background: var(--pri); color: #fff; font-size: 16px; font-weight: 700;
+    cursor: pointer; margin-top: 14px; display: none; transition: opacity .15s;
+  }
+  .next-btn:active { opacity: .85; }
+  .next-btn.show { display: block; }
+
+  /* streak toast */
+  .streak-toast {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--sec); color: #fff; padding: 10px 22px; border-radius: 50px;
+    font-size: 14px; font-weight: 700; z-index: 100; transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none; white-space: nowrap;
+  }
+  .streak-toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── RANKING ── */
+  #screen-ranking { padding: 0; }
+  .ranking-scroll { flex: 1; overflow-y: auto; padding: 16px; }
+  .ranking-podium { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-bottom: 24px; }
+  .podium-place { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .podium-avatar { font-size: 28px; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid transparent; }
+  .podium-avatar.p1 { border-color: #F59E0B; background: #FEF9C3; width: 60px; height: 60px; font-size: 32px; }
+  .podium-avatar.p2 { border-color: #9CA3AF; background: #F3F4F6; }
+  .podium-avatar.p3 { border-color: #B45309; background: #FEF3C7; }
+  .podium-name { font-size: 12px; font-weight: 700; color: var(--text); max-width: 70px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .podium-pts { font-size: 12px; color: var(--muted); }
+  .podium-bar { border-radius: 6px 6px 0 0; width: 64px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .podium-bar.p1 { height: 80px; background: linear-gradient(180deg, #FEF9C3, #F59E0B); }
+  .podium-bar.p2 { height: 60px; background: linear-gradient(180deg, #F3F4F6, #9CA3AF); }
+  .podium-bar.p3 { height: 48px; background: linear-gradient(180deg, #FEF3C7, #D97706); }
+
+  .rank-list { display: flex; flex-direction: column; gap: 8px; }
+  .rank-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border); padding: 12px 14px;
+  }
+  .rank-row.me { border-color: var(--pri); background: var(--pri-light); }
+  .rank-pos { font-size: 14px; font-weight: 800; color: var(--muted); width: 22px; text-align: center; }
+  .rank-avatar { font-size: 22px; }
+  .rank-info { flex: 1; }
+  .rank-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .rank-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .rank-pts { font-size: 15px; font-weight: 800; color: var(--pri); }
+
+  /* ── PROFILE ── */
+  #screen-profile { padding: 0; }
+  .profile-scroll { flex: 1; overflow-y: auto; padding: 16px; }
+  .profile-hero { text-align: center; padding: 24px 0 16px; }
+  .profile-avatar-big { font-size: 64px; width: 96px; height: 96px; border-radius: 50%; background: var(--pri-light); border: 3px solid var(--pri); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .profile-username { font-size: 22px; font-weight: 800; color: var(--text); }
+  .profile-level { font-size: 13px; color: var(--pri); font-weight: 600; margin-top: 4px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--surface); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 14px 8px; text-align: center; }
+  .stat-card-val { font-size: 22px; font-weight: 800; color: var(--pri); }
+  .stat-card-lbl { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-top: 3px; }
+  .cat-progress-list { display: flex; flex-direction: column; gap: 10px; }
+  .cat-prog-row { background: var(--surface); border-radius: var(--radius-sm); border: 1.5px solid var(--border); padding: 12px 14px; }
+  .cat-prog-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+  .cat-prog-track { height: 5px; background: var(--border); border-radius: 3px; }
+  .cat-prog-fill { height: 100%; border-radius: 3px; background: var(--pri); transition: width .6s; }
+  .logout-btn { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--err); background: var(--err-light); color: var(--err); font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+
+  /* ── SVG ANIMATIONS ── */
+  @keyframes seq-pop { 0%{transform:scale(.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+  @keyframes flower-grow { 0%{transform:scale(0) rotate(-20deg);opacity:0} 80%{transform:scale(1.1) rotate(3deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+  @keyframes pulse-q { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+  .anim-seq { animation: seq-pop .4s backwards; }
+  .anim-flower { animation: flower-grow .5s backwards; }
+  .anim-q { animation: pulse-q 1.4s infinite; }
+
+  /* loading */
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--pri); border-radius: 50%; animation: spin .7s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="screen-auth" class="screen active">
+  <div class="auth-logo">🧠</div>
+  <div class="auth-title">NardIQ</div>
+  <div class="auth-sub">Desafio mental para o ensino básico</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Entrar</button>
+      <button class="auth-tab" onclick="switchTab('register')">Cadastrar</button>
+    </div>
+    <!-- LOGIN -->
+    <div id="form-login" class="auth-form">
+      <input type="email" id="login-email" placeholder="Seu e-mail" autocomplete="email">
+      <input type="password" id="login-pass" placeholder="Senha" autocomplete="current-password">
+      <button class="btn-primary" onclick="doLogin()">Entrar 🚀</button>
+      <div class="auth-err" id="login-err"></div>
+    </div>
+    <!-- REGISTER -->
+    <div id="form-register" class="auth-form" style="display:none">
+      <input type="text" id="reg-username" placeholder="Seu apelido (ex: Nard123)" maxlength="20">
+      <input type="email" id="reg-email" placeholder="E-mail">
+      <input type="password" id="reg-pass" placeholder="Senha (mín. 6 caracteres)">
+      <div style="font-size:13px;color:var(--muted);font-weight:600;">Escolha seu avatar:</div>
+      <div class="emoji-picker" id="emoji-picker"></div>
+      <button class="btn-primary" onclick="doRegister()">Criar conta 🎉</button>
+      <div class="auth-err" id="reg-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen">
+  <div class="topbar">
+    <span class="topbar-logo">🧠 NardIQ</span>
+    <div class="topbar-user" onclick="goTo('profile')">
+      <div class="topbar-pts" id="topbar-pts">0 pts</div>
+      <div class="avatar" id="topbar-avatar">😊</div>
+    </div>
+  </div>
+  <div class="home-scroll">
+    <div class="hero-card">
+      <div class="hero-greeting">Olá, bora treinar?</div>
+      <div class="hero-name" id="hero-name">Aluno</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-val" id="hero-pts">0</span>
+          <span class="hero-stat-lbl">pontos</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val" id="hero-streak">0🔥</span>
+          <span class="hero-stat-lbl">sequência</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val" id="hero-acc">—</span>
+          <span class="hero-stat-lbl">acertos</span>
+        </div>
+      </div>
+      <div class="level-bar-wrap">
+        <div class="level-bar-label">
+          <span id="hero-level">Nível 1 — Iniciante</span>
+          <span id="hero-level-pct">0%</span>
+        </div>
+        <div class="level-bar"><div class="level-bar-fill" id="level-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="section-title">Ano escolar</div>
+    <div class="ano-row" id="ano-row"></div>
+
+    <div class="section-title">Categorias</div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <div class="bottom-nav" id="main-nav">
+    <button class="nav-item active" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
+    <button class="nav-item" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
+    <button class="nav-item" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goTo('home')">←</button>
+    <span class="topbar-logo">🧠 NardIQ</span>
+    <div class="topbar-pts" id="quiz-pts-top">0 pts</div>
+  </div>
+  <div class="quiz-scroll" id="quiz-scroll">
+    <div class="quiz-header">
+      <div class="quiz-meta">
+        <div class="quiz-cat" id="quiz-cat-label">—</div>
+        <div class="quiz-progress-text" id="quiz-prog-text">Questão 1 de 5</div>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-thumb" id="quiz-progress" style="width:0%"></div></div>
+    <div class="puzzle-card" id="puzzle-card">
+      <div class="puzzle-tag" id="p-tag"></div>
+      <div class="puzzle-question" id="p-question"></div>
+      <div class="puzzle-visual" id="p-visual"></div>
+      <div class="options-grid" id="p-options"></div>
+      <div class="feedback-box" id="p-feedback"></div>
+      <div class="expl-box" id="p-expl"></div>
+      <button class="next-btn" id="next-btn" onclick="nextPuzzle()">Próximo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RANKING -->
+<div id="screen-ranking" class="screen">
+  <div class="topbar">
+    <span class="topbar-logo">🏆 Ranking</span>
+    <button onclick="loadRanking()" style="border:none;background:transparent;font-size:18px;cursor:pointer;">🔄</button>
+  </div>
+  <div class="ranking-scroll">
+    <div class="ranking-podium" id="ranking-podium"></div>
+    <div class="rank-list" id="rank-list"><div class="spinner"></div></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
+    <button class="nav-item active" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
+    <button class="nav-item" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="screen-profile" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="goTo('home')">←</button>
+    <span class="topbar-logo">👤 Meu Perfil</span>
+    <div></div>
+  </div>
+  <div class="profile-scroll">
+    <div class="profile-hero">
+      <div class="profile-avatar-big" id="prof-avatar">🧠</div>
+      <div class="profile-username" id="prof-username">—</div>
+      <div class="profile-level" id="prof-level">Nível 1 — Iniciante</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-card-val" id="ps-pts">0</div><div class="stat-card-lbl">Pontos</div></div>
+      <div class="stat-card"><div class="stat-card-val" id="ps-correct">0</div><div class="stat-card-lbl">Acertos</div></div>
+      <div class="stat-card"><div class="stat-card-val" id="ps-acc">—</div><div class="stat-card-lbl">Taxa</div></div>
+      <div class="stat-card"><div class="stat-card-val" id="ps-streak">0</div><div class="stat-card-lbl">Melhor 🔥</div></div>
+      <div class="stat-card"><div class="stat-card-val" id="ps-total">0</div><div class="stat-card-lbl">Tentativas</div></div>
+      <div class="stat-card"><div class="stat-card-val" id="ps-rank">—</div><div class="stat-card-lbl">Posição</div></div>
+    </div>
+    <div class="section-title" style="margin-bottom:10px;">Progresso por categoria</div>
+    <div class="cat-progress-list" id="cat-prog-list"></div>
+    <button class="logout-btn" onclick="doLogout()">Sair da conta</button>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item" onclick="goTo('home')"><span class="nav-icon">🏠</span><span class="nav-label">Início</span></button>
+    <button class="nav-item" onclick="goTo('ranking')"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
+    <button class="nav-item active" onclick="goTo('profile')"><span class="nav-icon">👤</span><span class="nav-label">Perfil</span></button>
+  </div>
+</div>
+
+<!-- STREAK TOAST -->
+<div class="streak-toast" id="streak-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── CONFIG ──
+const SUPA_URL = 'https://glmakzmtklycnlolfybi.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk';
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+const EMOJIS = ['🧠','🦁','🐯','🐧','🦊','🐸','🦋','🐉','🚀','⚡'];
+const ANOS = ['5°','6°','7°','8°','9°'];
+const CATS = [
+  {name:'Sequências', icon:'🔢', color:'#4C3BCF'},
+  {name:'Álgebra',    icon:'✖️',  color:'#7B6FE8'},
+  {name:'Equações',   icon:'⚖️',  color:'#0EA5E9'},
+  {name:'Lógica',     icon:'💡',  color:'#F59E0B'},
+  {name:'Geometria',  icon:'📐',  color:'#10B981'},
+];
+const LEVELS = [
+  {name:'Iniciante',   pts:0},
+  {name:'Curioso',     pts:100},
+  {name:'Pensador',    pts:300},
+  {name:'Calculista',  pts:600},
+  {name:'Gênio',       pts:1000},
+  {name:'NardIQ Pro',  pts:2000},
+];
+
+// ── PUZZLE BANK ──
+const ALL_PUZZLES = [
+// 5° ANO ──────────────────────────────────────
+{id:'5seq1',ano:'5°',cat:'Sequências',tag:'Encontre o padrão',
+ q:'Qual o valor da interrogação?',
+ visual:'sequence',data:{nums:[2,8,5,6,8,null,11]},
+ opts:[1,4,3,29],correct:2,
+ expl:'A sequência tem pares (+6,−3): 2→8(+6), 8→5(−3), 5→6(+1?). O padrão alternado coloca 3 na posição do ?, pois 8→11=+3.'},
+{id:'5log1',ano:'5°',cat:'Lógica',tag:'Enigma das palavras',
+ q:'Se GATO = 16 e PEIXE = 125, quanto vale MACACO?',
+ visual:'words',data:{rows:[{w:'GATO',n:4,v:'4² = 16'},{w:'PEIXE',n:5,v:'5³ = 125'},{w:'MACACO',n:6,v:'6³ = ?'}]},
+ opts:[36,216,250,512],correct:1,
+ expl:'A regra: letras³. GATO=4 letras→4²=16. PEIXE=5→5³=125. MACACO=6→6³=216.'},
+{id:'5eq1',ano:'5°',cat:'Equações',tag:'Sistema de pesos',
+ q:'Coelho + Gato = 12 kg. A diferença entre eles é 6 kg. Quanto pesa o GATO?',
+ visual:'system',data:{rows:['C + G = 12 kg','C − G = 6 kg']},
+ opts:[9,7,3,5],correct:2,
+ expl:'C+G=12 e C−G=6. Somando: 2C=18 → C=9. Logo G=12−9=3 kg.'},
+{id:'5alg1',ano:'5°',cat:'Álgebra',tag:'Flores e valores',
+ q:'Descubra os valores e resolva a última linha!',
+ visual:'flowers',data:{
+   rows:[
+     {a:'🌹',b:'🌹',c:'🌹',op:'+',res:'60'},
+     {a:'🌹',b:'🌼',c:'🌼',op:'+',res:'30'},
+     {a:'🌼',b:'🌻',c:'',op:'−',res:'3'},
+     {a:'🌻',b:'🌹',c:'🌼',op:'+',res:'?'},
+   ]},
+ opts:[22,25,27,30],correct:2,
+ expl:'🌹=20, 🌼=5, 🌻=2. Linha final: 2+20+5=27.'},
+{id:'5geo1',ano:'5°',cat:'Geometria',tag:'Formas e medidas',
+ q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',
+ visual:'shape',data:{type:'square',label:'5 cm'},
+ opts:[10,15,20,25],correct:2,
+ expl:'Perímetro de quadrado = 4 × lado = 4 × 5 = 20 cm.'},
+
+// 6° ANO ──────────────────────────────────────
+{id:'6seq1',ano:'6°',cat:'Sequências',tag:'Fibonacci!',
+ q:'Qual número vem a seguir? 1, 1, 2, 3, 5, 8, 13, ?',
+ visual:'sequence',data:{nums:[1,1,2,3,5,8,13,null]},
+ opts:[18,20,21,26],correct:2,
+ expl:'Fibonacci: cada número é a soma dos dois anteriores. 8+13=21.'},
+{id:'6alg1',ano:'6°',cat:'Álgebra',tag:'Encontre X',
+ q:'Se 3x + 7 = 22, qual é o valor de x?',
+ visual:'equation',data:{eq:'3x + 7 = 22'},
+ opts:[3,4,5,6],correct:2,
+ expl:'3x = 22−7 = 15. Dividindo por 3: x = 5.'},
+{id:'6eq1',ano:'6°',cat:'Equações',tag:'Sistema linear',
+ q:'x + y = 10 e x − y = 4. Qual o valor de x?',
+ visual:'system',data:{rows:['x + y = 10','x − y = 4']},
+ opts:[5,6,7,8],correct:2,
+ expl:'Somando as equações: 2x=14 → x=7. E y=10−7=3.'},
+{id:'6log1',ano:'6°',cat:'Lógica',tag:'Quem é mais velho?',
+ q:'Ana > Bia > Carla. Carla tem 10 anos, Ana tem 15. Qual idade Bia pode ter?',
+ visual:'none',data:{},
+ opts:[8,12,15,16],correct:1,
+ expl:'Bia deve estar entre Carla (10) e Ana (15). A única opção válida é 12.'},
+{id:'6geo1',ano:'6°',cat:'Geometria',tag:'Área do retângulo',
+ q:'Um retângulo tem base 8 cm e altura 5 cm. Qual é a sua área?',
+ visual:'shape',data:{type:'rect',w:8,h:5},
+ opts:[13,26,40,80],correct:2,
+ expl:'Área = base × altura = 8 × 5 = 40 cm².'},
+
+// 7° ANO ──────────────────────────────────────
+{id:'7seq1',ano:'7°',cat:'Sequências',tag:'Potências de 2',
+ q:'Qual o próximo número? 2, 4, 8, 16, 32, ?',
+ visual:'sequence',data:{nums:[2,4,8,16,32,null]},
+ opts:[48,56,64,128],correct:2,
+ expl:'Cada número é o dobro do anterior. 32 × 2 = 64.'},
+{id:'7alg1',ano:'7°',cat:'Álgebra',tag:'Produto notável',
+ q:'Qual é o valor de (x+3)² quando x = 2?',
+ visual:'equation',data:{eq:'(x+3)² , x=2'},
+ opts:[10,15,25,35],correct:2,
+ expl:'(2+3)² = 5² = 25.'},
+{id:'7eq1',ano:'7°',cat:'Equações',tag:'Equação com fração',
+ q:'Se x/2 + 3 = 7, qual é x?',
+ visual:'equation',data:{eq:'x/2 + 3 = 7'},
+ opts:[2,4,8,12],correct:2,
+ expl:'x/2 = 7−3 = 4. Então x = 4 × 2 = 8.'},
+{id:'7log1',ano:'7°',cat:'Lógica',tag:'Animais e valores',
+ q:'🐱+🐱+🐱=30 e 🐱+🐶+🐶=20. Quanto vale 🐶?',
+ visual:'animals',data:{rows:['🐱+🐱+🐱 = 30','🐱+🐶+🐶 = 20','🐶 = ?']},
+ opts:[3,5,7,10],correct:1,
+ expl:'3🐱=30 → 🐱=10. 10+2🐶=20 → 2🐶=10 → 🐶=5.'},
+{id:'7geo1',ano:'7°',cat:'Geometria',tag:'Triângulo',
+ q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',
+ visual:'shape',data:{type:'triangle',b:10,h:6},
+ opts:[16,30,60,120],correct:1,
+ expl:'Área do triângulo = (base × altura) / 2 = (10 × 6) / 2 = 30 cm².'},
+
+// 8° ANO ──────────────────────────────────────
+{id:'8seq1',ano:'8°',cat:'Sequências',tag:'Quadrados perfeitos',
+ q:'1, 4, 9, 16, 25, ?',
+ visual:'sequence',data:{nums:[1,4,9,16,25,null]},
+ opts:[30,34,36,49],correct:2,
+ expl:'São os quadrados perfeitos: 1², 2², 3², 4², 5², 6²=36.'},
+{id:'8alg1',ano:'8°',cat:'Álgebra',tag:'Potências',
+ q:'Qual o valor de 2⁵ + 3³?',
+ visual:'equation',data:{eq:'2⁵ + 3³'},
+ opts:[35,55,59,64],correct:2,
+ expl:'2⁵=32. 3³=27. 32+27=59.'},
+{id:'8eq1',ano:'8°',cat:'Equações',tag:'Equação do 2° grau',
+ q:'Quais são as raízes de x² − 5x + 6 = 0?',
+ visual:'equation',data:{eq:'x² − 5x + 6 = 0'},
+ opts:['x=1 e x=6','x=2 e x=3','x=−2 e x=−3','x=3 e x=3'],correct:1,
+ expl:'Δ=25−24=1. x=(5±1)/2. x₁=3, x₂=2.'},
+{id:'8geo1',ano:'8°',cat:'Geometria',tag:'Círculo',
+ q:'Um círculo tem raio 7 cm. Qual é a área? (π≈3,14)',
+ visual:'shape',data:{type:'circle',r:7},
+ opts:['43,96','49','153,86','154'],correct:2,
+ expl:'Área = π × r² = 3,14 × 7² = 3,14 × 49 ≈ 153,86 cm².'},
+
+// 9° ANO ──────────────────────────────────────
+{id:'9seq1',ano:'9°',cat:'Sequências',tag:'PA ou PG?',
+ q:'3, 6, 12, 24, 48, ?',
+ visual:'sequence',data:{nums:[3,6,12,24,48,null]},
+ opts:[72,86,96,100],correct:2,
+ expl:'É uma PG com razão 2. 48 × 2 = 96.'},
+{id:'9alg1',ano:'9°',cat:'Álgebra',tag:'Logaritmo básico',
+ q:'Qual o valor de log₁₀(1000)?',
+ visual:'equation',data:{eq:'log₁₀(1000)'},
+ opts:[2,3,4,10],correct:1,
+ expl:'log₁₀(1000) = log₁₀(10³) = 3.'},
+{id:'9geo1',ano:'9°',cat:'Geometria',tag:'Teorema de Pitágoras',
+ q:'Um triângulo tem catetos 3 e 4. Qual a hipotenusa?',
+ visual:'shape',data:{type:'pythagorean',a:3,b:4},
+ opts:[5,6,7,8],correct:0,
+ expl:'a²+b²=c². 9+16=25. √25=5. Hipotenusa=5.'},
+{id:'9log1',ano:'9°',cat:'Lógica',tag:'Raciocínio avançado',
+ q:'Um produto custa R$120 com 25% de desconto. Qual o preço original?',
+ visual:'none',data:{},
+ opts:['R$ 144','R$ 148','R$ 160','R$ 150'],correct:2,
+ expl:'120 = 75% do original. Original = 120 / 0,75 = R$ 160.'},
+];
+
+// ── STATE ──
+let currentUser = null;
+let profile = null;
+let selectedAno = '5°';
+let selectedCat = null;
+let quizPuzzles = [];
+let quizIdx = 0;
+let quizAnswered = false;
+let selectedEmoji = '🧠';
+
+// ── INIT ──
+window.addEventListener('load', async () => {
+  renderEmojiPicker();
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadProfile();
+    goTo('home');
+  }
+});
+
+// ── AUTH ──
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('form-login').style.display = tab==='login' ? 'flex' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'flex' : 'none';
+}
+
+function renderEmojiPicker() {
+  document.getElementById('emoji-picker').innerHTML = EMOJIS.map(e =>
+    `<div class="emoji-opt${e===selectedEmoji?' selected':''}" onclick="selectEmoji('${e}')">${e}</div>`
+  ).join('');
+}
+function selectEmoji(e) {
+  selectedEmoji = e;
+  renderEmojiPicker();
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  err.textContent = '';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = '❌ ' + (error.message === 'Invalid login credentials' ? 'E-mail ou senha incorretos.' : error.message); return; }
+  currentUser = data.user;
+  await loadProfile();
+  goTo('home');
+}
+
+async function doRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  const err = document.getElementById('reg-err');
+  err.textContent = '';
+  if (!username || username.length < 3) { err.textContent = '❌ Apelido precisa ter pelo menos 3 caracteres.'; return; }
+  if (pass.length < 6) { err.textContent = '❌ Senha precisa ter pelo menos 6 caracteres.'; return; }
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  if (error) { err.textContent = '❌ ' + error.message; return; }
+  currentUser = data.user;
+  // Create profile
+  const { error: pe } = await sb.from('nardiq_profiles').insert({
+    id: currentUser.id, username, avatar_emoji: selectedEmoji,
+  });
+  if (pe && pe.code !== '23505') { err.textContent = '❌ Erro ao criar perfil: ' + pe.message; return; }
+  await loadProfile();
+  goTo('home');
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null; profile = null;
+  goTo('auth');
+}
+
+// ── PROFILE ──
+async function loadProfile() {
+  if (!currentUser) return;
+  const { data } = await sb.from('nardiq_profiles').select('*').eq('id', currentUser.id).single();
+  profile = data;
+  updateUI();
+}
+
+function getLevel(pts) {
+  let lv = 0;
+  for (let i = 0; i < LEVELS.length; i++) { if (pts >= LEVELS[i].pts) lv = i; }
+  return lv;
+}
+function getLevelPct(pts) {
+  const lv = getLevel(pts);
+  const cur = LEVELS[lv].pts;
+  const next = LEVELS[lv+1] ? LEVELS[lv+1].pts : cur + 1000;
+  return Math.min(100, Math.round(((pts - cur) / (next - cur)) * 100));
+}
+
+function updateUI() {
+  if (!profile) return;
+  const pts = profile.total_points || 0;
+  const lv = getLevel(pts);
+  const lvName = `Nível ${lv+1} — ${LEVELS[lv].name}`;
+  const acc = profile.total_answered > 0 ? Math.round((profile.total_correct / profile.total_answered) * 100) + '%' : '—';
+  // Topbar
+  document.getElementById('topbar-pts').textContent = pts + ' pts';
+  document.getElementById('topbar-avatar').textContent = profile.avatar_emoji || '🧠';
+  // Hero
+  document.getElementById('hero-name').textContent = profile.username;
+  document.getElementById('hero-pts').textContent = pts;
+  document.getElementById('hero-streak').textContent = (profile.current_streak||0) + '🔥';
+  document.getElementById('hero-acc').textContent = acc;
+  document.getElementById('hero-level').textContent = lvName;
+  const pct = getLevelPct(pts);
+  document.getElementById('hero-level-pct').textContent = pct + '%';
+  document.getElementById('level-fill').style.width = pct + '%';
+  // Profile screen
+  document.getElementById('prof-avatar').textContent = profile.avatar_emoji || '🧠';
+  document.getElementById('prof-username').textContent = profile.username;
+  document.getElementById('prof-level').textContent = lvName;
+  document.getElementById('ps-pts').textContent = pts;
+  document.getElementById('ps-correct').textContent = profile.total_correct || 0;
+  document.getElementById('ps-acc').textContent = acc;
+  document.getElementById('ps-streak').textContent = profile.best_streak || 0;
+  document.getElementById('ps-total').textContent = profile.total_answered || 0;
+}
+
+// ── NAVIGATION ──
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  if (screen === 'home') renderHome();
+  if (screen === 'ranking') loadRanking();
+  if (screen === 'profile') loadProfileScreen();
+  if (screen === 'auth') {
+    document.getElementById('screen-auth').classList.add('active');
+  }
+}
+
+// ── HOME ──
+function renderHome() {
+  // Ano chips
+  document.getElementById('ano-row').innerHTML = ANOS.map(a =>
+    `<div class="ano-chip${a===selectedAno?' active':''}" onclick="selectAno('${a}')">${a} ano</div>`
+  ).join('');
+  // Categories
+  const puzzlesForAno = ALL_PUZZLES.filter(p => p.ano === selectedAno);
+  document.getElementById('cat-grid').innerHTML = CATS.map(c => {
+    const count = puzzlesForAno.filter(p => p.cat === c.name).length;
+    return `<div class="cat-card" onclick="startQuiz('${c.name}')">
+      <div class="cat-icon">${c.icon}</div>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count">${count} questões</div>
+      <div class="cat-badge">${selectedAno} ano</div>
+    </div>`;
+  }).join('');
+}
+function selectAno(a) { selectedAno = a; renderHome(); }
+
+// ── QUIZ ──
+function startQuiz(cat) {
+  selectedCat = cat;
+  quizPuzzles = ALL_PUZZLES.filter(p => p.ano === selectedAno && p.cat === cat);
+  if (!quizPuzzles.length) return;
+  // Shuffle
+  quizPuzzles = quizPuzzles.sort(() => Math.random() - .5);
+  quizIdx = 0;
+  goTo('quiz');
+  loadQuizPuzzle();
+}
+
+function loadQuizPuzzle() {
+  const p = quizPuzzles[quizIdx];
+  quizAnswered = false;
+  const pct = Math.round((quizIdx / quizPuzzles.length) * 100);
+  document.getElementById('quiz-progress').style.width = pct + '%';
+  document.getElementById('quiz-prog-text').textContent = `Questão ${quizIdx+1} de ${quizPuzzles.length}`;
+  document.getElementById('quiz-cat-label').textContent = `${selectedAno} ano • ${selectedCat}`;
+  document.getElementById('quiz-pts-top').textContent = (profile?.total_points || 0) + ' pts';
+  document.getElementById('p-tag').textContent = p.tag;
+  document.getElementById('p-question').textContent = p.q;
+  document.getElementById('p-feedback').className = 'feedback-box';
+  document.getElementById('p-expl').className = 'expl-box';
+  document.getElementById('next-btn').className = 'next-btn';
+  // Visual
+  document.getElementById('p-visual').innerHTML = renderVisual(p);
+  // Options
+  const letters = ['a','b','c','d'];
+  document.getElementById('p-options').innerHTML = p.opts.map((o, i) =>
+    `<button class="opt-btn" id="opt-${i}" onclick="answerQuiz(${i})">
+      <span class="opt-letter">${letters[i]})</span>${o}
+    </button>`
+  ).join('');
+  // Scroll to top
+  document.getElementById('quiz-scroll').scrollTo(0, 0);
+}
+
+function renderVisual(p) {
+  if (p.visual === 'sequence') {
+    return p.data.nums.map((n, i) => {
+      const delay = i * 0.07;
+      if (n === null) return `<div class="anim-seq anim-q" style="animation-delay:${delay}s;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:10px;background:var(--pri);color:#fff;font-size:22px;font-weight:800;margin:4px;">?</div>`;
+      return `<div class="anim-seq" style="animation-delay:${delay}s;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:10px;background:#EEF0FF;color:var(--pri);font-size:18px;font-weight:700;margin:4px;">${n}</div>`;
+    }).join('');
+  }
+  if (p.visual === 'flowers') {
+    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
+      `<div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:20px;animation:flower-grow .5s ${ri*0.1}s backwards">
+        <span>${r.a}</span>${r.c?`<span style="font-size:14px;color:var(--muted)">+</span><span>${r.b}</span><span style="font-size:14px;color:var(--muted)">+</span><span>${r.c}</span>`:`<span style="font-size:14px;color:var(--muted)">${r.op}</span><span>${r.b}</span>`}
+        <span style="font-size:14px;color:var(--muted)">=</span>
+        <span style="font-size:16px;font-weight:700;color:${r.res==='?'?'var(--pri)':'var(--text)'}">${r.res}</span>
+      </div>`
+    ).join('')}</div>`;
+  }
+  if (p.visual === 'words') {
+    return `<div style="display:flex;flex-direction:column;gap:6px;width:100%">${p.data.rows.map((r,ri) =>
+      `<div class="anim-seq" style="animation-delay:${ri*.1}s;display:flex;justify-content:space-between;align-items:center;background:var(--pri-light);border-radius:8px;padding:10px 14px">
+        <span style="font-weight:700;color:var(--pri)">${r.w}</span>
+        <span style="font-size:12px;color:var(--muted)">${r.n} letras</span>
+        <span style="font-weight:700;color:${r.v.includes('?')?'var(--sec)':'var(--text)'}">${r.v}</span>
+      </div>`
+    ).join('')}</div>`;
+  }
+  if (p.visual === 'system') {
+    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
+      `<div class="anim-seq" style="animation-delay:${ri*.12}s;background:var(--pri-light);border-radius:8px;padding:12px 16px;text-align:center;font-size:16px;font-weight:700;color:var(--pri)">${r}</div>`
+    ).join('')}</div>`;
+  }
+  if (p.visual === 'equation') {
+    return `<div style="background:var(--pri-light);border-radius:12px;padding:18px 24px;font-size:22px;font-weight:800;color:var(--pri);text-align:center;animation:seq-pop .4s backwards">${p.data.eq}</div>`;
+  }
+  if (p.visual === 'animals') {
+    return `<div style="display:flex;flex-direction:column;gap:8px;width:100%">${p.data.rows.map((r,ri) =>
+      `<div class="anim-seq" style="animation-delay:${ri*.1}s;background:var(--sec-light);border-radius:8px;padding:12px;text-align:center;font-size:18px;font-weight:600;color:var(--text)">${r}</div>`
+    ).join('')}</div>`;
+  }
+  if (p.visual === 'shape') {
+    const d = p.data;
+    if (d.type === 'square') return `<svg viewBox="0 0 140 120" width="140" height="120"><rect x="20" y="20" width="100" height="100" rx="4" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="70" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.label}</text></svg>`;
+    if (d.type === 'rect') return `<svg viewBox="0 0 180 120" width="180" height="120"><rect x="10" y="25" width="160" height="70" rx="4" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="90" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.w}×${d.h} cm</text></svg>`;
+    if (d.type === 'circle') return `<svg viewBox="0 0 140 140" width="140" height="140"><circle cx="70" cy="70" r="55" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><line x1="70" y1="70" x2="125" y2="70" stroke="var(--pri)" stroke-width="1.5" stroke-dasharray="4"/><text x="98" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="var(--pri)">r=${d.r}</text></svg>`;
+    if (d.type === 'triangle') return `<svg viewBox="0 0 160 130" width="160" height="130"><polygon points="80,15 150,115 10,115" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><text x="80" y="128" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pri)">base=${d.b}</text><text x="12" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="var(--pri)" transform="rotate(-60,12,70)">h=${d.h}</text></svg>`;
+    if (d.type === 'pythagorean') return `<svg viewBox="0 0 140 130" width="140" height="130"><polygon points="20,110 20,30 100,110" fill="#EEF0FF" stroke="var(--pri)" stroke-width="2.5"/><rect x="20" y="100" width="10" height="10" fill="none" stroke="var(--pri)" stroke-width="1.5"/><text x="12" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.a}</text><text x="58" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="var(--pri)">${d.b}</text><text x="72" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="var(--sec)">?</text></svg>`;
+  }
+  return '';
+}
+
+async function answerQuiz(chosen) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const p = quizPuzzles[quizIdx];
+  const correct = chosen === p.correct;
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+  btns[p.correct].classList.add('correct');
+  if (!correct) btns[chosen].classList.add('wrong');
+
+  const fb = document.getElementById('p-feedback');
+  const ex = document.getElementById('p-expl');
+  if (correct) {
+    fb.textContent = '✅ Correto! Muito bem!';
+    fb.className = 'feedback-box show ok';
+  } else {
+    fb.textContent = '❌ Não foi dessa vez. Veja a explicação!';
+    fb.className = 'feedback-box show nok';
+  }
+  ex.textContent = '💡 ' + p.expl;
+  ex.className = 'expl-box show';
+  document.getElementById('next-btn').className = 'next-btn show';
+
+  // Save to Supabase
+  if (currentUser && profile) {
+    const pts = correct ? 10 + (profile.current_streak || 0) * 2 : 0;
+    const newStreak = correct ? (profile.current_streak || 0) + 1 : 0;
+    const newBest = Math.max(profile.best_streak || 0, newStreak);
+    if (newStreak >= 3) showStreakToast(newStreak);
+    // Insert progress
+    await sb.from('nardiq_progress').insert({
+      user_id: currentUser.id,
+      puzzle_id: p.id,
+      ano: p.ano,
+      categoria: p.cat,
+      correct,
+      points_earned: pts,
+    });
+    // Update profile
+    const updates = {
+      total_points: (profile.total_points || 0) + pts,
+      total_correct: (profile.total_correct || 0) + (correct ? 1 : 0),
+      total_answered: (profile.total_answered || 0) + 1,
+      current_streak: newStreak,
+      best_streak: newBest,
+      level: getLevel((profile.total_points || 0) + pts) + 1,
+    };
+    await sb.from('nardiq_profiles').update(updates).eq('id', currentUser.id);
+    profile = { ...profile, ...updates };
+    updateUI();
+    document.getElementById('quiz-pts-top').textContent = profile.total_points + ' pts';
+  }
+}
+
+function nextPuzzle() {
+  quizIdx++;
+  if (quizIdx >= quizPuzzles.length) {
+    // Finished — go home
+    goTo('home');
+    return;
+  }
+  loadQuizPuzzle();
+}
+
+function showStreakToast(n) {
+  const t = document.getElementById('streak-toast');
+  t.textContent = `🔥 ${n}x sequência! +${n*2} bônus!`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── RANKING ──
+async function loadRanking() {
+  const list = document.getElementById('rank-list');
+  const podium = document.getElementById('ranking-podium');
+  list.innerHTML = '<div class="spinner"></div>';
+  const { data } = await sb.from('nardiq_ranking').select('*').limit(50);
+  if (!data || !data.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);padding:32px">Nenhum jogador ainda. Seja o primeiro!</div>';
+    podium.innerHTML = '';
+    return;
+  }
+  // Podium top 3
+  const medals = ['🥇','🥈','🥉'];
+  const pClasses = ['p1','p2','p3'];
+  const heights = ['p1','p2','p3'];
+  const order = data.length >= 3 ? [1,0,2] : [0,1,2]; // 2nd, 1st, 3rd visual order
+  podium.innerHTML = order.filter(i => data[i]).map(i => {
+    const r = data[i];
+    return `<div class="podium-place">
+      <div class="podium-avatar ${pClasses[i]}">${r.avatar_emoji||'🧠'}</div>
+      <div class="podium-name">${r.username}</div>
+      <div class="podium-pts">${r.total_points} pts</div>
+      <div class="podium-bar ${heights[i]}">${medals[i]}</div>
+    </div>`;
+  }).join('');
+  // List from 4th
+  const myId = currentUser?.id;
+  list.innerHTML = data.slice(3).map(r =>
+    `<div class="rank-row${r.id===myId?' me':''}">
+      <div class="rank-pos">${r.position}</div>
+      <div class="rank-avatar">${r.avatar_emoji||'🧠'}</div>
+      <div class="rank-info">
+        <div class="rank-name">${r.username}${r.id===myId?' (você)':''}</div>
+        <div class="rank-sub">${r.total_correct||0} acertos • ${r.accuracy||0}% taxa</div>
+      </div>
+      <div class="rank-pts">${r.total_points} pts</div>
+    </div>`
+  ).join('');
+  // Find user position if not in top 50 display
+  if (myId) {
+    const me = data.find(r => r.id === myId);
+    document.getElementById('ps-rank').textContent = me ? '#' + me.position : '—';
+  }
+}
+
+// ── PROFILE SCREEN ──
+async function loadProfileScreen() {
+  if (!profile) return;
+  updateUI();
+  // Category progress
+  const { data: prog } = await sb.from('nardiq_progress')
+    .select('categoria, correct')
+    .eq('user_id', currentUser.id);
+  if (prog) {
+    const bycat = {};
+    prog.forEach(p => {
+      if (!bycat[p.categoria]) bycat[p.categoria] = {total:0,correct:0};
+      bycat[p.categoria].total++;
+      if (p.correct) bycat[p.categoria].correct++;
+    });
+    document.getElementById('cat-prog-list').innerHTML = CATS.map(c => {
+      const s = bycat[c.name] || {total:0,correct:0};
+      const pct = s.total > 0 ? Math.round((s.correct/s.total)*100) : 0;
+      return `<div class="cat-prog-row">
+        <div class="cat-prog-header">
+          <span>${c.icon} ${c.name}</span>
+          <span style="color:var(--pri)">${pct}% (${s.correct}/${s.total})</span>
+        </div>
+        <div class="cat-prog-track"><div class="cat-prog-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+}
+</script>
+</body>
+</html>
