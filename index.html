@@ -14,33 +14,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ── TEMAS ──────────────────────────────────────────── */
+/* ── TEMAS ── */
 :root {
-  --bg:        #0D0D1A;
-  --surface:   #13112B;
+  --bg: #0D0D1A;
+  --surface: #13112B;
   --surfaceHi: #1A1836;
-  --border:    #2A2744;
-  --border2:   #1E1B3A;
-  --violet:    #6C63FF;
-  --violetL:   #A78BFA;
-  --cyan:      #00F5C4;
-  --yellow:    #FFD166;
-  --red:       #FF4D6D;
-  --text:      #E8E6F0;
-  --muted:     #7C7A9C;
+  --border: #2A2744;
+  --border2: #1E1B3A;
+  --violet: #6C63FF;
+  --violetL: #A78BFA;
+  --cyan: #00F5C4;
+  --yellow: #FFD166;
+  --red: #FF4D6D;
+  --text: #E8E6F0;
+  --muted: #7C7A9C;
   --bodyMuted: #B8B6D4;
 }
-[data-theme="black"] {
-  --bg:#000; --surface:#0A0A0A; --surfaceHi:#111;
-  --border:#222; --border2:#181818; --muted:#555577; --bodyMuted:#9995BB;
-}
-[data-theme="white"] {
-  --bg:#F5F4FF; --surface:#FFF; --surfaceHi:#EDEDFF;
-  --border:#DDD9FF; --border2:#EEEAFF;
-  --violet:#5A52E0; --violetL:#8B7CF8;
-  --cyan:#00B89C; --yellow:#E6A800; --red:#E63B5A;
-  --text:#1A1733; --muted:#7770AA; --bodyMuted:#5A5588;
-}
+[data-theme="black"] { --bg:#000; --surface:#0A0A0A; --surfaceHi:#111; --border:#222; --border2:#181818; --muted:#555577; --bodyMuted:#9995BB; }
+[data-theme="white"] { --bg:#F5F4FF; --surface:#FFF; --surfaceHi:#EDEDFF; --border:#DDD9FF; --border2:#EEEAFF; --violet:#5A52E0; --violetL:#8B7CF8; --cyan:#00B89C; --yellow:#E6A800; --red:#E63B5A; --text:#1A1733; --muted:#7770AA; --bodyMuted:#5A5588; }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;transition:background .3s,color .3s}
 #app{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden}
@@ -281,13 +272,26 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 
 /* ── CONFETTI ── */
 #cr-confetti{position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%}
-
-/* ── PROGRESS BAR NO QUIZ ── */
 .quiz-progress{display:flex;gap:4px;margin-bottom:16px;justify-content:center}
 .progress-dot{width:12px;height:12px;border-radius:50%;background:var(--border2);transition:all .3s}
 .progress-dot.done{background:var(--cyan)}
 .progress-dot.wrong{background:var(--red)}
 .progress-dot.current{background:var(--violet);transform:scale(1.3)}
+
+/* ── MULTIPLAYER ── */
+.multiplayer-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.multiplayer-section .section-label{font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.friend-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--border2);border-radius:10px;margin-bottom:6px}
+.friend-name{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;color:var(--text)}
+.friend-status{font-size:12px;color:var(--muted)}
+.challenge-btn{padding:4px 14px;background:linear-gradient(135deg,var(--violet),var(--violetL));border:none;border-radius:20px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.challenge-btn:hover{opacity:.8}
+.challenge-btn:disabled{opacity:.4;cursor:not-allowed}
+.invite-input-wrap{display:flex;gap:8px;margin-top:10px}
+.invite-input-wrap input{flex:1;padding:10px 12px;background:var(--border2);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none}
+.invite-input-wrap input:focus{border-color:var(--violet)}
+.invite-input-wrap button{padding:10px 18px;background:var(--violet);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;transition:opacity .2s}
+.invite-input-wrap button:hover{opacity:.8}
 </style>
 </head>
 <body>
@@ -358,7 +362,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     </div>
     <div id="auth-error"   class="auth-error"></div>
     <div id="auth-success" class="auth-success" style="display:none"></div>
-    <!-- Login -->
     <div id="form-login">
       <input class="auth-input" id="login-email"    type="email"    placeholder="E-mail" autocomplete="email">
       <input class="auth-input" id="login-password" type="password" placeholder="Senha"  autocomplete="current-password">
@@ -369,7 +372,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
         Entrar com Google
       </button>
     </div>
-    <!-- Signup -->
     <div id="form-signup" style="display:none">
       <input class="auth-input" id="signup-username" type="text"     placeholder="Username (visível no ranking)" autocomplete="off" maxlength="20">
       <input class="auth-input" id="signup-email"    type="email"    placeholder="E-mail" autocomplete="email">
@@ -389,13 +391,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <div id="screen-home" class="screen"><div class="screen-inner">
   <div class="logo">Nard<span>IQ</span></div>
   <div class="tagline">PENSE · APRENDA · EVOLUA</div>
-  <!-- Theme toggle -->
   <div class="theme-row">
     <button class="theme-btn active" id="theme-night" onclick="setTheme('night')"><span class="theme-dot" style="background:#0D0D1A;border:1.5px solid #6C63FF"></span>Noite</button>
     <button class="theme-btn" id="theme-black" onclick="setTheme('black')"><span class="theme-dot" style="background:#000;border:1.5px solid #555"></span>Preto</button>
     <button class="theme-btn" id="theme-white" onclick="setTheme('white')"><span class="theme-dot" style="background:#F5F4FF;border:1.5px solid #5A52E0"></span>Branco</button>
   </div>
-  <!-- User bar -->
   <div class="user-bar">
     <div class="user-avatar" id="home-avatar">?</div>
     <div class="user-info">
@@ -404,7 +404,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     </div>
     <button class="logout-btn" onclick="doLogout()">Sair</button>
   </div>
-  <!-- XP Card -->
   <div class="xp-card">
     <div class="xp-header">
       <div><div class="level-label" id="home-level-num">NÍVEL 1</div><div class="level-name" id="home-level-name">Iniciante</div></div>
@@ -412,17 +411,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
     </div>
     <div class="progress-track"><div class="progress-fill" id="home-xp-bar" style="width:0%"></div></div>
   </div>
-  <!-- Ano escolar -->
+
+  <!-- ══ MULTIPLAYER ══ -->
+  <div class="multiplayer-section">
+    <div class="section-label">👥 Jogar com amigos</div>
+    <div id="friends-list">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Convide amigos para desafios!</div>
+    </div>
+    <div class="invite-input-wrap">
+      <input id="invite-input" placeholder="Nome do amigo para desafiar..." maxlength="20">
+      <button onclick="challengeFriend()">Desafiar</button>
+    </div>
+    <div id="challenge-status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+  </div>
+
   <div class="section">
     <div class="section-label">Ano escolar</div>
     <div class="ano-row" id="ano-row"></div>
   </div>
-  <!-- Categorias -->
   <div class="section">
     <div class="section-label">Escolha a categoria</div>
     <div class="cat-grid" id="cat-grid"></div>
   </div>
-  <!-- Quick nav -->
   <div class="quick-nav">
     <button class="quick-btn" onclick="showScreen('screen-ranking');loadRanking()"><span class="quick-label">🏆 Ranking global</span><span style="color:var(--muted);font-size:13px">→</span></button>
     <button class="quick-btn" onclick="loadHistory();showScreen('screen-history')"><span class="quick-label">📊 Histórico</span><span style="color:var(--muted);font-size:13px">→</span></button>
@@ -512,6 +522,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
   <div id="history-list"></div>
 </div></div>
 
+<!-- ══ MULTIPLAYER CHALLENGE ══ -->
+<div id="screen-challenge" class="screen"><div class="screen-inner">
+  <div class="page-header"><button class="page-back" onclick="goHome()">←</button><div class="page-title">⚔️ Desafio</div></div>
+  <div id="challenge-info" style="text-align:center;padding:20px;background:var(--surface);border-radius:14px;border:1px solid var(--border)">
+    <div style="font-size:28px;margin-bottom:8px">🏁</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;color:var(--text)" id="challenge-title">Desafio contra amigo</div>
+    <div style="color:var(--muted);font-size:14px;margin:8px 0" id="challenge-sub">Responda as 10 questões!</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0">
+      <div style="background:var(--border2);padding:12px;border-radius:10px">
+        <div style="font-size:11px;color:var(--muted)">VOCÊ</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--violet)" id="challenge-my-score">0</div>
+      </div>
+      <div style="background:var(--border2);padding:12px;border-radius:10px">
+        <div style="font-size:11px;color:var(--muted)" id="challenge-opponent-label">OPONENTE</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:var(--cyan)" id="challenge-opp-score">0</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--muted)" id="challenge-status-text">Aguardando oponente...</div>
+    <button class="primary-btn" style="margin-top:16px" onclick="startChallengeGame()">Começar desafio!</button>
+  </div>
+</div></div>
+
 <canvas id="cr-confetti"></canvas>
 <div id="xp-float-container"></div>
 
@@ -547,103 +579,260 @@ let state = {
   questionCount:0, question:null, answered:false,
   timerInterval:null, timeLeft:0, theme:'night',
   category:null, ano:'5°',
-  sessionHistory:[],
   currentQuestions: [],
   currentIndex: 0,
   answeredResults: [],
+  isChallenge: false,
+  challengeId: null,
+  challengeOpponent: null,
 };
-let usedQuestions = {};
 
-// ── PUZZLE BANK com 10 questões por categoria por ano ──
-function buildPuzzleBank() {
-  const bank = {};
-  for (const ano of ANOS) {
-    bank[ano] = {};
-    for (const cat of CATS) {
-      bank[ano][cat.key] = getPuzzlesFor(ano, cat.key);
-    }
-  }
-  return bank;
-}
-
+// ── BANCO DE QUESTÕES POR ANO ──
 function getPuzzlesFor(ano, cat) {
   const allPuzzles = {
-    'sequencias': [
-      {q:'Qual o valor da interrogação? 2, 8, 5, 6, 8, ?, 11',visual:'seq',seq:[2,8,5,6,8,null,11],options:['A) 1','B) 4','C) 3','D) 29'],answer:'C',steps:['Observe os pares: 2→8(+6), 8→5(-3), 5→6(+1), 6→8(+2), 8→?', 'O padrão nos pares pares é: -3. 8→? e ?→11(+3) sugere que ? = 3 pois 11-8=3.','Confirma: <code>?=3</code>, pois a diferença seguinte é exatamente 3.'],conclusion:'Resposta: 3'},
-      {q:'Qual o próximo número? 1, 2, 4, 8, 16, ___',visual:'seq',seq:[1,2,4,8,16,null],options:['A) 24','B) 28','C) 32','D) 36'],answer:'C',steps:['Cada termo é o dobro do anterior.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
-      {q:'Complete: 3, 6, 9, 12, ___',visual:'seq',seq:[3,6,9,12,null],options:['A) 14','B) 15','C) 16','D) 18'],answer:'B',steps:['Progressão aritmética com razão 3.','12 + 3 = <code>15</code>.'],conclusion:'Resposta: 15'},
-      {q:'Próximo: 100, 90, 80, 70, ___',visual:'seq',seq:[100,90,80,70,null],options:['A) 55','B) 60','C) 65','D) 50'],answer:'B',steps:['PA decrescente com razão -10.','70 - 10 = <code>60</code>.'],conclusion:'Resposta: 60'},
-      {q:'Qual o próximo? 2, 4, 6, 8, ___',visual:'seq',seq:[2,4,6,8,null],options:['A) 9','B) 10','C) 11','D) 12'],answer:'B',steps:['PA com razão 2.','8 + 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
-      {q:'Complete: 5, 10, 15, 20, ___',visual:'seq',seq:[5,10,15,20,null],options:['A) 21','B) 22','C) 23','D) 25'],answer:'D',steps:['PA com razão 5.','20 + 5 = <code>25</code>.'],conclusion:'Resposta: 25'},
-      {q:'Próximo: 50, 45, 40, 35, ___',visual:'seq',seq:[50,45,40,35,null],options:['A) 28','B) 30','C) 32','D) 34'],answer:'B',steps:['PA decrescente com razão -5.','35 - 5 = <code>30</code>.'],conclusion:'Resposta: 30'},
-      {q:'Qual o próximo? 7, 14, 21, 28, ___',visual:'seq',seq:[7,14,21,28,null],options:['A) 32','B) 33','C) 34','D) 35'],answer:'D',steps:['PA com razão 7.','28 + 7 = <code>35</code>.'],conclusion:'Resposta: 35'},
-      {q:'Complete: 11, 22, 33, 44, ___',visual:'seq',seq:[11,22,33,44,null],options:['A) 50','B) 55','C) 60','D) 65'],answer:'B',steps:['PA com razão 11.','44 + 11 = <code>55</code>.'],conclusion:'Resposta: 55'},
-      {q:'Próximo: 1, 3, 5, 7, 9, ___',visual:'seq',seq:[1,3,5,7,9,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'B',steps:['PA com razão 2.','9 + 2 = <code>11</code>.'],conclusion:'Resposta: 11'},
-    ],
-    'algebra': [
-      {q:'Se GATO = 16 e PEIXE = 125, então MACACO = ?',visual:'words',words:[{w:'GATO',n:4,v:'4² = 16'},{w:'PEIXE',n:5,v:'5³ = 125'},{w:'MACACO',n:6,v:'6³ = ?'}],options:['A) 36','B) 216','C) 250','D) 512'],answer:'B',steps:['Regra: letras³. GATO=4 letras → 4²=16 (atenção: é cubo do nº de letras para 5).','PEIXE=5 letras → 5³=125. Logo MACACO=6 letras → <code>6³=216</code>.'],conclusion:'Resposta: 216'},
-      {q:'🌹+🌹+🌹=60. 🌹+🌼+🌼=30. 🌼-🌻=3. 🌻+🌹+🌼=?',visual:'flowers',flowers:[{a:'🌹',b:'🌹',c:'🌹',op:'+',res:'60'},{a:'🌹',b:'🌼',c:'🌼',op:'+',res:'30'},{a:'🌼',b:'🌻',c:'',op:'−',res:'3'},{a:'🌻',b:'🌹',c:'🌼',op:'+',res:'?'}],options:['A) 22','B) 25','C) 27','D) 30'],answer:'C',steps:['3🌹=60 → 🌹=20.','20+2🌼=30 → 🌼=5.','5−🌻=3 → 🌻=2.','🌻+🌹+🌼 = 2+20+5 = <code>27</code>.'],conclusion:'Resposta: 27'},
-      {q:'Se 2x = 14, qual o valor de x?',visual:'eq',eq:'2x = 14',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 14 ÷ 2 = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'Se 3x = 21, qual é x?',visual:'eq',eq:'3x = 21',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 21 ÷ 3 = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'Se x + 5 = 12, qual é x?',visual:'eq',eq:'x + 5 = 12',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 12 - 5 = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'Se x - 3 = 10, qual é x?',visual:'eq',eq:'x - 3 = 10',options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['x = 10 + 3 = <code>13</code>.'],conclusion:'Resposta: 13'},
-      {q:'Se 4x = 32, qual é x?',visual:'eq',eq:'4x = 32',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['x = 32 ÷ 4 = <code>8</code>.'],conclusion:'Resposta: 8'},
-      {q:'Se 2x + 3 = 15, qual é x?',visual:'eq',eq:'2x + 3 = 15',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['2x = 15 - 3 = 12','x = 12 ÷ 2 = <code>6</code>.'],conclusion:'Resposta: 6'},
-      {q:'Se 3x - 5 = 16, qual é x?',visual:'eq',eq:'3x - 5 = 16',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['3x = 16 + 5 = 21','x = 21 ÷ 3 = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'Se x/4 = 6, qual é x?',visual:'eq',eq:'x/4 = 6',options:['A) 18','B) 20','C) 22','D) 24'],answer:'D',steps:['x = 6 × 4 = <code>24</code>.'],conclusion:'Resposta: 24'},
-    ],
-    'equacoes': [
-      {q:'Coelho + Gato = 12kg. A diferença entre eles é 6kg. Quanto pesa o GATO?',visual:'system',system:['C + G = 12 kg','C − G = 6 kg'],options:['A) 9 kg','B) 7 kg','C) 3 kg','D) 5 kg'],answer:'C',steps:['C+G=12 e C−G=6.','Somando: 2C=18 → C=9.','G = 12−9 = <code>3 kg</code>.'],conclusion:'Resposta: 3 kg'},
-      {q:'Um número somado com 8 resulta em 15. Qual é o número?',visual:'eq',eq:'x + 8 = 15',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 15 − 8 = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'x + y = 10 e x = 4. Qual o valor de y?',visual:'system',system:['x + y = 10','x = 4'],options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['4 + y = 10','y = 10 - 4 = <code>6</code>.'],conclusion:'Resposta: 6'},
-      {q:'Ana tem o dobro de balas de Bia. Juntas têm 18 balas. Quantas balas tem Bia?',visual:null,options:['A) 4','B) 5','C) 6','D) 8'],answer:'C',steps:['Ana = 2B, 2B + B = 18','3B = 18 → B = <code>6</code>.'],conclusion:'Resposta: 6'},
-      {q:'A idade de João é o triplo da de Pedro. Juntos têm 32 anos. Qual a idade de Pedro?',visual:null,options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['João = 3P, 3P + P = 32','4P = 32 → P = <code>8</code>.'],conclusion:'Resposta: 8'},
-      {q:'x + y = 12 e x - y = 2. Qual é x?',visual:'system',system:['x + y = 12','x - y = 2'],options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['Somando: 2x = 14 → x = <code>7</code>.'],conclusion:'Resposta: 7'},
-      {q:'Um número menos 5 é igual a 12. Qual é o número?',visual:'eq',eq:'x - 5 = 12',options:['A) 15','B) 16','C) 17','D) 18'],answer:'C',steps:['x = 12 + 5 = <code>17</code>.'],conclusion:'Resposta: 17'},
-      {q:'O dobro de um número é 24. Qual é o número?',visual:'eq',eq:'2x = 24',options:['A) 10','B) 11','C) 12','D) 13'],answer:'C',steps:['x = 24 ÷ 2 = <code>12</code>.'],conclusion:'Resposta: 12'},
-      {q:'A metade de um número é 15. Qual é o número?',visual:'eq',eq:'x/2 = 15',options:['A) 25','B) 28','C) 30','D) 32'],answer:'C',steps:['x = 15 × 2 = <code>30</code>.'],conclusion:'Resposta: 30'},
-      {q:'x + 7 = 20 e y = x - 3. Quanto vale y?',visual:'system',system:['x + 7 = 20','y = x - 3'],options:['A) 8','B) 9','C) 10','D) 11'],answer:'C',steps:['x = 20 - 7 = 13','y = 13 - 3 = <code>10</code>.'],conclusion:'Resposta: 10'},
-    ],
-    'logica': [
-      {q:'Ana tem mais balas que Bia. Bia tem mais balas que Carla. Carla tem 10. Ana tem 20. Bia pode ter:',visual:null,options:['A) 8','B) 15','C) 20','D) 25'],answer:'B',steps:['Carla < Bia < Ana.','Carla=10, Ana=20. Logo Bia está entre 11 e 19.','Única opção válida: <code>15</code>.'],conclusion:'Resposta: 15'},
-      {q:'Em uma fila: Pedro está antes de João. João está antes de Maria. Quem está na frente?',visual:null,options:['A) João','B) Maria','C) Pedro','D) Todos empatados'],answer:'C',steps:['Pedro → João → Maria.','<code>Pedro</code> está primeiro.'],conclusion:'Resposta: Pedro'},
-      {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
-      {q:'Se hoje é sexta-feira, amanhã será:',visual:null,options:['A) Quinta','B) Sábado','C) Domingo','D) Segunda'],answer:'B',steps:['A sequência dos dias da semana é: ... Quinta → Sexta → <code>Sábado</code>.'],conclusion:'Resposta: Sábado'},
-      {q:'Qual é o próximo? 🔴, 🔵, 🔴, 🔵, ___',visual:null,options:['A) 🔴','B) 🔵','C) 🟡','D) 🟢'],answer:'A',steps:['O padrão alterna entre vermelho e azul.','Após azul vem <code>vermelho</code>.'],conclusion:'Resposta: 🔴'},
-      {q:'Se 2 + 2 = 4 e 3 + 3 = 6, então 4 + 4 = ?',visual:null,options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['O padrão é somar os números iguais.','4 + 4 = <code>8</code>.'],conclusion:'Resposta: 8'},
-      {q:'João é mais alto que Pedro. Pedro é mais alto que Carlos. Quem é o mais baixo?',visual:null,options:['A) João','B) Pedro','C) Carlos','D) Todos iguais'],answer:'C',steps:['João > Pedro > Carlos.','O mais baixo é <code>Carlos</code>.'],conclusion:'Resposta: Carlos'},
-      {q:'Se amanhã for domingo, que dia é hoje?',visual:null,options:['A) Quinta','B) Sexta','C) Sábado','D) Segunda'],answer:'C',steps:['Se amanhã é domingo, hoje é <code>sábado</code>.'],conclusion:'Resposta: Sábado'},
-      {q:'Qual número falta? 2, 4, 6, 8, ___',visual:'seq',seq:[2,4,6,8,null],options:['A) 9','B) 10','C) 11','D) 12'],answer:'B',steps:['PA com razão 2.','8 + 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
-      {q:'Se 1 = 2, 2 = 4, 3 = 6, então 4 = ?',visual:null,options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['A regra é multiplicar por 2.','4 × 2 = <code>8</code>.'],conclusion:'Resposta: 8'},
-    ],
-    'geometria': [
-      {q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',visual:'shape',shape:{type:'square',label:'5 cm'},options:['A) 10','B) 15','C) 20','D) 25'],answer:'C',steps:['Perímetro = 4 × lado.','4 × 5 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
-      {q:'Um retângulo tem base 8 cm e altura 3 cm. Qual é a área?',visual:'shape',shape:{type:'rect',w:8,h:3},options:['A) 11','B) 22','C) 24','D) 32'],answer:'C',steps:['Área = base × altura.','8 × 3 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
-      {q:'Qual a área de um quadrado de lado 4 cm?',visual:'shape',shape:{type:'square',label:'4 cm'},options:['A) 12','B) 14','C) 16','D) 18'],answer:'C',steps:['Área = lado².','4² = <code>16 cm²</code>.'],conclusion:'Resposta: 16 cm²'},
-      {q:'Qual o perímetro de um retângulo de base 6 cm e altura 4 cm?',visual:'shape',shape:{type:'rect',w:6,h:4},options:['A) 18','B) 20','C) 22','D) 24'],answer:'B',steps:['Perímetro = 2×(base+altura).','2×(6+4) = 2×10 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
-      {q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',visual:'shape',shape:{type:'triangle',b:10,h:6},options:['A) 16','B) 30','C) 60','D) 120'],answer:'B',steps:['Área = (base × altura) / 2.','(10 × 6) / 2 = <code>30 cm²</code>.'],conclusion:'Resposta: 30 cm²'},
-      {q:'Qual o perímetro de um triângulo equilátero de lado 5 cm?',visual:null,options:['A) 10','B) 12','C) 15','D) 18'],answer:'C',steps:['Perímetro = 3 × lado.','3 × 5 = <code>15 cm</code>.'],conclusion:'Resposta: 15 cm'},
-      {q:'Qual a área de um círculo de raio 3 cm? (use π=3,14)',visual:'shape',shape:{type:'circle',r:3},options:['A) 18,84','B) 25,12','C) 28,26','D) 30,12'],answer:'C',steps:['Área = π × r².','3,14 × 3² = 3,14 × 9 = <code>28,26 cm²</code>.'],conclusion:'Resposta: 28,26 cm²'},
-      {q:'Qual o perímetro de um quadrado de lado 7 cm?',visual:'shape',shape:{type:'square',label:'7 cm'},options:['A) 21','B) 24','C) 27','D) 28'],answer:'D',steps:['Perímetro = 4 × lado.','4 × 7 = <code>28 cm</code>.'],conclusion:'Resposta: 28 cm'},
-      {q:'Qual a área de um retângulo de base 12 cm e altura 5 cm?',visual:'shape',shape:{type:'rect',w:12,h:5},options:['A) 50','B) 55','C) 60','D) 65'],answer:'C',steps:['Área = base × altura.','12 × 5 = <code>60 cm²</code>.'],conclusion:'Resposta: 60 cm²'},
-      {q:'Qual o perímetro de um círculo de raio 5 cm? (use π=3,14)',visual:'shape',shape:{type:'circle',r:5},options:['A) 25,12','B) 30,24','C) 31,4','D) 34,5'],answer:'C',steps:['Perímetro = 2 × π × r.','2 × 3,14 × 5 = <code>31,4 cm</code>.'],conclusion:'Resposta: 31,4 cm'},
-    ],
+    '5°': {
+      'sequencias': [
+        {q:'Qual o próximo? 2, 4, 6, 8, ___',visual:'seq',seq:[2,4,6,8,null],options:['A) 9','B) 10','C) 11','D) 12'],answer:'B',steps:['PA com razão 2.','8 + 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
+        {q:'Complete: 5, 10, 15, 20, ___',visual:'seq',seq:[5,10,15,20,null],options:['A) 21','B) 22','C) 23','D) 25'],answer:'D',steps:['PA com razão 5.','20 + 5 = <code>25</code>.'],conclusion:'Resposta: 25'},
+        {q:'Próximo: 50, 45, 40, 35, ___',visual:'seq',seq:[50,45,40,35,null],options:['A) 28','B) 30','C) 32','D) 34'],answer:'B',steps:['PA decrescente com razão -5.','35 - 5 = <code>30</code>.'],conclusion:'Resposta: 30'},
+        {q:'Qual o próximo? 7, 14, 21, 28, ___',visual:'seq',seq:[7,14,21,28,null],options:['A) 32','B) 33','C) 34','D) 35'],answer:'D',steps:['PA com razão 7.','28 + 7 = <code>35</code>.'],conclusion:'Resposta: 35'},
+        {q:'Complete: 11, 22, 33, 44, ___',visual:'seq',seq:[11,22,33,44,null],options:['A) 50','B) 55','C) 60','D) 65'],answer:'B',steps:['PA com razão 11.','44 + 11 = <code>55</code>.'],conclusion:'Resposta: 55'},
+        {q:'Próximo: 1, 3, 5, 7, 9, ___',visual:'seq',seq:[1,3,5,7,9,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'B',steps:['PA com razão 2.','9 + 2 = <code>11</code>.'],conclusion:'Resposta: 11'},
+        {q:'Qual o próximo? 3, 6, 9, 12, ___',visual:'seq',seq:[3,6,9,12,null],options:['A) 13','B) 14','C) 15','D) 16'],answer:'C',steps:['PA com razão 3.','12 + 3 = <code>15</code>.'],conclusion:'Resposta: 15'},
+        {q:'Complete: 4, 8, 12, 16, ___',visual:'seq',seq:[4,8,12,16,null],options:['A) 18','B) 19','C) 20','D) 22'],answer:'C',steps:['PA com razão 4.','16 + 4 = <code>20</code>.'],conclusion:'Resposta: 20'},
+      ],
+      'algebra': [
+        {q:'Se 2x = 14, qual o valor de x?',visual:'eq',eq:'2x = 14',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 14 ÷ 2 = <code>7</code>.'],conclusion:'Resposta: 7'},
+        {q:'Se x + 5 = 12, qual é x?',visual:'eq',eq:'x + 5 = 12',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 12 - 5 = <code>7</code>.'],conclusion:'Resposta: 7'},
+        {q:'Se x - 3 = 10, qual é x?',visual:'eq',eq:'x - 3 = 10',options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['x = 10 + 3 = <code>13</code>.'],conclusion:'Resposta: 13'},
+        {q:'Se 3x = 21, qual é x?',visual:'eq',eq:'3x = 21',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 21 ÷ 3 = <code>7</code>.'],conclusion:'Resposta: 7'},
+        {q:'Se 4x = 32, qual é x?',visual:'eq',eq:'4x = 32',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['x = 32 ÷ 4 = <code>8</code>.'],conclusion:'Resposta: 8'},
+        {q:'Se 2x + 3 = 15, qual é x?',visual:'eq',eq:'2x + 3 = 15',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['2x = 15 - 3 = 12','x = 12 ÷ 2 = <code>6</code>.'],conclusion:'Resposta: 6'},
+      ],
+      'equacoes': [
+        {q:'Coelho + Gato = 12kg. A diferença entre eles é 6kg. Quanto pesa o GATO?',visual:'system',system:['C + G = 12 kg','C − G = 6 kg'],options:['A) 9 kg','B) 7 kg','C) 3 kg','D) 5 kg'],answer:'C',steps:['C+G=12 e C−G=6.','Somando: 2C=18 → C=9.','G = 12−9 = <code>3 kg</code>.'],conclusion:'Resposta: 3 kg'},
+        {q:'Um número somado com 8 resulta em 15. Qual é o número?',visual:'eq',eq:'x + 8 = 15',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['x = 15 − 8 = <code>7</code>.'],conclusion:'Resposta: 7'},
+        {q:'x + y = 10 e x = 4. Qual o valor de y?',visual:'system',system:['x + y = 10','x = 4'],options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['4 + y = 10','y = 10 - 4 = <code>6</code>.'],conclusion:'Resposta: 6'},
+        {q:'Ana tem o dobro de balas de Bia. Juntas têm 18 balas. Quantas balas tem Bia?',visual:null,options:['A) 4','B) 5','C) 6','D) 8'],answer:'C',steps:['Ana = 2B, 2B + B = 18','3B = 18 → B = <code>6</code>.'],conclusion:'Resposta: 6'},
+      ],
+      'logica': [
+        {q:'Ana tem mais balas que Bia. Bia tem mais balas que Carla. Carla tem 10. Ana tem 20. Bia pode ter:',visual:null,options:['A) 8','B) 15','C) 20','D) 25'],answer:'B',steps:['Carla < Bia < Ana.','Carla=10, Ana=20. Logo Bia está entre 11 e 19.','Única opção válida: <code>15</code>.'],conclusion:'Resposta: 15'},
+        {q:'Em uma fila: Pedro está antes de João. João está antes de Maria. Quem está na frente?',visual:null,options:['A) João','B) Maria','C) Pedro','D) Todos empatados'],answer:'C',steps:['Pedro → João → Maria.','<code>Pedro</code> está primeiro.'],conclusion:'Resposta: Pedro'},
+        {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
+        {q:'Se hoje é sexta-feira, amanhã será:',visual:null,options:['A) Quinta','B) Sábado','C) Domingo','D) Segunda'],answer:'B',steps:['A sequência dos dias da semana é: ... Quinta → Sexta → <code>Sábado</code>.'],conclusion:'Resposta: Sábado'},
+      ],
+      'geometria': [
+        {q:'Um quadrado tem lado de 5 cm. Qual é o seu perímetro?',visual:'shape',shape:{type:'square',label:'5 cm'},options:['A) 10','B) 15','C) 20','D) 25'],answer:'C',steps:['Perímetro = 4 × lado.','4 × 5 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
+        {q:'Um retângulo tem base 8 cm e altura 3 cm. Qual é a área?',visual:'shape',shape:{type:'rect',w:8,h:3},options:['A) 11','B) 22','C) 24','D) 32'],answer:'C',steps:['Área = base × altura.','8 × 3 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
+        {q:'Qual a área de um quadrado de lado 4 cm?',visual:'shape',shape:{type:'square',label:'4 cm'},options:['A) 12','B) 14','C) 16','D) 18'],answer:'C',steps:['Área = lado².','4² = <code>16 cm²</code>.'],conclusion:'Resposta: 16 cm²'},
+        {q:'Qual o perímetro de um retângulo de base 6 cm e altura 4 cm?',visual:'shape',shape:{type:'rect',w:6,h:4},options:['A) 18','B) 20','C) 22','D) 24'],answer:'B',steps:['Perímetro = 2×(base+altura).','2×(6+4) = 2×10 = <code>20 cm</code>.'],conclusion:'Resposta: 20 cm'},
+      ],
+    },
+    '6°': {
+      'sequencias': [
+        {q:'Fibonacci: 1, 1, 2, 3, 5, 8, 13, ___',visual:'seq',seq:[1,1,2,3,5,8,13,null],options:['A) 18','B) 20','C) 21','D) 26'],answer:'C',steps:['Cada termo = soma dos dois anteriores.','8+13 = <code>21</code>.'],conclusion:'Resposta: 21'},
+        {q:'Próximo: 2, 6, 18, 54, ___',visual:'seq',seq:[2,6,18,54,null],options:['A) 108','B) 162','C) 180','D) 216'],answer:'B',steps:['PG com razão 3.','54 × 3 = <code>162</code>.'],conclusion:'Resposta: 162'},
+        {q:'Complete: 10, 20, 40, 80, ___',visual:'seq',seq:[10,20,40,80,null],options:['A) 120','B) 140','C) 160','D) 180'],answer:'C',steps:['PG com razão 2.','80 × 2 = <code>160</code>.'],conclusion:'Resposta: 160'},
+        {q:'Próximo: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 40'],answer:'C',steps:['Quadrados perfeitos: 1²,2²,3²,4²,5².','Próximo: 6² = <code>36</code>.'],conclusion:'Resposta: 36'},
+      ],
+      'algebra': [
+        {q:'Se 3x + 7 = 22, qual é o valor de x?',visual:'eq',eq:'3x + 7 = 22',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['3x = 22−7 = 15.','x = 15÷3 = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'Se 5x - 3 = 12, qual é x?',visual:'eq',eq:'5x - 3 = 12',options:['A) 1','B) 2','C) 3','D) 4'],answer:'C',steps:['5x = 12 + 3 = 15.','x = 15÷5 = <code>3</code>.'],conclusion:'Resposta: 3'},
+        {q:'Se 2x + 5 = 19, qual é x?',visual:'eq',eq:'2x + 5 = 19',options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['2x = 19 - 5 = 14.','x = 14÷2 = <code>7</code>.'],conclusion:'Resposta: 7'},
+        {q:'Se x/2 + 3 = 7, qual é x?',visual:'eq',eq:'x/2 + 3 = 7',options:['A) 4','B) 6','C) 8','D) 10'],answer:'C',steps:['x/2 = 7 - 3 = 4.','x = 4 × 2 = <code>8</code>.'],conclusion:'Resposta: 8'},
+        {q:'Se 4x - 8 = 12, qual é x?',visual:'eq',eq:'4x - 8 = 12',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['4x = 12 + 8 = 20.','x = 20÷4 = <code>5</code>.'],conclusion:'Resposta: 5'},
+      ],
+      'equacoes': [
+        {q:'x + y = 10 e x − y = 4. Qual o valor de x?',visual:'system',system:['x + y = 10','x − y = 4'],options:['A) 5','B) 6','C) 7','D) 8'],answer:'C',steps:['Somando: 2x=14 → x=<code>7</code>.','y = 10−7 = 3.'],conclusion:'Resposta: x = 7'},
+        {q:'2x + 3 = 11. Qual é x?',visual:'eq',eq:'2x + 3 = 11',options:['A) 3','B) 4','C) 5','D) 6'],answer:'B',steps:['2x=11−3=8.','x=8÷2=<code>4</code>.'],conclusion:'Resposta: 4'},
+        {q:'x + y = 15 e x = 2y. Quanto vale y?',visual:'system',system:['x + y = 15','x = 2y'],options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['2y + y = 15 → 3y = 15.','y = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'A soma de dois números é 20. Um é o triplo do outro. Quais são os números?',visual:null,options:['A) 4 e 16','B) 5 e 15','C) 6 e 14','D) 8 e 12'],answer:'B',steps:['x + 3x = 20 → 4x = 20 → x=5.','Os números são <code>5 e 15</code>.'],conclusion:'Resposta: 5 e 15'},
+      ],
+      'logica': [
+        {q:'Todo pássaro tem asas. Tuco é um pássaro. Logo:',visual:null,options:['A) Tuco não tem asas','B) Tuco tem asas','C) Asas são só de pássaros','D) Nada se conclui'],answer:'B',steps:['Modus Ponens: pássaro→asas e Tuco é pássaro.','Logo: <code>Tuco tem asas</code>.'],conclusion:'Resposta: Tuco tem asas'},
+        {q:'Se 2 + 2 = 5 é falso, o que podemos dizer?',visual:null,options:['A) 2+2=4 é falso','B) 2+2=4 é verdadeiro','C) Nada','D) 2+2=5 é verdadeiro'],answer:'B',steps:['A afirmação 2+2=5 é falsa.','Logo a negação, 2+2=4, é <code>verdadeira</code>.'],conclusion:'Resposta: 2+2=4 é verdadeiro'},
+        {q:'Se hoje é segunda, daqui a 5 dias será:',visual:null,options:['A) Sexta','B) Sábado','C) Domingo','D) Segunda'],answer:'B',steps:['Segunda + 5 dias = <code>Sábado</code>.'],conclusion:'Resposta: Sábado'},
+        {q:'Qual número falta? 2, 4, 8, 16, ___',visual:'seq',seq:[2,4,8,16,null],options:['A) 24','B) 28','C) 30','D) 32'],answer:'D',steps:['PG com razão 2.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
+      ],
+      'geometria': [
+        {q:'Um triângulo tem base 10 cm e altura 6 cm. Qual é a área?',visual:'shape',shape:{type:'triangle',b:10,h:6},options:['A) 16','B) 30','C) 60','D) 120'],answer:'B',steps:['Área = (base × altura) / 2.','(10 × 6) / 2 = <code>30 cm²</code>.'],conclusion:'Resposta: 30 cm²'},
+        {q:'Qual a área de um círculo de raio 5 cm? (use π=3,14)',visual:'shape',shape:{type:'circle',r:5},options:['A) 25,12','B) 78,5','C) 157','D) 314'],answer:'B',steps:['Área = π × r².','3,14 × 5² = 3,14 × 25 = <code>78,5 cm²</code>.'],conclusion:'Resposta: 78,5 cm²'},
+        {q:'Qual o perímetro de um triângulo equilátero de lado 6 cm?',visual:null,options:['A) 12','B) 15','C) 18','D) 21'],answer:'C',steps:['Perímetro = 3 × lado.','3 × 6 = <code>18 cm</code>.'],conclusion:'Resposta: 18 cm'},
+        {q:'Qual a área de um retângulo de base 7 cm e altura 4 cm?',visual:'shape',shape:{type:'rect',w:7,h:4},options:['A) 22','B) 24','C) 26','D) 28'],answer:'D',steps:['Área = base × altura.','7 × 4 = <code>28 cm²</code>.'],conclusion:'Resposta: 28 cm²'},
+      ],
+    },
+    '7°': {
+      'sequencias': [
+        {q:'Quadrados perfeitos: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 49'],answer:'C',steps:['São n². O próximo é 6²=<code>36</code>.'],conclusion:'Resposta: 36'},
+        {q:'Próximo: 2, 4, 8, 16, 32, 64, ___',visual:'seq',seq:[2,4,8,16,32,64,null],options:['A) 96','B) 112','C) 128','D) 256'],answer:'C',steps:['PG com razão 2.','64×2=<code>128</code>.'],conclusion:'Resposta: 128'},
+        {q:'Cubos: 1, 8, 27, 64, ___',visual:'seq',seq:[1,8,27,64,null],options:['A) 100','B) 120','C) 125','D) 144'],answer:'C',steps:['São n³. O próximo é 5³=<code>125</code>.'],conclusion:'Resposta: 125'},
+        {q:'Complete: 3, 6, 12, 24, ___',visual:'seq',seq:[3,6,12,24,null],options:['A) 36','B) 42','C) 48','D) 54'],answer:'C',steps:['PG com razão 2.','24 × 2 = <code>48</code>.'],conclusion:'Resposta: 48'},
+      ],
+      'algebra': [
+        {q:'(x+3)² quando x=2 vale:',visual:'eq',eq:'(x+3)², x=2',options:['A) 10','B) 15','C) 25','D) 35'],answer:'C',steps:['(2+3)² = 5² = <code>25</code>.'],conclusion:'Resposta: 25'},
+        {q:'Se 4x − 8 = 12, qual é x?',visual:'eq',eq:'4x − 8 = 12',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['4x = 12+8 = 20.','x = 20÷4 = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'Se 2x² = 32, qual é x (positivo)?',visual:'eq',eq:'2x² = 32',options:['A) 2','B) 3','C) 4','D) 5'],answer:'C',steps:['x² = 16.','x = <code>4</code>.'],conclusion:'Resposta: 4'},
+        {q:'Se 3x - 4 = 14, qual é x?',visual:'eq',eq:'3x - 4 = 14',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['3x = 14 + 4 = 18.','x = 18÷3 = <code>6</code>.'],conclusion:'Resposta: 6'},
+      ],
+      'equacoes': [
+        {q:'x/2 + 3 = 7. Qual é x?',visual:'eq',eq:'x/2 + 3 = 7',options:['A) 2','B) 4','C) 8','D) 12'],answer:'C',steps:['x/2 = 7−3 = 4.','x = 4×2 = <code>8</code>.'],conclusion:'Resposta: 8'},
+        {q:'3x + 2y = 16 e x = 2. Qual é y?',visual:'system',system:['3x + 2y = 16','x = 2'],options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['3(2) + 2y = 16 → 6 + 2y = 16.','2y = 10 → y = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'x + y = 12 e x - y = 4. Qual é x?',visual:'system',system:['x + y = 12','x - y = 4'],options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['Somando: 2x = 16 → x = <code>8</code>.'],conclusion:'Resposta: 8'},
+        {q:'Um número mais sua metade é igual a 21. Qual é o número?',visual:null,options:['A) 10','B) 12','C) 14','D) 16'],answer:'C',steps:['x + x/2 = 21 → 3x/2 = 21.','3x = 42 → x = <code>14</code>.'],conclusion:'Resposta: 14'},
+      ],
+      'logica': [
+        {q:'P→Q é verdadeiro. Q é falso. O que se conclui sobre P?',visual:null,options:['A) P é verdadeiro','B) P é falso','C) P pode ser V ou F','D) Nada'],answer:'B',steps:['Modus Tollens: P→Q e ¬Q implica <code>¬P</code>.'],conclusion:'Resposta: P é falso'},
+        {q:'Se P∧Q é falso, o que podemos afirmar?',visual:null,options:['A) P é falso','B) Q é falso','C) P ou Q é falso','D) P e Q são falsos'],answer:'C',steps:['Para P∧Q ser falso, pelo menos um dos dois deve ser falso.','Logo: <code>P ou Q é falso</code>.'],conclusion:'Resposta: P ou Q é falso'},
+        {q:'Se todos os A são B e todos os B são C, então:',visual:null,options:['A) Todos os A são C','B) Todos os C são A','C) Alguns A são C','D) Nenhum A é C'],answer:'A',steps:['Silogismo: A⊂B e B⊂C implica <code>A⊂C</code>.'],conclusion:'Resposta: Todos os A são C'},
+      ],
+      'geometria': [
+        {q:'Um círculo tem raio 7 cm. Qual é a área? (π≈3,14)',visual:'shape',shape:{type:'circle',r:7},options:['A) 43,96','B) 49','C) 153,86','D) 154'],answer:'C',steps:['Área = π × r².','3,14 × 7² = 3,14 × 49 ≈ <code>153,86 cm²</code>.'],conclusion:'Resposta: ≈ 153,86 cm²'},
+        {q:'Catetos 3 e 4. Qual a hipotenusa? (Pitágoras)',visual:'shape',shape:{type:'pythagorean',a:3,b:4},options:['A) 5','B) 6','C) 7','D) 8'],answer:'A',steps:['a²+b²=c².','9+16=25. √25=<code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'Qual a área de um losango com diagonais 8 cm e 6 cm?',visual:null,options:['A) 14','B) 20','C) 24','D) 48'],answer:'C',steps:['Área = (D × d) / 2.','(8 × 6) / 2 = <code>24 cm²</code>.'],conclusion:'Resposta: 24 cm²'},
+        {q:'Qual o volume de um cubo de aresta 3 cm?',visual:null,options:['A) 9','B) 18','C) 27','D) 36'],answer:'C',steps:['Volume = aresta³.','3³ = <code>27 cm³</code>.'],conclusion:'Resposta: 27 cm³'},
+      ],
+    },
+    '8°': {
+      'sequencias': [
+        {q:'Cubos: 1, 8, 27, 64, ___',visual:'seq',seq:[1,8,27,64,null],options:['A) 100','B) 120','C) 125','D) 144'],answer:'C',steps:['São n³. O próximo é 5³=<code>125</code>.'],conclusion:'Resposta: 125'},
+        {q:'Progressão: 1, 2, 4, 8, 16, ___',visual:'seq',seq:[1,2,4,8,16,null],options:['A) 24','B) 28','C) 30','D) 32'],answer:'D',steps:['PG com razão 2.','16 × 2 = <code>32</code>.'],conclusion:'Resposta: 32'},
+        {q:'Complete: 81, 27, 9, 3, ___',visual:'seq',seq:[81,27,9,3,null],options:['A) 1','B) 2','C) 0','D) -1'],answer:'A',steps:['PG com razão 1/3.','3 ÷ 3 = <code>1</code>.'],conclusion:'Resposta: 1'},
+        {q:'Próximo: 2, 6, 12, 20, 30, ___',visual:'seq',seq:[2,6,12,20,30,null],options:['A) 38','B) 40','C) 42','D) 44'],answer:'C',steps:['Diferenças: 4,6,8,10. Próxima diferença: 12.','30 + 12 = <code>42</code>.'],conclusion:'Resposta: 42'},
+      ],
+      'algebra': [
+        {q:'Qual o valor de 2⁵ + 3³?',visual:'eq',eq:'2⁵ + 3³',options:['A) 35','B) 55','C) 59','D) 64'],answer:'C',steps:['2⁵=32. 3³=27.','32+27=<code>59</code>.'],conclusion:'Resposta: 59'},
+        {q:'log₁₀(1000) = ?',visual:'eq',eq:'log₁₀(1000)',options:['A) 2','B) 3','C) 4','D) 10'],answer:'B',steps:['log₁₀(10³) = <code>3</code>.'],conclusion:'Resposta: 3'},
+        {q:'√144 + √25 = ?',visual:'eq',eq:'√144 + √25',options:['A) 15','B) 17','C) 19','D) 21'],answer:'B',steps:['√144=12. √25=5.','12+5=<code>17</code>.'],conclusion:'Resposta: 17'},
+        {q:'Se 2x² = 50, qual é x (positivo)?',visual:'eq',eq:'2x² = 50',options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['x² = 25.','x = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'(2x + 3)(x - 1) = 0. Quais as raízes?',visual:'eq',eq:'(2x+3)(x-1)=0',options:['A) x=1 e x=-1,5','B) x=1 e x=-3','C) x=1 e x=3','D) x=1 e x=2'],answer:'A',steps:['2x+3=0 → x=-1,5.','x-1=0 → x=1.'],conclusion:'Resposta: x=1 e x=-1,5'},
+      ],
+      'equacoes': [
+        {q:'x² − 5x + 6 = 0. Quais as raízes?',visual:'eq',eq:'x² − 5x + 6 = 0',options:['A) x=1 e x=6','B) x=2 e x=3','C) x=−2 e x=−3','D) x=3 e x=3'],answer:'B',steps:['Δ=25−24=1.','x=(5±1)/2 → x₁=3, x₂=<code>2</code>.'],conclusion:'Resposta: x=2 e x=3'},
+        {q:'x² - 16 = 0. Qual é x (positivo)?',visual:'eq',eq:'x² - 16 = 0',options:['A) 2','B) 3','C) 4','D) 5'],answer:'C',steps:['x² = 16.','x = <code>4</code>.'],conclusion:'Resposta: 4'},
+        {q:'x² - 3x - 10 = 0. Quais as raízes?',visual:'eq',eq:'x² - 3x - 10 = 0',options:['A) x=-2 e x=5','B) x=2 e x=-5','C) x=-2 e x=-5','D) x=2 e x=5'],answer:'A',steps:['Δ=9+40=49.','x=(3±7)/2 → x₁=5, x₂=<code>-2</code>.'],conclusion:'Resposta: -2 e 5'},
+      ],
+      'logica': [
+        {q:'¬(P ∧ Q) é equivalente a:',visual:null,options:['A) ¬P ∧ ¬Q','B) ¬P ∨ ¬Q','C) P ∨ Q','D) P ∧ ¬Q'],answer:'B',steps:['Lei de De Morgan: ¬(A∧B) = <code>¬A ∨ ¬B</code>.'],conclusion:'Resposta: ¬P ∨ ¬Q'},
+        {q:'Se P→Q e Q→R, então:',visual:null,options:['A) R→P','B) P→R','C) ¬P→¬R','D) R→Q'],answer:'B',steps:['Silogismo hipotético: P→Q e Q→R garantem <code>P→R</code>.'],conclusion:'Resposta: P→R'},
+        {q:'¬(P ∨ Q) é equivalente a:',visual:null,options:['A) ¬P ∧ ¬Q','B) ¬P ∨ ¬Q','C) P ∨ Q','D) P ∧ Q'],answer:'A',steps:['Lei de De Morgan: ¬(A∨B) = <code>¬A ∧ ¬B</code>.'],conclusion:'Resposta: ¬P ∧ ¬Q'},
+      ],
+      'geometria': [
+        {q:'Quadrado com perímetro 28cm. Qual a área?',visual:'shape',shape:{type:'square',label:'?'},options:['A) 28','B) 36','C) 49','D) 56'],answer:'C',steps:['Lado = 28÷4 = 7cm.','Área = 7² = <code>49 cm²</code>.'],conclusion:'Resposta: 49 cm²'},
+        {q:'Qual o volume de um cilindro de raio 3cm e altura 5cm? (π=3,14)',visual:null,options:['A) 94,2','B) 113,04','C) 141,3','D) 188,4'],answer:'C',steps:['Volume = π × r² × h.','3,14 × 3² × 5 = 3,14 × 9 × 5 = <code>141,3 cm³</code>.'],conclusion:'Resposta: 141,3 cm³'},
+        {q:'Qual a área de um trapézio de bases 6cm e 10cm e altura 4cm?',visual:null,options:['A) 20','B) 24','C) 28','D) 32'],answer:'D',steps:['Área = (B+b)×h/2.','(10+6)×4/2 = 16×4/2 = <code>32 cm²</code>.'],conclusion:'Resposta: 32 cm²'},
+        {q:'Qual o perímetro de um círculo de raio 5cm? (π=3,14)',visual:'shape',shape:{type:'circle',r:5},options:['A) 25,12','B) 30,24','C) 31,4','D) 34,5'],answer:'C',steps:['Perímetro = 2×π×r.','2×3,14×5 = <code>31,4 cm</code>.'],conclusion:'Resposta: 31,4 cm'},
+      ],
+    },
+    '9°': {
+      'sequencias': [
+        {q:'PG: 3, 6, 12, 24, 48, ___',visual:'seq',seq:[3,6,12,24,48,null],options:['A) 72','B) 86','C) 96','D) 100'],answer:'C',steps:['Razão = 2.','48×2=<code>96</code>.'],conclusion:'Resposta: 96'},
+        {q:'Progressão: 1, 1, 2, 3, 5, 8, ___',visual:'seq',seq:[1,1,2,3,5,8,null],options:['A) 10','B) 11','C) 12','D) 13'],answer:'D',steps:['Fibonacci: cada termo é a soma dos dois anteriores.','8+5 = <code>13</code>.'],conclusion:'Resposta: 13'},
+        {q:'Complete: 2, 6, 18, 54, ___',visual:'seq',seq:[2,6,18,54,null],options:['A) 108','B) 152','C) 162','D) 172'],answer:'C',steps:['PG com razão 3.','54×3 = <code>162</code>.'],conclusion:'Resposta: 162'},
+        {q:'Próximo: 1, 4, 9, 16, 25, ___',visual:'seq',seq:[1,4,9,16,25,null],options:['A) 30','B) 34','C) 36','D) 40'],answer:'C',steps:['São n². Próximo: 6² = <code>36</code>.'],conclusion:'Resposta: 36'},
+      ],
+      'algebra': [
+        {q:'Um produto com 25% de desconto custa R$120. Qual o preço original?',visual:null,options:['A) R$144','B) R$148','C) R$160','D) R$150'],answer:'C',steps:['120 = 75% do original.','Original = 120 ÷ 0,75 = <code>R$160</code>.'],conclusion:'Resposta: R$160'},
+        {q:'√144 + √25 = ?',visual:'eq',eq:'√144 + √25',options:['A) 15','B) 17','C) 19','D) 21'],answer:'B',steps:['√144=12. √25=5.','12+5=<code>17</code>.'],conclusion:'Resposta: 17'},
+        {q:'Se log₂(8) = x, qual é x?',visual:'eq',eq:'log₂(8) = x',options:['A) 2','B) 3','C) 4','D) 5'],answer:'B',steps:['2³ = 8.','log₂(8) = <code>3</code>.'],conclusion:'Resposta: 3'},
+        {q:'(x+2)(x-3) = 0. Quais as raízes?',visual:'eq',eq:'(x+2)(x-3)=0',options:['A) x=2 e x=3','B) x=-2 e x=3','C) x=2 e x=-3','D) x=-2 e x=-3'],answer:'B',steps:['x+2=0 → x=-2.','x-3=0 → x=3.'],conclusion:'Resposta: -2 e 3'},
+        {q:'Se 2^x = 256, qual é x?',visual:'eq',eq:'2^x = 256',options:['A) 6','B) 7','C) 8','D) 9'],answer:'C',steps:['2⁸ = 256.','x = <code>8</code>.'],conclusion:'Resposta: 8'},
+      ],
+      'equacoes': [
+        {q:'2x² = 50. Qual o valor positivo de x?',visual:'eq',eq:'2x² = 50',options:['A) 4','B) 5','C) 6','D) 7'],answer:'B',steps:['x²=25.','x=<code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'x² - 7x + 12 = 0. Quais as raízes?',visual:'eq',eq:'x² - 7x + 12 = 0',options:['A) x=2 e x=6','B) x=3 e x=4','C) x=4 e x=5','D) x=2 e x=5'],answer:'B',steps:['Δ=49-48=1.','x=(7±1)/2 → x₁=4, x₂=<code>3</code>.'],conclusion:'Resposta: 3 e 4'},
+        {q:'x² + 6x + 9 = 0. Qual a raiz?',visual:'eq',eq:'x² + 6x + 9 = 0',options:['A) -3','B) 3','C) -9','D) 9'],answer:'A',steps:['(x+3)² = 0.','x = <code>-3</code>.'],conclusion:'Resposta: -3'},
+        {q:'x² - 4 = 0. Quais as raízes?',visual:'eq',eq:'x² - 4 = 0',options:['A) x=2','B) x=-2','C) x=2 e x=-2','D) x=4 e x=-4'],answer:'C',steps:['x² = 4.','x = <code>2 e -2</code>.'],conclusion:'Resposta: 2 e -2'},
+      ],
+      'logica': [
+        {q:'Se P→Q e Q→R, então:',visual:null,options:['A) R→P','B) P→R','C) ¬P→¬R','D) R→Q'],answer:'B',steps:['Silogismo hipotético: P→Q e Q→R garantem <code>P→R</code>.'],conclusion:'Resposta: P→R'},
+        {q:'¬(P → Q) é equivalente a:',visual:null,options:['A) P ∧ ¬Q','B) ¬P ∧ Q','C) ¬P ∨ Q','D) P ∨ ¬Q'],answer:'A',steps:['A negação de P→Q é <code>P ∧ ¬Q</code>.'],conclusion:'Resposta: P ∧ ¬Q'},
+        {q:'Se P∨Q é falso, o que podemos afirmar?',visual:null,options:['A) P é falso e Q é falso','B) P é verdadeiro e Q é falso','C) P é falso e Q é verdadeiro','D) P e Q são verdadeiros'],answer:'A',steps:['Para P∨Q ser falso, ambos devem ser falsos.','Logo: <code>P é falso e Q é falso</code>.'],conclusion:'Resposta: P e Q são falsos'},
+      ],
+      'geometria': [
+        {q:'Quadrado com perímetro 28cm. Qual a área?',visual:'shape',shape:{type:'square',label:'?'},options:['A) 28','B) 36','C) 49','D) 56'],answer:'C',steps:['Lado = 28÷4 = 7cm.','Área = 7² = <code>49 cm²</code>.'],conclusion:'Resposta: 49 cm²'},
+        {q:'Qual a distância entre os pontos (1,2) e (4,6)?',visual:null,options:['A) 3','B) 4','C) 5','D) 6'],answer:'C',steps:['d = √((4-1)² + (6-2)²) = √(9+16) = √25 = <code>5</code>.'],conclusion:'Resposta: 5'},
+        {q:'Qual o volume de uma esfera de raio 3cm? (π=3,14)',visual:null,options:['A) 37,68','B) 75,36','C) 113,04','D) 150,72'],answer:'C',steps:['Volume = 4/3 × π × r³.','4/3 × 3,14 × 27 = 4 × 3,14 × 9 = <code>113,04 cm³</code>.'],conclusion:'Resposta: 113,04 cm³'},
+        {q:'Qual a área de um setor circular de raio 6cm e ângulo 60°? (π=3,14)',visual:null,options:['A) 9,42','B) 18,84','C) 28,26','D) 37,68'],answer:'B',steps:['Área = (θ/360) × π × r².','(60/360) × 3,14 × 36 = 1/6 × 113,04 = <code>18,84 cm²</code>.'],conclusion:'Resposta: 18,84 cm²'},
+      ],
+    },
   };
-
-  // Adaptar para cada ano com variações
-  const variations = {
-    '5°': { offset: 0 },
-    '6°': { offset: 0 },
-    '7°': { offset: 0 },
-    '8°': { offset: 0 },
-    '9°': { offset: 0 },
-  };
-
-  // Retorna 10 questões por categoria
-  return allPuzzles[cat] || [];
+  return allPuzzles[ano]?.[cat] || [];
 }
 
-const PUZZLES = buildPuzzleBank();
+// ── FUNÇÕES DE MULTIPLAYER ──
+let pendingChallenge = null;
+
+function challengeFriend() {
+  const input = $id('invite-input');
+  const friendName = input.value.trim();
+  if (!friendName) {
+    $id('challenge-status').textContent = '⚠️ Digite o nome do amigo.';
+    return;
+  }
+  if (!_sbUser) {
+    $id('challenge-status').textContent = '⚠️ Faça login para desafiar amigos.';
+    return;
+  }
+  
+  $id('challenge-status').textContent = '🔍 Procurando ' + friendName + '...';
+  
+  _sb.from('nardiq_profiles')
+    .select('id, username')
+    .eq('username', friendName)
+    .maybeSingle()
+    .then(({data, error}) => {
+      if (error || !data) {
+        $id('challenge-status').textContent = '❌ Amigo "' + friendName + '" não encontrado.';
+        return;
+      }
+      if (data.id === _sbUser.id) {
+        $id('challenge-status').textContent = '😅 Você não pode desafiar a si mesmo!';
+        return;
+      }
+      
+      // Criar desafio
+      _sb.from('nardiq_challenges').insert({
+        challenger_id: _sbUser.id,
+        opponent_id: data.id,
+        challenger_name: _sbProfile?.username || 'Você',
+        opponent_name: data.username,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      }).then(({data: challengeData, error: err2}) => {
+        if (err2) {
+          $id('challenge-status').textContent = '❌ Erro ao criar desafio: ' + err2.message;
+          return;
+        }
+        $id('challenge-status').textContent = '✅ Desafio enviado para ' + friendName + '! Aguarde resposta.';
+        input.value = '';
+        
+        // Mostrar tela de desafio
+        pendingChallenge = { opponent: data, challengeId: challengeData?.[0]?.id };
+        showChallengeScreen(data);
+      });
+    });
+}
+
+function showChallengeScreen(opponent) {
+  $set('challenge-opponent-label', 'textContent', opponent.username.toUpperCase());
+  $set('challenge-title', 'textContent', '⚔️ Desafio contra ' + opponent.username);
+  state.isChallenge = true;
+  state.challengeOpponent = opponent;
+  showScreen('screen-challenge');
+}
+
+function startChallengeGame() {
+  if (!state.challengeOpponent) {
+    alert('Nenhum desafio ativo.');
+    return;
+  }
+  // Iniciar quiz com as mesmas questões para ambos
+  const cat = state.category || 'sequencias';
+  const ano = state.ano || '5°';
+  state.category = cat;
+  state.ano = ano;
+  startQuiz(cat);
+}
 
 // ── TEMA ──
 function setTheme(t) {
@@ -693,7 +882,7 @@ function renderHome() {
   ).join('');
   const catGrid = $id('cat-grid');
   if(catGrid) catGrid.innerHTML = CATS.map(c => {
-    const puzzlesForCat = (PUZZLES[state.ano]||{})[c.key]||[];
+    const puzzlesForCat = getPuzzlesFor(state.ano, c.key);
     return `<button class="cat-btn" style="border-color:${c.color}" onclick="startQuiz('${c.key}')">
       <span class="cat-icon">${c.icon}</span>
       <span class="cat-name">${c.name}</span>
@@ -714,18 +903,14 @@ function startQuiz(catKey) {
   state.currentIndex = 0;
   state.answeredResults = [];
   
-  // Pegar 10 questões da categoria
-  const pool = (PUZZLES[state.ano]||{})[catKey]||[];
+  const pool = getPuzzlesFor(state.ano, catKey);
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
   state.currentQuestions = shuffled.slice(0, Math.min(10, shuffled.length));
   
-  // Se não houver questões suficientes, gerar mais
   while (state.currentQuestions.length < 10) {
     const fallback = [
       {q:'Qual o próximo? 1, 2, 3, 4, ___',visual:'seq',seq:[1,2,3,4,null],options:['A) 4','B) 5','C) 6','D) 7'],answer:'B',steps:['PA com razão 1.','4 + 1 = <code>5</code>.'],conclusion:'Resposta: 5'},
       {q:'Se 2 + 2 = 4, qual é 3 + 3?',visual:'eq',eq:'3 + 3 = ?',options:['A) 4','B) 5','C) 6','D) 7'],answer:'C',steps:['3 + 3 = <code>6</code>.'],conclusion:'Resposta: 6'},
-      {q:'Qual é o dobro de 8?',visual:'eq',eq:'2 × 8 = ?',options:['A) 14','B) 15','C) 16','D) 18'],answer:'C',steps:['2 × 8 = <code>16</code>.'],conclusion:'Resposta: 16'},
-      {q:'Qual é a metade de 20?',visual:'eq',eq:'20 ÷ 2 = ?',options:['A) 8','B) 9','C) 10','D) 12'],answer:'C',steps:['20 ÷ 2 = <code>10</code>.'],conclusion:'Resposta: 10'},
     ];
     for (const q of fallback) {
       if (state.currentQuestions.length < 10 && !state.currentQuestions.find(p => p.q === q.q)) {
@@ -742,8 +927,6 @@ function startQuiz(catKey) {
   if(cp){cp.textContent=catInfo.icon+' '+catInfo.name;cp.style.cssText=`border-color:${catInfo.color};color:${catInfo.color}`}
   if(dp){dp.textContent=state.ano+' ano';dp.style.cssText='border-color:var(--violet);color:var(--violet)'}
   
-  const key=catKey+'_'+state.ano;
-  usedQuestions[key]=[];
   showScreen('quiz');
   renderProgress();
   loadQuestion();
@@ -794,7 +977,6 @@ function loadQuestion() {
   `;
   $cls('next-btn').remove('visible');
   
-  // Timer (30s)
   clearInterval(state.timerInterval);
   state.timeLeft=30;
   updateTimer();
@@ -963,7 +1145,6 @@ function showSessionScore() {
   if(state.streak>state.bestStreak) state.bestStreak=state.streak;
   saveData();
   
-  // Salvar histórico
   if (_sbUser) {
     const hist = {
       ano: state.ano,
@@ -973,7 +1154,6 @@ function showSessionScore() {
       xp: state.sessionXp,
       timestamp: new Date().toISOString()
     };
-    // Salvar no localStorage para fallback
     const history = JSON.parse(localStorage.getItem('nardiq-history') || '[]');
     history.unshift(hist);
     localStorage.setItem('nardiq-history', JSON.stringify(history.slice(0, 100)));
@@ -1002,9 +1182,7 @@ function showSessionScore() {
     $set('ss-bar-correct-num','textContent',correct);$set('ss-bar-wrong-num','textContent',wrong);$set('ss-bar-timeout-num','textContent',timeout);
   },400);
   
-  // Confetti
   launchConfetti(accuracy);
-  
   showScreen('screen-session-score');
 }
 
@@ -1071,7 +1249,6 @@ function goHome(){
 
 // ── SUPABASE AUTH ──
 async function onSplashStart() {
-  // Verificar se há sessão ativa
   const { data } = await _sb.auth.getSession();
   const user = data?.session?.user;
   if(user){ _sbUser=user; await sbLoadAndGo(user); }
@@ -1135,11 +1312,30 @@ async function doSignup() {
 }
 
 async function doGoogleLogin() {
-  // IMPORTANTE: Ativar Google OAuth no Supabase Dashboard
-  // Provedor desabilitado -> mostra mensagem amigável
   const msg = document.getElementById('auth-error');
   msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar ou peça ao admin para ativar.';
   msg.style.color = 'var(--yellow)';
+}
+
+async function sbLoadAndGo(user) {
+  let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+  if(!data){
+    const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
+    await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
+    const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+    data=d2;
+  }
+  _sbProfile=data;
+  if(data){state.xp=data.xp||0;state.bestStreak=data.best_streak||0;}
+  loadData();updateHomeXP();renderHome();
+  showScreen('home');
+}
+
+async function doLogout() {
+  await _sb.auth.signOut();
+  _sbUser=null;_sbProfile=null;
+  state.xp=0;state.bestStreak=0;
+  showScreen('screen-auth');
 }
 
 // ── SAVE/LOAD ──
@@ -1164,27 +1360,6 @@ async function saveProgress(q,correct) {
     _sb.from('nardiq_profiles').update({total_questions:(_sbProfile?.total_questions||0)+1}).eq('id',_sbUser.id).then(()=>{});
   }
   if(_sbProfile) _sbProfile.total_questions=(_sbProfile.total_questions||0)+1;
-}
-
-async function sbLoadAndGo(user) {
-  let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
-  if(!data){
-    const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
-    await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
-    const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
-    data=d2;
-  }
-  _sbProfile=data;
-  if(data){state.xp=data.xp||0;state.bestStreak=data.best_streak||0;}
-  loadData();updateHomeXP();renderHome();
-  showScreen('home');
-}
-
-async function doLogout() {
-  await _sb.auth.signOut();
-  _sbUser=null;_sbProfile=null;
-  state.xp=0;state.bestStreak=0;
-  showScreen('screen-auth');
 }
 
 // ── RANKING ──
@@ -1240,14 +1415,6 @@ function loadHistory() {
     </div>`;
   }).join('');
 }
-
-// Atualizar listener para o botão de histórico
-document.addEventListener('DOMContentLoaded', function() {
-  const histBtn = document.querySelector('.quick-btn .quick-label')?.parentElement;
-  if (histBtn && histBtn.textContent.includes('Histórico')) {
-    histBtn.onclick = () => { loadHistory(); showScreen('screen-history'); };
-  }
-});
 
 // Inicialização
 console.log('🚀 NardIQ iniciado!');
