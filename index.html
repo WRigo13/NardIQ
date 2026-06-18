@@ -314,6 +314,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #challenge-status{font-size:12px;color:var(--muted);margin-top:8px}
 #cr-confetti{position:fixed;inset:0;pointer-events:none;z-index:300;width:100%;height:100%}
 </style>
+
 </head>
 <body>
 <div id="app">
@@ -541,8 +542,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 // SUPABASE - NOVAS CREDENCIAIS
 // ============================================
 const _sb = supabase.createClient(
-  'https://jcwgzovdcfgfnciqudox.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjd2d6b3ZkY2ZnZm5jaXF1ZG94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTIzMDIsImV4cCI6MjA5NzM4ODMwMn0.1DzJbGUWtW_21hNTs3EspmJaf3-hMMkeUN5JWRf8ka0'
+  'https://glmakzmtklycnlolfybi.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk'
 );
 
 // ============================================
@@ -571,9 +572,26 @@ window.addEventListener('appinstalled', () => {
 
 function showInstallBanner() {
   const banner = document.getElementById('install-banner');
-  if (banner && !installBannerVisible && !window.matchMedia('(display-mode: standalone)').matches) {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  if (banner && !installBannerVisible && !isStandalone) {
     banner.classList.add('visible');
     installBannerVisible = true;
+  }
+}
+
+// Mostra botao de instalacao manual em iOS/Safari (nao tem beforeinstallprompt)
+function checkiOSInstall() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  if (isIOS && !isStandalone) {
+    const banner = document.getElementById('install-banner');
+    if (banner) {
+      banner.querySelector('span:nth-child(2)').textContent = 'Instalar: toque em ― e "Tela Inicial"';
+      banner.classList.add('visible');
+      installBannerVisible = true;
+    }
   }
 }
 
@@ -1508,12 +1526,20 @@ function goHome(){
 // SUPABASE AUTH
 // ============================================
 async function onSplashStart() {
+  // Timeout de segurança: se Supabase demorar >4s, vai para auth
+  const timeout = setTimeout(() => {
+    if(document.getElementById('screen-splash')?.classList.contains('active')) {
+      showScreen('screen-auth');
+    }
+  }, 4000);
   try {
     const { data } = await _sb.auth.getSession();
+    clearTimeout(timeout);
     const user = data?.session?.user;
     if(user){ _sbUser=user; await sbLoadAndGo(user); }
     else showScreen('screen-auth');
   } catch(e) {
+    clearTimeout(timeout);
     showScreen('screen-auth');
   }
 }
@@ -1570,9 +1596,29 @@ async function doSignup() {
 
 async function doGoogleLogin() {
   const msg = document.getElementById('auth-error');
-  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar.';
-  msg.style.color = 'var(--yellow)';
+  if(msg){ msg.textContent = ''; msg.style.color = ''; }
+  try {
+    const { error } = await _sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+    if(error && msg){
+      msg.style.color = 'var(--yellow)';
+      msg.textContent = (error.message.includes('provider') || error.message.includes('enabled'))
+        ? 'Ative o Google: Supabase > Authentication > Providers > Google'
+        : error.message;
+    }
+  } catch(e) {
+    if(msg){ msg.style.color='var(--yellow)'; msg.textContent='Erro ao conectar com Google.'; }
+  }
 }
+
+_sb.auth.onAuthStateChange(async (event, session) => {
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user && !_sbUser) {
+    _sbUser = session.user;
+    await sbLoadAndGo(session.user);
+  }
+});
 
 async function sbLoadAndGo(user) {
   try {
@@ -1696,12 +1742,44 @@ function loadHistory() {
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
-console.log('🚀 NardIQ PWA iniciado!');
+console.log('NardIQ PWA iniciado! Supabase: glmakzmtklycnlolfybi');
+// Checa instalacao iOS apos carregar
+window.addEventListener('load', function() {
+  setTimeout(checkiOSInstall, 2000);
+  // Mostra banner manual se Chrome nao disparou beforeinstallprompt em 5s
+  setTimeout(function() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    if (!isStandalone && !installBannerVisible) {
+      const banner = document.getElementById('install-banner');
+      if (banner) {
+        if (deferredPrompt) {
+          showInstallBanner();
+        } else {
+          // Instrucao manual para Android Chrome
+          banner.querySelector('span:nth-child(2)').textContent = 'Instalar: menu ⋮ → "Adicionar à tela inicial"';
+          banner.classList.add('visible');
+          installBannerVisible = true;
+        }
+      }
+    }
+  }, 5000);
+});
 console.log('📚 Banco de questões: 250 perguntas');
-console.log('🔗 Supabase URL:', 'https://jcwgzovdcfgfnciqudox.supabase.co');
+console.log('🔗 Supabase URL:', 'https://glmakzmtklycnlolfybi.supabase.co');
 
 if (window.matchMedia('(display-mode: standalone)').matches) {
   console.log('📱 App está rodando como PWA instalado');
+}
+
+// ============================================
+// SERVICE WORKER — REGISTRO PWA
+// ============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/NardIQ/sw.js')
+      .then(reg => console.log('SW registrado:', reg.scope))
+      .catch(err => console.log('SW erro:', err));
+  });
 }
 </script>
 </body>
