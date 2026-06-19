@@ -39,7 +39,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-/* Botão Instalar */
+/* Botão Instalar - ADICIONADO */
 .install-banner {
   position: fixed;
   bottom: 20px;
@@ -319,7 +319,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <body>
 <div id="app">
 
-<!-- Botão Instalar -->
+<!-- Botão Instalar - ADICIONADO -->
 <button id="install-banner" class="install-banner" onclick="installApp()">
   <span class="icon">📲</span>
   <span>Instalar NardIQ no seu dispositivo</span>
@@ -542,8 +542,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 // SUPABASE - NOVAS CREDENCIAIS
 // ============================================
 const _sb = supabase.createClient(
-  'https://glmakzmtklycnlolfybi.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsbWFrem10a2x5Y25sb2xmeWJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTgxMzQsImV4cCI6MjA5NzI5NDEzNH0.k1kagseYh243ixUA-sqk2pPQYudPzvrIqz92HYTWpHk'
+  'https://jcwgzovdcfgfnciqudox.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjd2d6b3ZkY2ZnZm5jaXF1ZG94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTIzMDIsImV4cCI6MjA5NzM4ODMwMn0.1DzJbGUWtW_21hNTs3EspmJaf3-hMMkeUN5JWRf8ka0'
 );
 
 // ============================================
@@ -554,7 +554,7 @@ function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
 function $cls(id){const el=$id(id);return el?el.classList:{add:()=>{},remove:()=>{},toggle:()=>{}}}
 
 // ============================================
-// PWA - INSTALAÇÃO
+// PWA - INSTALAÇÃO - ADICIONADO
 // ============================================
 let deferredPrompt = null;
 let installBannerVisible = false;
@@ -572,26 +572,9 @@ window.addEventListener('appinstalled', () => {
 
 function showInstallBanner() {
   const banner = document.getElementById('install-banner');
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true;
-  if (banner && !installBannerVisible && !isStandalone) {
+  if (banner && !installBannerVisible && !window.matchMedia('(display-mode: standalone)').matches) {
     banner.classList.add('visible');
     installBannerVisible = true;
-  }
-}
-
-// Mostra botao de instalacao manual em iOS/Safari (nao tem beforeinstallprompt)
-function checkiOSInstall() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-  if (isIOS && !isStandalone) {
-    const banner = document.getElementById('install-banner');
-    if (banner) {
-      banner.querySelector('span:nth-child(2)').textContent = 'Instalar: toque em ― e "Tela Inicial"';
-      banner.classList.add('visible');
-      installBannerVisible = true;
-    }
   }
 }
 
@@ -653,9 +636,6 @@ let state = {
 // ============================================
 function getPuzzlesFor(ano, cat) {
   const allQuestions = {
-    // ==========================================
-    // 5° ANO - NÍVEL BÁSICO (50 perguntas)
-    // ==========================================
     '5°': {
       'sequencias': [
         {q:'Qual o valor da interrogação? 2, 8, 5, 6, 8, ?, 11', visual:'seq', seq:[2,8,5,6,8,null,11], options:['A) 1','B) 4','C) 3','D) 29','E) 42'], answer:'C', steps:['Observe os pares: 2→8(+6), 8→5(-3), 5→6(+1), 6→8(+2)', 'O padrão sugere que ? = 3 pois 11-8=3'], conclusion:'Resposta: 3'},
@@ -718,9 +698,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um retângulo de base 12 cm e altura 5 cm?', visual:'shape', shape:{type:'rect', w:12, h:5}, options:['A) 50','B) 55','C) 60','D) 65','E) 70'], answer:'C', steps:['Área = base × altura.', '12 × 5 = <code>60 cm²</code>.'], conclusion:'Resposta: 60 cm²'},
       ],
     },
-    // ==========================================
-    // 6° ANO - NÍVEL INTERMEDIÁRIO 1 (50 perguntas)
-    // ==========================================
     '6°': {
       'sequencias': [
         {q:'Qual o próximo número? 1, 1, 2, 3, 5, 8, 13, ___', visual:'seq', seq:[1,1,2,3,5,8,13,null], options:['A) 18','B) 20','C) 21','D) 26','E) 30'], answer:'C', steps:['Cada termo = soma dos dois anteriores.', '8+13 = <code>21</code>.'], conclusion:'Resposta: 21'},
@@ -783,9 +760,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um triângulo com base 8 cm e altura 5 cm?', visual:'shape', shape:{type:'triangle', b:8, h:5}, options:['A) 15','B) 20','C) 25','D) 30','E) 35'], answer:'B', steps:['Área = (base × altura) / 2.', '(8 × 5) / 2 = <code>20 cm²</code>.'], conclusion:'Resposta: 20 cm²'},
       ],
     },
-    // ==========================================
-    // 7° ANO - NÍVEL INTERMEDIÁRIO 2 (50 perguntas)
-    // ==========================================
     '7°': {
       'sequencias': [
         {q:'Quadrados perfeitos: 1, 4, 9, 16, 25, ___', visual:'seq', seq:[1,4,9,16,25,null], options:['A) 30','B) 34','C) 36','D) 49','E) 50'], answer:'C', steps:['São n². O próximo é 6²=<code>36</code>.'], conclusion:'Resposta: 36'},
@@ -848,9 +822,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a distância entre os pontos (0,0) e (6,8)?', visual:null, options:['A) 8','B) 9','C) 10','D) 11','E) 12'], answer:'C', steps:['d = √(6²+8²) = √(36+64) = √100 = <code>10</code>.'], conclusion:'Resposta: 10'},
       ],
     },
-    // ==========================================
-    // 8° ANO - NÍVEL AVANÇADO 1 (50 perguntas)
-    // ==========================================
     '8°': {
       'sequencias': [
         {q:'Próximo: 1, 2, 6, 24, 120, ___', visual:'seq', seq:[1,2,6,24,120,null], options:['A) 480','B) 600','C) 720','D) 840','E) 960'], answer:'C', steps:['Fatoriais: 1!,2!,3!,4!,5!.', 'Próximo: 6! = <code>720</code>.'], conclusion:'Resposta: 720'},
@@ -913,9 +884,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um trapézio com bases 8 cm e 12 cm e altura 6 cm?', visual:null, options:['A) 50','B) 55','C) 60','D) 65','E) 70'], answer:'C', steps:['Área = (B+b)×h/2.', '(12+8)×6/2 = 20×6/2 = <code>60 cm²</code>.'], conclusion:'Resposta: 60 cm²'},
       ],
     },
-    // ==========================================
-    // 9° ANO - NÍVEL AVANÇADO 2 (50 perguntas)
-    // ==========================================
     '9°': {
       'sequencias': [
         {q:'PG: 3, 6, 12, 24, 48, ___', visual:'seq', seq:[3,6,12,24,48,null], options:['A) 72','B) 86','C) 96','D) 100','E) 120'], answer:'C', steps:['Razão = 2.', '48×2=<code>96</code>.'], conclusion:'Resposta: 96'},
@@ -987,9 +955,6 @@ function getPuzzlesFor(ano, cat) {
 // ============================================
 // CONTINUAÇÃO DO CÓDIGO (Funções existentes)
 // ============================================
-// (Aqui vai todo o resto do código JavaScript que já estava funcionando)
-// Como o código é muito longo, mantive as funções principais.
-// O banco de questões acima é a única alteração necessária.
 
 // ============================================
 // SHARE FUNCTIONS
@@ -1526,20 +1491,12 @@ function goHome(){
 // SUPABASE AUTH
 // ============================================
 async function onSplashStart() {
-  // Timeout de segurança: se Supabase demorar >4s, vai para auth
-  const timeout = setTimeout(() => {
-    if(document.getElementById('screen-splash')?.classList.contains('active')) {
-      showScreen('screen-auth');
-    }
-  }, 4000);
   try {
     const { data } = await _sb.auth.getSession();
-    clearTimeout(timeout);
     const user = data?.session?.user;
     if(user){ _sbUser=user; await sbLoadAndGo(user); }
     else showScreen('screen-auth');
   } catch(e) {
-    clearTimeout(timeout);
     showScreen('screen-auth');
   }
 }
@@ -1559,24 +1516,15 @@ async function doLogin() {
   if(!email||!password){$id('auth-error').textContent='Preencha e-mail e senha.';return;}
   if(btn){btn.disabled=true;btn.textContent='Entrando...';}
   $id('auth-error').textContent='';
-  try {
-    const{data,error}=await _sb.auth.signInWithPassword({email,password});
-    if(error){
-      const msg = error.message.includes('Invalid') ? 'E-mail ou senha incorretos.'
-        : error.message.includes('fetch') ? 'Sem conexão. Verifique sua internet.'
-        : error.message;
-      $id('auth-error').textContent=msg;
-      if(btn){btn.disabled=false;btn.textContent='Entrar';}
-      return;
-    }
-    _sbUser=data.user;
-    await sbLoadAndGo(data.user);
+  const{data,error}=await _sb.auth.signInWithPassword({email,password});
+  if(error){
+    $id('auth-error').textContent=error.message.includes('Invalid')?'E-mail ou senha incorretos.':error.message;
     if(btn){btn.disabled=false;btn.textContent='Entrar';}
-  } catch(e) {
-    $id('auth-error').textContent = e.message?.includes('fetch')
-      ? 'Erro de conexão. Tente novamente.' : 'Erro: ' + e.message;
-    if(btn){btn.disabled=false;btn.textContent='Entrar';}
+    return;
   }
+  _sbUser=data.user;
+  await sbLoadAndGo(data.user);
+  if(btn){btn.disabled=false;btn.textContent='Entrar';}
 }
 
 async function doSignup() {
@@ -1591,22 +1539,9 @@ async function doSignup() {
   if(btn){btn.disabled=true;btn.textContent='Criando conta...';}
   const{data:ex}=await _sb.from('nardiq_profiles').select('id').eq('username',username).maybeSingle();
   if(ex){$id('auth-error').textContent='Username já em uso. Escolha outro.';if(btn){btn.disabled=false;btn.textContent='Criar conta';}return;}
-  let signupData, signupError;
-  try {
-    const res = await _sb.auth.signUp({email,password});
-    signupData = res.data; signupError = res.error;
-  } catch(e) {
-    $id('auth-error').textContent = e.message?.includes('fetch')
-      ? 'Erro de conexão. Verifique sua internet.' : 'Erro: ' + e.message;
-    if(btn){btn.disabled=false;btn.textContent='Criar conta';}
-    return;
-  }
-  const data = signupData, error = signupError;
+  const{data,error}=await _sb.auth.signUp({email,password});
   if(error){
-    const emsg = error.message.includes('rate') ? 'Muitos cadastros. Use o Google ou aguarde.'
-      : error.message.includes('fetch') ? 'Erro de conexão. Tente novamente.'
-      : error.message;
-    $id('auth-error').textContent=emsg;
+    $id('auth-error').textContent=error.message;
     if(btn){btn.disabled=false;btn.textContent='Criar conta';}
     return;
   }
@@ -1618,34 +1553,13 @@ async function doSignup() {
 
 async function doGoogleLogin() {
   const msg = document.getElementById('auth-error');
-  if(msg){ msg.textContent = ''; msg.style.color = ''; }
-  try {
-    const { error } = await _sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href }
-    });
-    if(error && msg){
-      msg.style.color = 'var(--yellow)';
-      msg.textContent = (error.message.includes('provider') || error.message.includes('enabled'))
-        ? 'Ative o Google: Supabase > Authentication > Providers > Google'
-        : error.message;
-    }
-  } catch(e) {
-    if(msg){ msg.style.color='var(--yellow)'; msg.textContent='Erro ao conectar com Google.'; }
-  }
+  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar.';
+  msg.style.color = 'var(--yellow)';
 }
-
-_sb.auth.onAuthStateChange(async (event, session) => {
-  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user && !_sbUser) {
-    _sbUser = session.user;
-    await sbLoadAndGo(session.user);
-  }
-});
 
 async function sbLoadAndGo(user) {
   try {
-    let res = await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single().catch(()=>({data:null,error:{message:'fetch'}}));
-    let data = res?.data;
+    let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
     if(!data){
       const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
       await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
@@ -1765,41 +1679,21 @@ function loadHistory() {
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
-console.log('NardIQ PWA iniciado! Supabase: glmakzmtklycnlolfybi');
-// Checa instalacao iOS apos carregar
-window.addEventListener('load', function() {
-  setTimeout(checkiOSInstall, 2000);
-  // Mostra banner manual se Chrome nao disparou beforeinstallprompt em 5s
-  setTimeout(function() {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-    if (!isStandalone && !installBannerVisible) {
-      const banner = document.getElementById('install-banner');
-      if (banner) {
-        if (deferredPrompt) {
-          showInstallBanner();
-        } else {
-          // Instrucao manual para Android Chrome
-          banner.querySelector('span:nth-child(2)').textContent = 'Instalar: menu ⋮ → "Adicionar à tela inicial"';
-          banner.classList.add('visible');
-          installBannerVisible = true;
-        }
-      }
-    }
-  }, 5000);
-});
+console.log('🚀 NardIQ PWA iniciado!');
 console.log('📚 Banco de questões: 250 perguntas');
-console.log('🔗 Supabase URL:', 'https://glmakzmtklycnlolfybi.supabase.co');
+console.log('🔗 Supabase URL:', 'https://jcwgzovdcfgfnciqudox.supabase.co');
 
+// Verificar se já está instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
   console.log('📱 App está rodando como PWA instalado');
+  // Esconder banner se já estiver instalado
+  hideInstallBanner();
 }
 
-// ============================================
-// SERVICE WORKER — REGISTRO PWA
-// ============================================
+// Verificar se o navegador suporta service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/NardIQ/sw.js')
+    navigator.serviceWorker.register('/sw.js')
       .then(reg => console.log('SW registrado:', reg.scope))
       .catch(err => console.log('SW erro:', err));
   });
