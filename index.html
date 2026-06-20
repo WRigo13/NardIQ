@@ -1800,11 +1800,9 @@ function goHome(){
 // SUPABASE AUTH
 // ============================================
 async function onSplashStart() {
-  // Timeout de segurança: se Supabase demorar >4s, vai para auth
   const timeout = setTimeout(() => {
-    if(document.getElementById('screen-splash')?.classList.contains('active')) {
+    if(document.getElementById('screen-splash')?.classList.contains('active'))
       showScreen('screen-auth');
-    }
   }, 4000);
   try {
     const { data } = await _sb.auth.getSession();
@@ -1833,24 +1831,15 @@ async function doLogin() {
   if(!email||!password){$id('auth-error').textContent='Preencha e-mail e senha.';return;}
   if(btn){btn.disabled=true;btn.textContent='Entrando...';}
   $id('auth-error').textContent='';
-  try {
-    const{data,error}=await _sb.auth.signInWithPassword({email,password});
-    if(error){
-      const msg = error.message.includes('Invalid') ? 'E-mail ou senha incorretos.'
-        : error.message.includes('fetch') ? 'Sem conexão. Verifique sua internet.'
-        : error.message;
-      $id('auth-error').textContent=msg;
-      if(btn){btn.disabled=false;btn.textContent='Entrar';}
-      return;
-    }
-    _sbUser=data.user;
-    await sbLoadAndGo(data.user);
+  const{data,error}=await _sb.auth.signInWithPassword({email,password});
+  if(error){
+    $id('auth-error').textContent=error.message.includes('Invalid')?'E-mail ou senha incorretos.':error.message;
     if(btn){btn.disabled=false;btn.textContent='Entrar';}
-  } catch(e) {
-    $id('auth-error').textContent = e.message?.includes('fetch')
-      ? 'Erro de conexão. Tente novamente.' : 'Erro: ' + e.message;
-    if(btn){btn.disabled=false;btn.textContent='Entrar';}
+    return;
   }
+  _sbUser=data.user;
+  await sbLoadAndGo(data.user);
+  if(btn){btn.disabled=false;btn.textContent='Entrar';}
 }
 
 async function doSignup() {
@@ -1865,22 +1854,9 @@ async function doSignup() {
   if(btn){btn.disabled=true;btn.textContent='Criando conta...';}
   const{data:ex}=await _sb.from('nardiq_profiles').select('id').eq('username',username).maybeSingle();
   if(ex){$id('auth-error').textContent='Username já em uso. Escolha outro.';if(btn){btn.disabled=false;btn.textContent='Criar conta';}return;}
-  let signupData, signupError;
-  try {
-    const res = await _sb.auth.signUp({email,password});
-    signupData = res.data; signupError = res.error;
-  } catch(e) {
-    $id('auth-error').textContent = e.message?.includes('fetch')
-      ? 'Erro de conexão. Verifique sua internet.' : 'Erro: ' + e.message;
-    if(btn){btn.disabled=false;btn.textContent='Criar conta';}
-    return;
-  }
-  const data = signupData, error = signupError;
+  const{data,error}=await _sb.auth.signUp({email,password});
   if(error){
-    const emsg = error.message.includes('rate') ? 'Muitos cadastros. Use o Google ou aguarde.'
-      : error.message.includes('fetch') ? 'Erro de conexão. Tente novamente.'
-      : error.message;
-    $id('auth-error').textContent=emsg;
+    $id('auth-error').textContent=error.message;
     if(btn){btn.disabled=false;btn.textContent='Criar conta';}
     return;
   }
@@ -1909,6 +1885,7 @@ async function doGoogleLogin() {
   }
 }
 
+// Captura retorno OAuth redirect
 _sb.auth.onAuthStateChange(async (event, session) => {
   if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user && !_sbUser) {
     _sbUser = session.user;
@@ -1918,8 +1895,7 @@ _sb.auth.onAuthStateChange(async (event, session) => {
 
 async function sbLoadAndGo(user) {
   try {
-    let res = await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single().catch(()=>({data:null,error:{message:'fetch'}}));
-    let data = res?.data;
+    let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
     if(!data){
       const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
       await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
