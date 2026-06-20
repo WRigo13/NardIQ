@@ -1885,13 +1885,43 @@ async function doGoogleLogin() {
   }
 }
 
-// Captura retorno OAuth redirect
+// Captura retorno OAuth redirect (hash fragment na URL após redirect do Google)
 _sb.auth.onAuthStateChange(async (event, session) => {
-  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user && !_sbUser) {
-    _sbUser = session.user;
-    await sbLoadAndGo(session.user);
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
+    if (!_sbUser) {
+      _sbUser = session.user;
+      await sbLoadAndGo(session.user);
+    }
   }
 });
+
+// Detecta automaticamente sessão ao carregar a página (resolve o loop do Google OAuth)
+(async function autoDetectSession() {
+  // Se a URL tem access_token ou code no hash/query = voltou do OAuth
+  const hasOAuthParams = window.location.hash.includes('access_token') ||
+                         window.location.hash.includes('error') ||
+                         window.location.search.includes('code=') ||
+                         window.location.search.includes('error=');
+  if (hasOAuthParams) {
+    // Mostra splash direto para não mostrar tela de login enquanto processa
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const splash = document.getElementById('screen-splash');
+    if (splash) splash.classList.add('active');
+    // Aguarda Supabase processar os tokens do hash
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      const { data } = await _sb.auth.getSession();
+      if (data?.session?.user) {
+        _sbUser = data.session.user;
+        await sbLoadAndGo(data.session.user);
+        return;
+      }
+    } catch(e) {}
+    // Limpa a URL e vai para auth se falhou
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showScreen('screen-auth');
+  }
+})();
 
 async function sbLoadAndGo(user) {
   try {
