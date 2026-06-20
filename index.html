@@ -1957,12 +1957,10 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
   hideInstallBanner();
 }
 
-// Verificar se o navegador suporta service worker
+// Desregistra Service Workers anteriores (evita 404 no app instalado)
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('SW registrado:', reg.scope))
-      .catch(err => console.log('SW erro:', err));
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => { reg.unregister(); console.log('SW removido:', reg.scope); });
   });
 }
 </script>
