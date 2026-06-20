@@ -39,7 +39,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 #screen-splash.active{display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .screen-inner{width:100%;max-width:480px;margin:0 auto;padding:24px 16px 80px;min-height:100%}
 
-/* Botão Instalar */
+/* Botão Instalar - ADICIONADO */
 .install-banner {
   position: fixed;
   bottom: 20px;
@@ -319,7 +319,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 <body>
 <div id="app">
 
-<!-- Botão Instalar -->
+<!-- Botão Instalar - ADICIONADO -->
 <button id="install-banner" class="install-banner" onclick="installApp()">
   <span class="icon">📲</span>
   <span>Instalar NardIQ no seu dispositivo</span>
@@ -554,7 +554,7 @@ function $set(id,prop,val){const el=$id(id);if(el)el[prop]=val}
 function $cls(id){const el=$id(id);return el?el.classList:{add:()=>{},remove:()=>{},toggle:()=>{}}}
 
 // ============================================
-// PWA - INSTALAÇÃO
+// PWA - INSTALAÇÃO - ADICIONADO
 // ============================================
 let deferredPrompt = null;
 let installBannerVisible = false;
@@ -572,26 +572,9 @@ window.addEventListener('appinstalled', () => {
 
 function showInstallBanner() {
   const banner = document.getElementById('install-banner');
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true;
-  if (banner && !installBannerVisible && !isStandalone) {
+  if (banner && !installBannerVisible && !window.matchMedia('(display-mode: standalone)').matches) {
     banner.classList.add('visible');
     installBannerVisible = true;
-  }
-}
-
-// Mostra botao de instalacao manual em iOS/Safari (nao tem beforeinstallprompt)
-function checkiOSInstall() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
-  if (isIOS && !isStandalone) {
-    const banner = document.getElementById('install-banner');
-    if (banner) {
-      banner.querySelector('span:nth-child(2)').textContent = 'Instalar: toque em ― e "Tela Inicial"';
-      banner.classList.add('visible');
-      installBannerVisible = true;
-    }
   }
 }
 
@@ -627,15 +610,15 @@ let _sbProfile = null;
 
 const ANOS = ['5°','6°','7°','8°','9°'];
 const CATS = [
-  {key:'sequencias',   name:'Sequências',        icon:'🔢', color:'#6C63FF'},
-  {key:'algebra',      name:'Álgebra',            icon:'✖️',  color:'#A78BFA'},
-  {key:'equacoes',     name:'Equações',           icon:'⚖️',  color:'#00C6FF'},
-  {key:'logica',       name:'Lógica',             icon:'💡',  color:'#FFD166'},
-  {key:'geometria',    name:'Geometria',          icon:'📐',  color:'#00F5C4'},
-  {key:'geografia',    name:'Geografia',          icon:'🌍',  color:'#22C55E'},
-  {key:'biologia',     name:'Biologia',           icon:'🧬',  color:'#EC4899'},
-  {key:'gerais',       name:'Conhec. Gerais',     icon:'🎓',  color:'#F97316'},
-  {key:'estatistica',  name:'Média, Moda e Med.', icon:'📊',  color:'#06B6D4'},
+  {key:'sequencias',  name:'Sequências',        icon:'🔢', color:'#6C63FF'},
+  {key:'algebra',     name:'Álgebra',            icon:'✖️',  color:'#A78BFA'},
+  {key:'equacoes',    name:'Equações',           icon:'⚖️',  color:'#00C6FF'},
+  {key:'logica',      name:'Lógica',             icon:'💡',  color:'#FFD166'},
+  {key:'geometria',   name:'Geometria',          icon:'📐',  color:'#00F5C4'},
+  {key:'geografia',   name:'Geografia',          icon:'🌍',  color:'#22C55E'},
+  {key:'biologia',    name:'Biologia',           icon:'🧬',  color:'#EC4899'},
+  {key:'gerais',      name:'Conhec. Gerais',     icon:'🎓',  color:'#F97316'},
+  {key:'estatistica', name:'Média, Moda e Med.', icon:'📊',  color:'#06B6D4'},
 ];
 const XP_THRESHOLDS = [0,100,300,600,1000,1800,3000,5000];
 const LEVEL_NAMES = ['Iniciante','Curioso','Pensador','Calculista','Estrategista','Gênio','Mestre','NardIQ Pro'];
@@ -657,9 +640,6 @@ let state = {
 // ============================================
 function getPuzzlesFor(ano, cat) {
   const allQuestions = {
-    // ==========================================
-    // 5° ANO - NÍVEL BÁSICO (50 perguntas)
-    // ==========================================
     '5°': {
       'sequencias': [
         {q:'Qual o valor da interrogação? 2, 8, 5, 6, 8, ?, 11', visual:'seq', seq:[2,8,5,6,8,null,11], options:['A) 1','B) 4','C) 3','D) 29','E) 42'], answer:'C', steps:['Observe os pares: 2→8(+6), 8→5(-3), 5→6(+1), 6→8(+2)', 'O padrão sugere que ? = 3 pois 11-8=3'], conclusion:'Resposta: 3'},
@@ -722,9 +702,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um retângulo de base 12 cm e altura 5 cm?', visual:'shape', shape:{type:'rect', w:12, h:5}, options:['A) 50','B) 55','C) 60','D) 65','E) 70'], answer:'C', steps:['Área = base × altura.', '12 × 5 = <code>60 cm²</code>.'], conclusion:'Resposta: 60 cm²'},
       ],
     },
-    // ==========================================
-    // 6° ANO - NÍVEL INTERMEDIÁRIO 1 (50 perguntas)
-    // ==========================================
     '6°': {
       'sequencias': [
         {q:'Qual o próximo número? 1, 1, 2, 3, 5, 8, 13, ___', visual:'seq', seq:[1,1,2,3,5,8,13,null], options:['A) 18','B) 20','C) 21','D) 26','E) 30'], answer:'C', steps:['Cada termo = soma dos dois anteriores.', '8+13 = <code>21</code>.'], conclusion:'Resposta: 21'},
@@ -787,9 +764,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um triângulo com base 8 cm e altura 5 cm?', visual:'shape', shape:{type:'triangle', b:8, h:5}, options:['A) 15','B) 20','C) 25','D) 30','E) 35'], answer:'B', steps:['Área = (base × altura) / 2.', '(8 × 5) / 2 = <code>20 cm²</code>.'], conclusion:'Resposta: 20 cm²'},
       ],
     },
-    // ==========================================
-    // 7° ANO - NÍVEL INTERMEDIÁRIO 2 (50 perguntas)
-    // ==========================================
     '7°': {
       'sequencias': [
         {q:'Quadrados perfeitos: 1, 4, 9, 16, 25, ___', visual:'seq', seq:[1,4,9,16,25,null], options:['A) 30','B) 34','C) 36','D) 49','E) 50'], answer:'C', steps:['São n². O próximo é 6²=<code>36</code>.'], conclusion:'Resposta: 36'},
@@ -852,9 +826,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a distância entre os pontos (0,0) e (6,8)?', visual:null, options:['A) 8','B) 9','C) 10','D) 11','E) 12'], answer:'C', steps:['d = √(6²+8²) = √(36+64) = √100 = <code>10</code>.'], conclusion:'Resposta: 10'},
       ],
     },
-    // ==========================================
-    // 8° ANO - NÍVEL AVANÇADO 1 (50 perguntas)
-    // ==========================================
     '8°': {
       'sequencias': [
         {q:'Próximo: 1, 2, 6, 24, 120, ___', visual:'seq', seq:[1,2,6,24,120,null], options:['A) 480','B) 600','C) 720','D) 840','E) 960'], answer:'C', steps:['Fatoriais: 1!,2!,3!,4!,5!.', 'Próximo: 6! = <code>720</code>.'], conclusion:'Resposta: 720'},
@@ -917,9 +888,6 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um trapézio com bases 8 cm e 12 cm e altura 6 cm?', visual:null, options:['A) 50','B) 55','C) 60','D) 65','E) 70'], answer:'C', steps:['Área = (B+b)×h/2.', '(12+8)×6/2 = 20×6/2 = <code>60 cm²</code>.'], conclusion:'Resposta: 60 cm²'},
       ],
     },
-    // ==========================================
-    // 9° ANO - NÍVEL AVANÇADO 2 (50 perguntas)
-    // ==========================================
     '9°': {
       'sequencias': [
         {q:'PG: 3, 6, 12, 24, 48, ___', visual:'seq', seq:[3,6,12,24,48,null], options:['A) 72','B) 86','C) 96','D) 100','E) 120'], answer:'C', steps:['Razão = 2.', '48×2=<code>96</code>.'], conclusion:'Resposta: 96'},
@@ -982,277 +950,270 @@ function getPuzzlesFor(ano, cat) {
         {q:'Qual a área de um trapézio com bases 8 cm e 12 cm e altura 6 cm?', visual:null, options:['A) 50','B) 55','C) 60','D) 65','E) 70'], answer:'C', steps:['Área = (B+b)×h/2.', '(12+8)×6/2 = 20×6/2 = <code>60 cm²</code>.'], conclusion:'Resposta: 60 cm²'},
       ],
     },
-
-    // ==========================================
-    // GEOGRAFIA (10 por ano = 50 questões)
-    // ==========================================
-    '5°_geo': null, // placeholder handled below
   };
 
-  // Extra categories merged into allQuestions
+
+  // Categorias extras — mescladas ao retornar
   const extraQuestions = {
     '5°': {
       'geografia': [
-        {q:'Qual é a capital do Brasil?', visual:null, options:['A) São Paulo','B) Rio de Janeiro','C) Brasília','D) Belo Horizonte','E) Salvador'], answer:'C', steps:['Brasília foi inaugurada em 1960 como capital federal.'], conclusion:'Resposta: Brasília'},
-        {q:'Qual o maior país do mundo em extensão territorial?', visual:null, options:['A) China','B) EUA','C) Canadá','D) Rússia','E) Brasil'], answer:'D', steps:['A Rússia tem 17,1 milhões de km², sendo o maior do mundo.'], conclusion:'Resposta: Rússia'},
-        {q:'Quantos estados tem o Brasil?', visual:null, options:['A) 24','B) 25','C) 26','D) 27','E) 28'], answer:'D', steps:['O Brasil tem 26 estados e 1 Distrito Federal = 27 unidades federativas.'], conclusion:'Resposta: 26 estados + DF'},
-        {q:'Qual é o maior rio do mundo em volume de água?', visual:null, options:['A) Nilo','B) Yangtzé','C) Mississipi','D) Amazonas','E) Congo'], answer:'D', steps:['O Rio Amazonas tem o maior volume de água doce do mundo.'], conclusion:'Resposta: Amazonas'},
-        {q:'Em qual continente fica o Brasil?', visual:null, options:['A) África','B) Europa','C) América do Sul','D) Oceania','E) Ásia'], answer:'C', steps:['O Brasil está localizado na América do Sul.'], conclusion:'Resposta: América do Sul'},
-        {q:'Qual é o menor continente do mundo?', visual:null, options:['A) Europa','B) Antártica','C) Oceania','D) América do Norte','E) África'], answer:'C', steps:['A Oceania é o menor continente, com cerca de 9 milhões de km².'], conclusion:'Resposta: Oceania'},
-        {q:'Qual é a capital da Argentina?', visual:null, options:['A) Montevidéu','B) Santiago','C) Lima','D) Buenos Aires','E) Assunção'], answer:'D', steps:['Buenos Aires é a capital e maior cidade da Argentina.'], conclusion:'Resposta: Buenos Aires'},
-        {q:'Qual oceano banha a costa leste do Brasil?', visual:null, options:['A) Pacífico','B) Índico','C) Atlântico','D) Ártico','E) Antártico'], answer:'C', steps:['O Oceano Atlântico banha toda a costa leste do Brasil.'], conclusion:'Resposta: Atlântico'},
-        {q:'Qual é a maior floresta tropical do mundo?', visual:null, options:['A) Floresta do Congo','B) Floresta Amazônica','C) Mata Atlântica','D) Floresta de Bornéu','E) Taiga'], answer:'B', steps:['A Floresta Amazônica é a maior floresta tropical do mundo.'], conclusion:'Resposta: Floresta Amazônica'},
-        {q:'Qual é a capital da França?', visual:null, options:['A) Londres','B) Roma','C) Berlim','D) Madri','E) Paris'], answer:'E', steps:['Paris é a capital e cidade mais populosa da França.'], conclusion:'Resposta: Paris'},
+        {q:'Qual é a capital do Brasil?',visual:null,options:['A) São Paulo','B) Rio de Janeiro','C) Brasília','D) Belo Horizonte','E) Salvador'],answer:'C',steps:['Brasília foi inaugurada em 1960 como capital federal.'],conclusion:'Resposta: Brasília'},
+        {q:'Qual o maior país do mundo em extensão territorial?',visual:null,options:['A) China','B) EUA','C) Canadá','D) Rússia','E) Brasil'],answer:'D',steps:['A Rússia tem 17,1 milhões de km².'],conclusion:'Resposta: Rússia'},
+        {q:'Quantos estados tem o Brasil?',visual:null,options:['A) 24','B) 25','C) 26','D) 27','E) 28'],answer:'D',steps:['O Brasil tem 26 estados e 1 Distrito Federal.'],conclusion:'Resposta: 27 unidades federativas'},
+        {q:'Qual é o maior rio do mundo em volume de água?',visual:null,options:['A) Nilo','B) Yangtzé','C) Mississipi','D) Amazonas','E) Congo'],answer:'D',steps:['O Rio Amazonas tem o maior volume de água doce do mundo.'],conclusion:'Resposta: Amazonas'},
+        {q:'Em qual continente fica o Brasil?',visual:null,options:['A) África','B) Europa','C) América do Sul','D) Oceania','E) Ásia'],answer:'C',steps:['O Brasil está na América do Sul.'],conclusion:'Resposta: América do Sul'},
+        {q:'Qual é o menor continente do mundo?',visual:null,options:['A) Europa','B) Antártica','C) Oceania','D) América do Norte','E) África'],answer:'C',steps:['A Oceania é o menor continente, com ~9 milhões de km².'],conclusion:'Resposta: Oceania'},
+        {q:'Qual é a capital da Argentina?',visual:null,options:['A) Montevidéu','B) Santiago','C) Lima','D) Buenos Aires','E) Assunção'],answer:'D',steps:['Buenos Aires é a capital da Argentina.'],conclusion:'Resposta: Buenos Aires'},
+        {q:'Qual oceano banha a costa leste do Brasil?',visual:null,options:['A) Pacífico','B) Índico','C) Atlântico','D) Ártico','E) Antártico'],answer:'C',steps:['O Oceano Atlântico banha toda a costa leste do Brasil.'],conclusion:'Resposta: Atlântico'},
+        {q:'Qual é a maior floresta tropical do mundo?',visual:null,options:['A) Floresta do Congo','B) Floresta Amazônica','C) Mata Atlântica','D) Floresta de Bornéu','E) Taiga'],answer:'B',steps:['A Floresta Amazônica é a maior floresta tropical do mundo.'],conclusion:'Resposta: Floresta Amazônica'},
+        {q:'Qual é a capital da França?',visual:null,options:['A) Londres','B) Roma','C) Berlim','D) Madri','E) Paris'],answer:'E',steps:['Paris é a capital da França.'],conclusion:'Resposta: Paris'},
       ],
       'biologia': [
-        {q:'Qual é o processo pelo qual as plantas produzem alimento usando luz solar?', visual:null, options:['A) Respiração','B) Fotossíntese','C) Digestão','D) Fermentação','E) Oxidação'], answer:'B', steps:['A fotossíntese converte luz solar, água e CO₂ em glicose e oxigênio.'], conclusion:'Resposta: Fotossíntese'},
-        {q:'Qual é a unidade básica da vida?', visual:null, options:['A) Tecido','B) Órgão','C) Célula','D) Molécula','E) Átomo'], answer:'C', steps:['A célula é a menor unidade estrutural e funcional dos seres vivos.'], conclusion:'Resposta: Célula'},
-        {q:'Qual é o órgão responsável pela bombeamento do sangue?', visual:null, options:['A) Pulmão','B) Fígado','C) Rim','D) Coração','E) Estômago'], answer:'D', steps:['O coração é o órgão central do sistema circulatório.'], conclusion:'Resposta: Coração'},
-        {q:'Quantas patas tem um inseto?', visual:null, options:['A) 4','B) 6','C) 8','D) 10','E) 12'], answer:'B', steps:['Todos os insetos têm 6 patas — é uma característica da classe Insecta.'], conclusion:'Resposta: 6 patas'},
-        {q:'Qual gás os seres humanos precisam respirar para viver?', visual:null, options:['A) Dióxido de carbono','B) Nitrogênio','C) Oxigênio','D) Hidrogênio','E) Hélio'], answer:'C', steps:['Precisamos de oxigênio (O₂) para a respiração celular.'], conclusion:'Resposta: Oxigênio'},
-        {q:'Os mamíferos são animais que:', visual:null, options:['A) Botam ovos','B) Têm escamas','C) Amamentam seus filhotes','D) Vivem só na água','E) São todos voadores'], answer:'C', steps:['Mamíferos amamentam seus filhotes com leite produzido pelas fêmeas.'], conclusion:'Resposta: Amamentam seus filhotes'},
-        {q:'Qual é a função dos pulmões?', visual:null, options:['A) Filtrar o sangue','B) Digerir alimentos','C) Trocar gases: absorver O₂ e liberar CO₂','D) Produzir hormônios','E) Bombear sangue'], answer:'C', steps:['Os pulmões realizam a hematose: absorvem O₂ e eliminam CO₂.'], conclusion:'Resposta: Troca de gases'},
-        {q:'O que é a metamorfose na biologia?', visual:null, options:['A) Um tipo de célula','B) Transformação do corpo do animal ao longo da vida','C) Um processo de fotossíntese','D) Tipo de reprodução','E) Sistema digestivo'], answer:'B', steps:['Metamorfose é a transformação do corpo (ex: girino → sapo).'], conclusion:'Resposta: Transformação do corpo'},
-        {q:'Qual é o maior animal do mundo?', visual:null, options:['A) Elefante africano','B) Girafa','C) Tubarão-baleia','D) Baleia-azul','E) Crocodilo'], answer:'D', steps:['A baleia-azul pode chegar a 30m de comprimento e 180 toneladas.'], conclusion:'Resposta: Baleia-azul'},
-        {q:'As plantas precisam de qual substância do solo para crescer?', visual:null, options:['A) Sal','B) Areia','C) Nutrientes minerais e água','D) Carvão','E) Ferro puro'], answer:'C', steps:['As plantas absorvem água e sais minerais pelo solo para crescer.'], conclusion:'Resposta: Nutrientes minerais e água'},
+        {q:'Qual é o processo pelo qual plantas produzem alimento usando luz solar?',visual:null,options:['A) Respiração','B) Fotossíntese','C) Digestão','D) Fermentação','E) Oxidação'],answer:'B',steps:['Fotossíntese converte luz solar, água e CO₂ em glicose e oxigênio.'],conclusion:'Resposta: Fotossíntese'},
+        {q:'Qual é a unidade básica da vida?',visual:null,options:['A) Tecido','B) Órgão','C) Célula','D) Molécula','E) Átomo'],answer:'C',steps:['A célula é a menor unidade estrutural e funcional dos seres vivos.'],conclusion:'Resposta: Célula'},
+        {q:'Qual órgão bombeia o sangue?',visual:null,options:['A) Pulmão','B) Fígado','C) Rim','D) Coração','E) Estômago'],answer:'D',steps:['O coração é o órgão central do sistema circulatório.'],conclusion:'Resposta: Coração'},
+        {q:'Quantas patas tem um inseto?',visual:null,options:['A) 4','B) 6','C) 8','D) 10','E) 12'],answer:'B',steps:['Todos os insetos têm 6 patas.'],conclusion:'Resposta: 6 patas'},
+        {q:'Qual gás os seres humanos precisam para viver?',visual:null,options:['A) CO₂','B) Nitrogênio','C) Oxigênio','D) Hidrogênio','E) Hélio'],answer:'C',steps:['Precisamos de oxigênio (O₂) para a respiração celular.'],conclusion:'Resposta: Oxigênio'},
+        {q:'Os mamíferos:',visual:null,options:['A) Botam ovos','B) Têm escamas','C) Amamentam seus filhotes','D) Vivem só na água','E) São todos voadores'],answer:'C',steps:['Mamíferos amamentam filhotes com leite.'],conclusion:'Resposta: Amamentam seus filhotes'},
+        {q:'Qual é a função dos pulmões?',visual:null,options:['A) Filtrar sangue','B) Digerir alimentos','C) Trocar gases: absorver O₂ e liberar CO₂','D) Produzir hormônios','E) Bombear sangue'],answer:'C',steps:['Pulmões realizam hematose: absorvem O₂ e eliminam CO₂.'],conclusion:'Resposta: Troca de gases'},
+        {q:'O que é metamorfose?',visual:null,options:['A) Tipo de célula','B) Transformação do corpo ao longo da vida','C) Fotossíntese','D) Reprodução','E) Sistema digestivo'],answer:'B',steps:['Ex: girino → sapo.'],conclusion:'Resposta: Transformação do corpo'},
+        {q:'Qual é o maior animal do mundo?',visual:null,options:['A) Elefante','B) Girafa','C) Tubarão-baleia','D) Baleia-azul','E) Crocodilo'],answer:'D',steps:['Baleia-azul chega a 30m e 180 toneladas.'],conclusion:'Resposta: Baleia-azul'},
+        {q:'As plantas precisam de qual substância do solo para crescer?',visual:null,options:['A) Sal','B) Areia','C) Nutrientes minerais e água','D) Carvão','E) Ferro puro'],answer:'C',steps:['Plantas absorvem água e sais minerais pelo solo.'],conclusion:'Resposta: Nutrientes minerais e água'},
       ],
       'gerais': [
-        {q:'Quantos planetas existem no Sistema Solar?', visual:null, options:['A) 7','B) 8','C) 9','D) 10','E) 11'], answer:'B', steps:['Desde 2006, o Sistema Solar tem 8 planetas (Plutão foi reclassificado).'], conclusion:'Resposta: 8 planetas'},
-        {q:'Quem pintou a Mona Lisa?', visual:null, options:['A) Miguel Ângelo','B) Rafael','C) Leonardo da Vinci','D) Picasso','E) Van Gogh'], answer:'C', steps:['A Mona Lisa foi pintada por Leonardo da Vinci entre 1503 e 1519.'], conclusion:'Resposta: Leonardo da Vinci'},
-        {q:'Em que ano o Brasil foi descoberto?', visual:null, options:['A) 1492','B) 1498','C) 1500','D) 1502','E) 1510'], answer:'C', steps:['Pedro Álvares Cabral chegou ao Brasil em 22 de abril de 1500.'], conclusion:'Resposta: 1500'},
-        {q:'Qual é o maior planeta do Sistema Solar?', visual:null, options:['A) Saturno','B) Urano','C) Netuno','D) Júpiter','E) Terra'], answer:'D', steps:['Júpiter é o maior planeta, com 318 vezes a massa da Terra.'], conclusion:'Resposta: Júpiter'},
-        {q:'Quantos continentes existem na Terra?', visual:null, options:['A) 4','B) 5','C) 6','D) 7','E) 8'], answer:'C', steps:['Existem 6 continentes: América, Europa, Ásia, África, Oceania e Antártida.'], conclusion:'Resposta: 6 continentes'},
-        {q:'Qual é o idioma mais falado no mundo?', visual:null, options:['A) Inglês','B) Espanhol','C) Português','D) Mandarim','E) Árabe'], answer:'D', steps:['O mandarim (chinês) tem mais de 1,1 bilhão de falantes nativos.'], conclusion:'Resposta: Mandarim'},
-        {q:'O que é a ONU?', visual:null, options:['A) Um país','B) Uma moeda','C) Organização das Nações Unidas','D) Uma empresa','E) Um rio'], answer:'C', steps:['A ONU é a Organização das Nações Unidas, fundada em 1945.'], conclusion:'Resposta: Organização das Nações Unidas'},
-        {q:'Qual é o metal mais abundante na crosta terrestre?', visual:null, options:['A) Ferro','B) Cobre','C) Alumínio','D) Ouro','E) Prata'], answer:'C', steps:['O alumínio é o metal mais abundante na crosta terrestre (~8%).'], conclusion:'Resposta: Alumínio'},
-        {q:'Quantas horas tem um dia?', visual:null, options:['A) 12','B) 18','C) 24','D) 36','E) 48'], answer:'C', steps:['Um dia tem 24 horas, tempo de uma rotação completa da Terra.'], conclusion:'Resposta: 24 horas'},
-        {q:'Qual é a velocidade da luz?', visual:null, options:['A) 300 km/s','B) 3.000 km/s','C) 30.000 km/s','D) 300.000 km/s','E) 3.000.000 km/s'], answer:'D', steps:['A luz percorre aproximadamente 300.000 km por segundo no vácuo.'], conclusion:'Resposta: 300.000 km/s'},
+        {q:'Quantos planetas existem no Sistema Solar?',visual:null,options:['A) 7','B) 8','C) 9','D) 10','E) 11'],answer:'B',steps:['Desde 2006, são 8 planetas.'],conclusion:'Resposta: 8'},
+        {q:'Quem pintou a Mona Lisa?',visual:null,options:['A) Miguel Ângelo','B) Rafael','C) Leonardo da Vinci','D) Picasso','E) Van Gogh'],answer:'C',steps:['Leonardo da Vinci pintou entre 1503 e 1519.'],conclusion:'Resposta: Leonardo da Vinci'},
+        {q:'Em que ano o Brasil foi descoberto?',visual:null,options:['A) 1492','B) 1498','C) 1500','D) 1502','E) 1510'],answer:'C',steps:['Cabral chegou em 22 de abril de 1500.'],conclusion:'Resposta: 1500'},
+        {q:'Qual é o maior planeta do Sistema Solar?',visual:null,options:['A) Saturno','B) Urano','C) Netuno','D) Júpiter','E) Terra'],answer:'D',steps:['Júpiter tem 318 vezes a massa da Terra.'],conclusion:'Resposta: Júpiter'},
+        {q:'Quantos continentes existem?',visual:null,options:['A) 4','B) 5','C) 6','D) 7','E) 8'],answer:'C',steps:['São 6: América, Europa, Ásia, África, Oceania e Antártida.'],conclusion:'Resposta: 6'},
+        {q:'Qual idioma é mais falado no mundo?',visual:null,options:['A) Inglês','B) Espanhol','C) Português','D) Mandarim','E) Árabe'],answer:'D',steps:['Mandarim tem mais de 1,1 bilhão de falantes nativos.'],conclusion:'Resposta: Mandarim'},
+        {q:'O que é a ONU?',visual:null,options:['A) Um país','B) Uma moeda','C) Organização das Nações Unidas','D) Uma empresa','E) Um rio'],answer:'C',steps:['Fundada em 1945.'],conclusion:'Resposta: Organização das Nações Unidas'},
+        {q:'Qual o metal mais abundante na crosta terrestre?',visual:null,options:['A) Ferro','B) Cobre','C) Alumínio','D) Ouro','E) Prata'],answer:'C',steps:['O alumínio compõe ~8% da crosta.'],conclusion:'Resposta: Alumínio'},
+        {q:'Quantas horas tem um dia?',visual:null,options:['A) 12','B) 18','C) 24','D) 36','E) 48'],answer:'C',steps:['24 horas = uma rotação completa da Terra.'],conclusion:'Resposta: 24'},
+        {q:'Qual a velocidade da luz?',visual:null,options:['A) 300 km/s','B) 3.000 km/s','C) 30.000 km/s','D) 300.000 km/s','E) 3.000.000 km/s'],answer:'D',steps:['~300.000 km/s no vácuo.'],conclusion:'Resposta: 300.000 km/s'},
       ],
       'estatistica': [
-        {q:'A média de 4, 6 e 8 é:', visual:null, options:['A) 5','B) 6','C) 7','D) 8','E) 9'], answer:'B', steps:['Média = (4+6+8)/3 = 18/3 = <code>6</code>.'], conclusion:'Resposta: 6'},
-        {q:'Qual é a moda de: 2, 3, 3, 4, 5?', visual:null, options:['A) 2','B) 3','C) 4','D) 5','E) Não tem moda'], answer:'B', steps:['Moda = valor que mais aparece. O 3 aparece 2 vezes.'], conclusion:'Resposta: 3'},
-        {q:'Qual é a mediana de: 1, 3, 5, 7, 9?', visual:null, options:['A) 3','B) 4','C) 5','D) 6','E) 7'], answer:'C', steps:['Com 5 valores ordenados, a mediana é o valor do meio: <code>5</code>.'], conclusion:'Resposta: 5'},
-        {q:'A média de 10, 20 e 30 é:', visual:null, options:['A) 15','B) 18','C) 20','D) 22','E) 25'], answer:'C', steps:['Média = (10+20+30)/3 = 60/3 = <code>20</code>.'], conclusion:'Resposta: 20'},
-        {q:'Qual é a moda de: 1, 1, 2, 3, 3, 3, 4?', visual:null, options:['A) 1','B) 2','C) 3','D) 4','E) Não tem'], answer:'C', steps:['O número 3 aparece 3 vezes — é a moda.'], conclusion:'Resposta: 3'},
-        {q:'Qual é a mediana de: 2, 4, 6, 8?', visual:null, options:['A) 4','B) 5','C) 6','D) 7','E) 3'], answer:'B', steps:['Com 4 valores, mediana = média dos dois centrais: (4+6)/2 = <code>5</code>.'], conclusion:'Resposta: 5'},
-        {q:'A média de 0, 0, 0 e 12 é:', visual:null, options:['A) 0','B) 2','C) 3','D) 4','E) 6'], answer:'C', steps:['Média = (0+0+0+12)/4 = 12/4 = <code>3</code>.'], conclusion:'Resposta: 3'},
-        {q:'Qual é a moda de: 5, 7, 7, 8, 9, 9, 9?', visual:null, options:['A) 5','B) 7','C) 8','D) 9','E) Não tem'], answer:'D', steps:['O número 9 aparece 3 vezes — maior frequência.'], conclusion:'Resposta: 9'},
-        {q:'A mediana de: 3, 7, 2, 9, 5 (ordenado: 2,3,5,7,9) é:', visual:null, options:['A) 3','B) 5','C) 7','D) 2','E) 9'], answer:'B', steps:['Ordenado: 2,3,5,7,9. O valor central é <code>5</code>.'], conclusion:'Resposta: 5'},
-        {q:'Se a média de 5 notas é 7, qual é a soma das notas?', visual:null, options:['A) 28','B) 30','C) 35','D) 40','E) 42'], answer:'C', steps:['Média = soma/quantidade → soma = 7×5 = <code>35</code>.'], conclusion:'Resposta: 35'},
+        {q:'A média de 4, 6 e 8 é:',visual:null,options:['A) 5','B) 6','C) 7','D) 8','E) 9'],answer:'B',steps:['(4+6+8)/3 = 18/3 = 6.'],conclusion:'Resposta: 6'},
+        {q:'Qual é a moda de: 2, 3, 3, 4, 5?',visual:null,options:['A) 2','B) 3','C) 4','D) 5','E) Sem moda'],answer:'B',steps:['3 aparece 2 vezes.'],conclusion:'Resposta: 3'},
+        {q:'Mediana de: 1, 3, 5, 7, 9?',visual:null,options:['A) 3','B) 4','C) 5','D) 6','E) 7'],answer:'C',steps:['5 valores ordenados — o do meio é 5.'],conclusion:'Resposta: 5'},
+        {q:'Média de 10, 20 e 30:',visual:null,options:['A) 15','B) 18','C) 20','D) 22','E) 25'],answer:'C',steps:['(10+20+30)/3 = 60/3 = 20.'],conclusion:'Resposta: 20'},
+        {q:'Moda de: 1, 1, 2, 3, 3, 3, 4?',visual:null,options:['A) 1','B) 2','C) 3','D) 4','E) Sem moda'],answer:'C',steps:['3 aparece 3 vezes.'],conclusion:'Resposta: 3'},
+        {q:'Mediana de: 2, 4, 6, 8?',visual:null,options:['A) 4','B) 5','C) 6','D) 7','E) 3'],answer:'B',steps:['4 valores: (4+6)/2 = 5.'],conclusion:'Resposta: 5'},
+        {q:'Média de 0, 0, 0 e 12:',visual:null,options:['A) 0','B) 2','C) 3','D) 4','E) 6'],answer:'C',steps:['(0+0+0+12)/4 = 3.'],conclusion:'Resposta: 3'},
+        {q:'Moda de: 5, 7, 7, 8, 9, 9, 9?',visual:null,options:['A) 5','B) 7','C) 8','D) 9','E) Sem moda'],answer:'D',steps:['9 aparece 3 vezes.'],conclusion:'Resposta: 9'},
+        {q:'Mediana de: 3, 7, 2, 9, 5 (ord: 2,3,5,7,9):',visual:null,options:['A) 3','B) 5','C) 7','D) 2','E) 9'],answer:'B',steps:['Valor central do conjunto ordenado é 5.'],conclusion:'Resposta: 5'},
+        {q:'Se a média de 5 notas é 7, qual é a soma?',visual:null,options:['A) 28','B) 30','C) 35','D) 40','E) 42'],answer:'C',steps:['Soma = 7 × 5 = 35.'],conclusion:'Resposta: 35'},
       ],
     },
     '6°': {
       'geografia': [
-        {q:'Qual é o país mais populoso do mundo?', visual:null, options:['A) Índia','B) EUA','C) China','D) Brasil','E) Indonésia'], answer:'A', steps:['A Índia ultrapassou a China em 2023, com mais de 1,4 bilhão de habitantes.'], conclusion:'Resposta: Índia'},
-        {q:'Qual é o deserto mais quente do mundo?', visual:null, options:['A) Atacama','B) Saara','C) Gobi','D) Antártico','E) Patagônia'], answer:'B', steps:['O Saara, na África, é o maior deserto quente do mundo.'], conclusion:'Resposta: Saara'},
-        {q:'Qual é a capital do Japão?', visual:null, options:['A) Pequim','B) Seul','C) Bangkok','D) Tóquio','E) Osaka'], answer:'D', steps:['Tóquio é a capital e maior metrópole do Japão.'], conclusion:'Resposta: Tóquio'},
-        {q:'Por qual linha imaginária o Brasil é cortado ao meio?', visual:null, options:['A) Trópico de Capricórnio','B) Trópico de Câncer','C) Equador','D) Meridiano de Greenwich','E) Antártico'], answer:'C', steps:['A Linha do Equador passa pelo norte do Brasil, dividindo a Terra em hemisférios.'], conclusion:'Resposta: Equador'},
-        {q:'Qual é a montanha mais alta do mundo?', visual:null, options:['A) Monte Kilimanjaro','B) Monte Everest','C) Aconcágua','D) Monte Fuji','E) Andes'], answer:'B', steps:['O Monte Everest tem 8.849 metros de altitude — o mais alto do mundo.'], conclusion:'Resposta: Monte Everest'},
-        {q:'Qual é a capital da Austrália?', visual:null, options:['A) Sydney','B) Melbourne','C) Brisbane','D) Camberra','E) Perth'], answer:'D', steps:['Camberra é a capital da Austrália, não Sydney como muitos pensam.'], conclusion:'Resposta: Camberra'},
-        {q:'O Rio Amazonas nasce em qual país?', visual:null, options:['A) Brasil','B) Colômbia','C) Peru','D) Equador','E) Venezuela'], answer:'C', steps:['O Amazonas nasce nos Andes peruanos, perto de Nevado Mismi.'], conclusion:'Resposta: Peru'},
-        {q:'Qual é o menor país do mundo?', visual:null, options:['A) Mônaco','B) San Marino','C) Liechtenstein','D) Vaticano','E) Andorra'], answer:'D', steps:['O Vaticano tem apenas 0,44 km² — o menor país do mundo.'], conclusion:'Resposta: Vaticano'},
-        {q:'Em qual continente fica o Egito?', visual:null, options:['A) Ásia','B) Europa','C) África','D) Oriente Médio','E) América'], answer:'C', steps:['O Egito está no nordeste do continente africano.'], conclusion:'Resposta: África'},
-        {q:'Qual é a capital da Alemanha?', visual:null, options:['A) Munique','B) Frankfurt','C) Hamburgo','D) Berlim','E) Colônia'], answer:'D', steps:['Berlim é a capital e maior cidade da Alemanha.'], conclusion:'Resposta: Berlim'},
+        {q:'Qual é o país mais populoso do mundo?',visual:null,options:['A) Índia','B) EUA','C) China','D) Brasil','E) Indonésia'],answer:'A',steps:['A Índia ultrapassou a China em 2023.'],conclusion:'Resposta: Índia'},
+        {q:'Qual é o deserto mais quente do mundo?',visual:null,options:['A) Atacama','B) Saara','C) Gobi','D) Antártico','E) Patagônia'],answer:'B',steps:['O Saara, na África, é o maior deserto quente.'],conclusion:'Resposta: Saara'},
+        {q:'Capital do Japão?',visual:null,options:['A) Pequim','B) Seul','C) Bangkok','D) Tóquio','E) Osaka'],answer:'D',steps:['Tóquio é a capital do Japão.'],conclusion:'Resposta: Tóquio'},
+        {q:'Por qual linha o Brasil é cortado ao meio?',visual:null,options:['A) Trópico de Capricórnio','B) Trópico de Câncer','C) Equador','D) Meridiano de Greenwich','E) Antártico'],answer:'C',steps:['O Equador passa pelo norte do Brasil.'],conclusion:'Resposta: Equador'},
+        {q:'Montanha mais alta do mundo?',visual:null,options:['A) Kilimanjaro','B) Everest','C) Aconcágua','D) Monte Fuji','E) Andes'],answer:'B',steps:['Everest tem 8.849m.'],conclusion:'Resposta: Monte Everest'},
+        {q:'Capital da Austrália?',visual:null,options:['A) Sydney','B) Melbourne','C) Brisbane','D) Camberra','E) Perth'],answer:'D',steps:['Camberra é a capital, não Sydney.'],conclusion:'Resposta: Camberra'},
+        {q:'O Rio Amazonas nasce em qual país?',visual:null,options:['A) Brasil','B) Colômbia','C) Peru','D) Equador','E) Venezuela'],answer:'C',steps:['Nasce nos Andes peruanos.'],conclusion:'Resposta: Peru'},
+        {q:'Menor país do mundo?',visual:null,options:['A) Mônaco','B) San Marino','C) Liechtenstein','D) Vaticano','E) Andorra'],answer:'D',steps:['Vaticano tem 0,44 km².'],conclusion:'Resposta: Vaticano'},
+        {q:'Em qual continente fica o Egito?',visual:null,options:['A) Ásia','B) Europa','C) África','D) Oriente Médio','E) América'],answer:'C',steps:['Egito está no nordeste africano.'],conclusion:'Resposta: África'},
+        {q:'Capital da Alemanha?',visual:null,options:['A) Munique','B) Frankfurt','C) Hamburgo','D) Berlim','E) Colônia'],answer:'D',steps:['Berlim é a capital.'],conclusion:'Resposta: Berlim'},
       ],
       'biologia': [
-        {q:'Qual é a função do sistema digestório?', visual:null, options:['A) Transportar sangue','B) Decompor alimentos e absorver nutrientes','C) Filtrar o ar','D) Produzir movimentos','E) Regular temperatura'], answer:'B', steps:['O sistema digestório quebra os alimentos e absorve nutrientes para o corpo.'], conclusion:'Resposta: Decompor alimentos e absorver nutrientes'},
-        {q:'O DNA está localizado em qual parte da célula?', visual:null, options:['A) Membrana','B) Citoplasma','C) Mitocôndria','D) Núcleo','E) Ribossomo'], answer:'D', steps:['O DNA fica no núcleo da célula, dentro dos cromossomos.'], conclusion:'Resposta: Núcleo'},
-        {q:'O que são os herbívoros?', visual:null, options:['A) Animais que comem outros animais','B) Animais que comem plantas','C) Animais que comem tudo','D) Fungos que decompõem','E) Plantas carnívoras'], answer:'B', steps:['Herbívoros se alimentam exclusivamente de plantas. Ex: vaca, coelho.'], conclusion:'Resposta: Animais que comem plantas'},
-        {q:'Qual é o órgão responsável pela filtração do sangue e produção de urina?', visual:null, options:['A) Fígado','B) Pulmão','C) Coração','D) Rim','E) Intestino'], answer:'D', steps:['Os rins filtram o sangue e produzem urina para eliminar resíduos.'], conclusion:'Resposta: Rim'},
-        {q:'A fotossíntese libera qual gás para a atmosfera?', visual:null, options:['A) Nitrogênio','B) Dióxido de carbono','C) Oxigênio','D) Hidrogênio','E) Metano'], answer:'C', steps:['A fotossíntese consome CO₂ e libera O₂, essencial para a vida.'], conclusion:'Resposta: Oxigênio'},
-        {q:'Qual é a principal função do sistema nervoso?', visual:null, options:['A) Transportar sangue','B) Digerir alimentos','C) Coordenar e controlar as funções do corpo','D) Produzir hormônios','E) Filtrar toxinas'], answer:'C', steps:['O sistema nervoso coordena e controla todas as funções corporais.'], conclusion:'Resposta: Coordenar e controlar o corpo'},
-        {q:'O que é um ecossistema?', visual:null, options:['A) Só os animais de uma região','B) Só as plantas de uma região','C) Conjunto de seres vivos e o ambiente onde vivem','D) Tipo de célula','E) Órgão do corpo humano'], answer:'C', steps:['Ecossistema = comunidade de seres vivos + fatores abióticos do ambiente.'], conclusion:'Resposta: Conjunto de seres vivos e seu ambiente'},
-        {q:'Quantos cromossomos tem uma célula humana normal?', visual:null, options:['A) 23','B) 44','C) 46','D) 48','E) 92'], answer:'C', steps:['Células humanas têm 46 cromossomos (23 pares).'], conclusion:'Resposta: 46 cromossomos'},
-        {q:'Qual é a função das mitocôndrias?', visual:null, options:['A) Produzir proteínas','B) Gerar energia (ATP) para a célula','C) Armazenar DNA','D) Produzir lipídios','E) Controlar a célula'], answer:'B', steps:['As mitocôndrias são as "usinas de energia" da célula, produzindo ATP.'], conclusion:'Resposta: Gerar energia (ATP)'},
-        {q:'O que é a cadeia alimentar?', visual:null, options:['A) Um tipo de DNA','B) Sequência de quem come quem em um ecossistema','C) Órgão digestivo','D) Tipo de célula','E) Processo de fotossíntese'], answer:'B', steps:['Cadeia alimentar mostra as relações alimentares entre os seres vivos.'], conclusion:'Resposta: Sequência de quem come quem'},
+        {q:'Função do sistema digestório?',visual:null,options:['A) Transportar sangue','B) Decompor alimentos e absorver nutrientes','C) Filtrar o ar','D) Produzir movimentos','E) Regular temperatura'],answer:'B',steps:['Decompõe alimentos e absorve nutrientes.'],conclusion:'Resposta: Decompor e absorver'},
+        {q:'O DNA está em qual parte da célula?',visual:null,options:['A) Membrana','B) Citoplasma','C) Mitocôndria','D) Núcleo','E) Ribossomo'],answer:'D',steps:['DNA fica no núcleo.'],conclusion:'Resposta: Núcleo'},
+        {q:'O que são herbívoros?',visual:null,options:['A) Comem outros animais','B) Comem plantas','C) Comem tudo','D) Fungos','E) Plantas carnívoras'],answer:'B',steps:['Herbívoros alimentam-se de plantas.'],conclusion:'Resposta: Comem plantas'},
+        {q:'Órgão que filtra o sangue e produz urina?',visual:null,options:['A) Fígado','B) Pulmão','C) Coração','D) Rim','E) Intestino'],answer:'D',steps:['Os rins filtram o sangue.'],conclusion:'Resposta: Rim'},
+        {q:'A fotossíntese libera qual gás?',visual:null,options:['A) Nitrogênio','B) CO₂','C) Oxigênio','D) Hidrogênio','E) Metano'],answer:'C',steps:['Fotossíntese libera O₂.'],conclusion:'Resposta: Oxigênio'},
+        {q:'Função do sistema nervoso?',visual:null,options:['A) Transportar sangue','B) Digerir alimentos','C) Coordenar e controlar funções do corpo','D) Produzir hormônios','E) Filtrar toxinas'],answer:'C',steps:['Sistema nervoso coordena funções corporais.'],conclusion:'Resposta: Coordenar o corpo'},
+        {q:'O que é um ecossistema?',visual:null,options:['A) Só animais','B) Só plantas','C) Seres vivos + ambiente','D) Tipo de célula','E) Órgão'],answer:'C',steps:['Ecossistema = comunidade + fatores abióticos.'],conclusion:'Resposta: Seres vivos + ambiente'},
+        {q:'Quantos cromossomos tem célula humana normal?',visual:null,options:['A) 23','B) 44','C) 46','D) 48','E) 92'],answer:'C',steps:['46 cromossomos (23 pares).'],conclusion:'Resposta: 46'},
+        {q:'Função das mitocôndrias?',visual:null,options:['A) Produzir proteínas','B) Gerar energia (ATP)','C) Armazenar DNA','D) Produzir lipídios','E) Controlar célula'],answer:'B',steps:['Mitocôndrias produzem ATP.'],conclusion:'Resposta: Gerar energia'},
+        {q:'O que é cadeia alimentar?',visual:null,options:['A) Tipo de DNA','B) Sequência de quem come quem','C) Órgão digestivo','D) Tipo de célula','E) Fotossíntese'],answer:'B',steps:['Mostra relações alimentares entre seres vivos.'],conclusion:'Resposta: Quem come quem'},
       ],
       'gerais': [
-        {q:'Qual é o elemento químico mais abundante no universo?', visual:null, options:['A) Oxigênio','B) Carbono','C) Hélio','D) Hidrogênio','E) Nitrogênio'], answer:'D', steps:['O hidrogênio (H) compõe cerca de 75% da matéria visível do universo.'], conclusion:'Resposta: Hidrogênio'},
-        {q:'Quem foi o primeiro ser humano a pisar na Lua?', visual:null, options:['A) Yuri Gagarin','B) Buzz Aldrin','C) Neil Armstrong','D) John Glenn','E) Alan Shepard'], answer:'C', steps:['Neil Armstrong pisou na Lua em 20 de julho de 1969, na missão Apollo 11.'], conclusion:'Resposta: Neil Armstrong'},
-        {q:'Qual é a fórmula química da água?', visual:null, options:['A) CO₂','B) H₂O','C) NaCl','D) O₂','E) H₂SO₄'], answer:'B', steps:['A água é formada por 2 átomos de hidrogênio e 1 de oxigênio: H₂O.'], conclusion:'Resposta: H₂O'},
-        {q:'Quantos ossos tem o corpo humano adulto?', visual:null, options:['A) 186','B) 196','C) 206','D) 216','E) 226'], answer:'C', steps:['O corpo humano adulto tem 206 ossos.'], conclusion:'Resposta: 206 ossos'},
-        {q:'Quem escreveu Dom Casmurro?', visual:null, options:['A) José de Alencar','B) Machado de Assis','C) Euclides da Cunha','D) Lima Barreto','E) Graciliano Ramos'], answer:'B', steps:['Dom Casmurro foi escrito por Machado de Assis e publicado em 1899.'], conclusion:'Resposta: Machado de Assis'},
-        {q:'Qual é o símbolo químico do ouro?', visual:null, options:['A) Go','B) Or','C) Ou','D) Au','E) Ag'], answer:'D', steps:['O símbolo Au vem do latim "Aurum".'], conclusion:'Resposta: Au'},
-        {q:'Em que ano terminou a Segunda Guerra Mundial?', visual:null, options:['A) 1943','B) 1944','C) 1945','D) 1946','E) 1947'], answer:'C', steps:['A Segunda Guerra Mundial terminou em 1945 com a rendição do Japão.'], conclusion:'Resposta: 1945'},
-        {q:'Qual é a unidade de medida de temperatura no Sistema Internacional?', visual:null, options:['A) Celsius','B) Fahrenheit','C) Kelvin','D) Rankine','E) Réaumur'], answer:'C', steps:['Kelvin (K) é a unidade de temperatura do SI, onde 0K = -273,15°C.'], conclusion:'Resposta: Kelvin'},
-        {q:'Quantos lados tem um octógono?', visual:null, options:['A) 6','B) 7','C) 8','D) 9','E) 10'], answer:'C', steps:['Octo = oito em latim. Octógono tem 8 lados.'], conclusion:'Resposta: 8 lados'},
-        {q:'Qual é o planeta mais próximo do Sol?', visual:null, options:['A) Vênus','B) Terra','C) Marte','D) Mercúrio','E) Júpiter'], answer:'D', steps:['Mercúrio é o planeta mais próximo do Sol, a ~58 milhões de km.'], conclusion:'Resposta: Mercúrio'},
+        {q:'Elemento mais abundante no universo?',visual:null,options:['A) Oxigênio','B) Carbono','C) Hélio','D) Hidrogênio','E) Nitrogênio'],answer:'D',steps:['Hidrogênio compõe ~75% da matéria visível.'],conclusion:'Resposta: Hidrogênio'},
+        {q:'Primeiro humano a pisar na Lua?',visual:null,options:['A) Yuri Gagarin','B) Buzz Aldrin','C) Neil Armstrong','D) John Glenn','E) Alan Shepard'],answer:'C',steps:['Neil Armstrong, em 20 de julho de 1969.'],conclusion:'Resposta: Neil Armstrong'},
+        {q:'Fórmula química da água?',visual:null,options:['A) CO₂','B) H₂O','C) NaCl','D) O₂','E) H₂SO₄'],answer:'B',steps:['2 hidrogênios + 1 oxigênio.'],conclusion:'Resposta: H₂O'},
+        {q:'Quantos ossos tem o adulto humano?',visual:null,options:['A) 186','B) 196','C) 206','D) 216','E) 226'],answer:'C',steps:['206 ossos.'],conclusion:'Resposta: 206'},
+        {q:'Quem escreveu Dom Casmurro?',visual:null,options:['A) José de Alencar','B) Machado de Assis','C) Euclides da Cunha','D) Lima Barreto','E) Graciliano Ramos'],answer:'B',steps:['Machado de Assis, publicado em 1899.'],conclusion:'Resposta: Machado de Assis'},
+        {q:'Símbolo químico do ouro?',visual:null,options:['A) Go','B) Or','C) Ou','D) Au','E) Ag'],answer:'D',steps:['Au vem do latim "Aurum".'],conclusion:'Resposta: Au'},
+        {q:'Fim da Segunda Guerra Mundial?',visual:null,options:['A) 1943','B) 1944','C) 1945','D) 1946','E) 1947'],answer:'C',steps:['1945, rendição do Japão.'],conclusion:'Resposta: 1945'},
+        {q:'Unidade de temperatura no Sistema Internacional?',visual:null,options:['A) Celsius','B) Fahrenheit','C) Kelvin','D) Rankine','E) Réaumur'],answer:'C',steps:['Kelvin (K), onde 0K = -273,15°C.'],conclusion:'Resposta: Kelvin'},
+        {q:'Quantos lados tem um octógono?',visual:null,options:['A) 6','B) 7','C) 8','D) 9','E) 10'],answer:'C',steps:['Octo = oito.'],conclusion:'Resposta: 8'},
+        {q:'Planeta mais próximo do Sol?',visual:null,options:['A) Vênus','B) Terra','C) Marte','D) Mercúrio','E) Júpiter'],answer:'D',steps:['Mercúrio fica a ~58 milhões de km do Sol.'],conclusion:'Resposta: Mercúrio'},
       ],
       'estatistica': [
-        {q:'A média de 5, 10, 15 e 20 é:', visual:null, options:['A) 10','B) 12','C) 12,5','D) 13','E) 15'], answer:'C', steps:['Média = (5+10+15+20)/4 = 50/4 = <code>12,5</code>.'], conclusion:'Resposta: 12,5'},
-        {q:'Qual é a moda de: 3, 3, 4, 5, 5, 5, 6?', visual:null, options:['A) 3','B) 4','C) 5','D) 6','E) Bimodal'], answer:'C', steps:['O 5 aparece 3 vezes, mais do que qualquer outro.'], conclusion:'Resposta: 5'},
-        {q:'Mediana de: 4, 8, 15, 16, 23, 42:', visual:null, options:['A) 14','B) 15','C) 15,5','D) 16','E) 18'], answer:'C', steps:['6 valores: mediana = (15+16)/2 = <code>15,5</code>.'], conclusion:'Resposta: 15,5'},
-        {q:'Um conjunto tem valores 2, 4, 4, 6. Qual é a média?', visual:null, options:['A) 3','B) 4','C) 5','D) 6','E) 3,5'], answer:'B', steps:['Média = (2+4+4+6)/4 = 16/4 = <code>4</code>.'], conclusion:'Resposta: 4'},
-        {q:'Qual é a moda de: 1, 2, 3, 4, 5 (sem repetição)?', visual:null, options:['A) 1','B) 3','C) 5','D) Não existe moda','E) 2,5'], answer:'D', steps:['Quando todos os valores aparecem igual número de vezes, não existe moda.'], conclusion:'Resposta: Não existe moda'},
-        {q:'A mediana de: 7, 2, 5 (ordenado: 2,5,7) é:', visual:null, options:['A) 2','B) 4','C) 5','D) 7','E) 4,6'], answer:'C', steps:['Ordenado: 2,5,7. Valor central = <code>5</code>.'], conclusion:'Resposta: 5'},
-        {q:'Um aluno tirou 6, 7, 8 e 9. Qual é a média?', visual:null, options:['A) 6,5','B) 7','C) 7,5','D) 8','E) 8,5'], answer:'C', steps:['Média = (6+7+8+9)/4 = 30/4 = <code>7,5</code>.'], conclusion:'Resposta: 7,5'},
-        {q:'Qual é a diferença entre média e mediana?', visual:null, options:['A) São iguais','B) Média é o valor central; mediana é a soma dividida','C) Média é a soma dividida; mediana é o valor central','D) Mediana é o valor mais repetido','E) Não há diferença'], answer:'C', steps:['Média = soma/quantidade. Mediana = valor do meio quando ordenado.'], conclusion:'Resposta: Média=soma dividida; Mediana=valor central'},
-        {q:'Conjunto: 10, 20, 20, 30, 30, 30. Qual é a moda?', visual:null, options:['A) 10','B) 20','C) 30','D) 25','E) Bimodal'], answer:'C', steps:['O 30 aparece 3 vezes — maior frequência.'], conclusion:'Resposta: 30'},
-        {q:'Média de 8 números é 6. Qual é a soma deles?', visual:null, options:['A) 40','B) 42','C) 46','D) 48','E) 50'], answer:'D', steps:['Soma = média × quantidade = 6 × 8 = <code>48</code>.'], conclusion:'Resposta: 48'},
+        {q:'Média de 5, 10, 15 e 20:',visual:null,options:['A) 10','B) 12','C) 12,5','D) 13','E) 15'],answer:'C',steps:['(5+10+15+20)/4 = 50/4 = 12,5.'],conclusion:'Resposta: 12,5'},
+        {q:'Moda de: 3, 3, 4, 5, 5, 5, 6?',visual:null,options:['A) 3','B) 4','C) 5','D) 6','E) Bimodal'],answer:'C',steps:['5 aparece 3 vezes.'],conclusion:'Resposta: 5'},
+        {q:'Mediana de: 4, 8, 15, 16, 23, 42?',visual:null,options:['A) 14','B) 15','C) 15,5','D) 16','E) 18'],answer:'C',steps:['6 valores: (15+16)/2 = 15,5.'],conclusion:'Resposta: 15,5'},
+        {q:'Média de: 2, 4, 4, 6?',visual:null,options:['A) 3','B) 4','C) 5','D) 6','E) 3,5'],answer:'B',steps:['(2+4+4+6)/4 = 16/4 = 4.'],conclusion:'Resposta: 4'},
+        {q:'Moda de: 1, 2, 3, 4, 5?',visual:null,options:['A) 1','B) 3','C) 5','D) Não existe','E) 2,5'],answer:'D',steps:['Sem repetição — não existe moda.'],conclusion:'Resposta: Não existe'},
+        {q:'Mediana de: 7, 2, 5 (ord: 2,5,7)?',visual:null,options:['A) 2','B) 4','C) 5','D) 7','E) 4,6'],answer:'C',steps:['Valor central = 5.'],conclusion:'Resposta: 5'},
+        {q:'Notas 6, 7, 8, 9. Qual a média?',visual:null,options:['A) 6,5','B) 7','C) 7,5','D) 8','E) 8,5'],answer:'C',steps:['(6+7+8+9)/4 = 30/4 = 7,5.'],conclusion:'Resposta: 7,5'},
+        {q:'Diferença entre média e mediana:',visual:null,options:['A) São iguais','B) Média=valor central; mediana=soma/n','C) Média=soma/n; mediana=valor central','D) Mediana=valor mais repetido','E) Não há'],answer:'C',steps:['Média=soma/qtd. Mediana=valor do meio.'],conclusion:'Resposta: C'},
+        {q:'Moda de: 10, 20, 20, 30, 30, 30?',visual:null,options:['A) 10','B) 20','C) 30','D) 25','E) Bimodal'],answer:'C',steps:['30 aparece 3 vezes.'],conclusion:'Resposta: 30'},
+        {q:'Média de 8 números é 6. Qual a soma?',visual:null,options:['A) 40','B) 42','C) 46','D) 48','E) 50'],answer:'D',steps:['Soma = 6 × 8 = 48.'],conclusion:'Resposta: 48'},
       ],
     },
     '7°': {
       'geografia': [
-        {q:'Qual é o maior país da América do Sul em extensão?', visual:null, options:['A) Argentina','B) Peru','C) Colômbia','D) Brasil','E) Venezuela'], answer:'D', steps:['O Brasil ocupa 8,5 milhões de km², sendo o maior da América do Sul.'], conclusion:'Resposta: Brasil'},
-        {q:'Qual é o clima predominante na Amazônia?', visual:null, options:['A) Desértico','B) Temperado','C) Equatorial quente e úmido','D) Polar','E) Mediterrâneo'], answer:'C', steps:['A Amazônia tem clima equatorial: quente e chuvoso o ano todo.'], conclusion:'Resposta: Equatorial'},
-        {q:'Qual é a cadeia montanhosa mais longa do mundo?', visual:null, options:['A) Himalaias','B) Alpes','C) Montanhas Rochosas','D) Andes','E) Urais'], answer:'D', steps:['Os Andes têm 7.200 km de extensão, a cordilheira mais longa do mundo.'], conclusion:'Resposta: Andes'},
-        {q:'Qual bioma ocupa a maior parte do Brasil?', visual:null, options:['A) Cerrado','B) Caatinga','C) Mata Atlântica','D) Pantanal','E) Amazônia'], answer:'E', steps:['A Amazônia ocupa cerca de 49% do território brasileiro.'], conclusion:'Resposta: Amazônia'},
-        {q:'Em qual hemisfério o Brasil está localizado predominantemente?', visual:null, options:['A) Norte e Leste','B) Sul e Oeste','C) Norte e Oeste','D) Sul e Leste','E) Apenas Sul'], answer:'B', steps:['A maior parte do Brasil fica no hemisfério Sul e Ocidental (Oeste).'], conclusion:'Resposta: Sul e Oeste'},
-        {q:'Qual é o principal rio da Europa em importância econômica?', visual:null, options:['A) Volga','B) Danúbio','C) Reno','D) Sena','E) Tâmisa'], answer:'C', steps:['O Rio Reno é o mais importante economicamente, cruzando vários países industrializados.'], conclusion:'Resposta: Reno'},
-        {q:'Qual é a capital do Canadá?', visual:null, options:['A) Toronto','B) Vancouver','C) Montreal','D) Ottawa','E) Calgary'], answer:'D', steps:['Ottawa é a capital do Canadá, não Toronto como muitos pensam.'], conclusion:'Resposta: Ottawa'},
-        {q:'Qual é o maior lago do mundo?', visual:null, options:['A) Lago Baikal','B) Lago Vitória','C) Mar Cáspio','D) Lago Superior','E) Lago Huron'], answer:'C', steps:['O Mar Cáspio é tecnicamente um lago com 371.000 km² — o maior do mundo.'], conclusion:'Resposta: Mar Cáspio'},
-        {q:'O que é a Zona Intertropical?', visual:null, options:['A) Região polar','B) Região entre os Trópicos de Câncer e Capricórnio','C) Zona temperada','D) Região dos desertos','E) Área oceânica'], answer:'B', steps:['Zona Intertropical = entre os dois trópicos, recebe mais radiação solar.'], conclusion:'Resposta: Entre os Trópicos de Câncer e Capricórnio'},
-        {q:'Qual continente tem o maior número de países?', visual:null, options:['A) Ásia','B) Europa','C) América','D) África','E) Oceania'], answer:'D', steps:['A África tem 54 países — o maior número de qualquer continente.'], conclusion:'Resposta: África'},
+        {q:'Maior país da América do Sul?',visual:null,options:['A) Argentina','B) Peru','C) Colômbia','D) Brasil','E) Venezuela'],answer:'D',steps:['Brasil com 8,5 milhões de km².'],conclusion:'Resposta: Brasil'},
+        {q:'Clima predominante na Amazônia?',visual:null,options:['A) Desértico','B) Temperado','C) Equatorial','D) Polar','E) Mediterrâneo'],answer:'C',steps:['Quente e chuvoso o ano todo.'],conclusion:'Resposta: Equatorial'},
+        {q:'Cadeia montanhosa mais longa do mundo?',visual:null,options:['A) Himalaias','B) Alpes','C) Rochosas','D) Andes','E) Urais'],answer:'D',steps:['Andes com 7.200 km.'],conclusion:'Resposta: Andes'},
+        {q:'Maior bioma do Brasil?',visual:null,options:['A) Cerrado','B) Caatinga','C) Mata Atlântica','D) Pantanal','E) Amazônia'],answer:'E',steps:['Amazônia ocupa ~49% do território.'],conclusion:'Resposta: Amazônia'},
+        {q:'O Brasil está predominantemente em qual hemisfério?',visual:null,options:['A) Norte e Leste','B) Sul e Oeste','C) Norte e Oeste','D) Sul e Leste','E) Só Sul'],answer:'B',steps:['Maior parte no hemisfério Sul e Ocidental.'],conclusion:'Resposta: Sul e Oeste'},
+        {q:'Capital do Canadá?',visual:null,options:['A) Toronto','B) Vancouver','C) Montreal','D) Ottawa','E) Calgary'],answer:'D',steps:['Ottawa, não Toronto.'],conclusion:'Resposta: Ottawa'},
+        {q:'Maior lago do mundo?',visual:null,options:['A) Baikal','B) Vitória','C) Mar Cáspio','D) Superior','E) Huron'],answer:'C',steps:['Mar Cáspio com 371.000 km².'],conclusion:'Resposta: Mar Cáspio'},
+        {q:'Zona entre os Trópicos de Câncer e Capricórnio?',visual:null,options:['A) Polar','B) Zona Intertropical','C) Temperada','D) Desertos','E) Oceânica'],answer:'B',steps:['Recebe mais radiação solar.'],conclusion:'Resposta: Zona Intertropical'},
+        {q:'Continente com mais países?',visual:null,options:['A) Ásia','B) Europa','C) América','D) África','E) Oceania'],answer:'D',steps:['África tem 54 países.'],conclusion:'Resposta: África'},
+        {q:'Rio mais importante economicamente na Europa?',visual:null,options:['A) Volga','B) Danúbio','C) Reno','D) Sena','E) Tâmisa'],answer:'C',steps:['Reno cruza países industrializados.'],conclusion:'Resposta: Reno'},
       ],
       'biologia': [
-        {q:'O que é a seleção natural?', visual:null, options:['A) Escolha artificial de animais','B) Processo pelo qual organismos mais adaptados sobrevivem e se reproduzem mais','C) Tipo de reprodução','D) Mutação genética','E) Hibridização'], answer:'B', steps:['Darwin descreveu a seleção natural: os mais adaptados ao ambiente sobrevivem e passam seus genes.'], conclusion:'Resposta: Sobrevivência dos mais adaptados'},
-        {q:'O que são os fungos?', visual:null, options:['A) Plantas sem clorofila','B) Animais microscópicos','C) Organismos eucariontes que se alimentam por absorção','D) Bactérias gigantes','E) Vírus complexos'], answer:'C', steps:['Fungos são eucariontes, heterotróficos por absorção. Incluem cogumelos e bolores.'], conclusion:'Resposta: Organismos eucariontes que se alimentam por absorção'},
-        {q:'Qual é a função dos glóbulos vermelhos (hemácias)?', visual:null, options:['A) Combater infecções','B) Coagular o sangue','C) Transportar oxigênio pelo corpo','D) Produzir anticorpos','E) Filtrar toxinas'], answer:'C', steps:['As hemácias transportam O₂ dos pulmões para os tecidos graças à hemoglobina.'], conclusion:'Resposta: Transportar oxigênio'},
-        {q:'O que é a respiração celular?', visual:null, options:['A) O ato de respirar ar','B) Processo de troca de gases nos pulmões','C) Produção de energia (ATP) nas células usando glicose e O₂','D) Fotossíntese reversa','E) Divisão celular'], answer:'C', steps:['Respiração celular: glicose + O₂ → ATP + CO₂ + H₂O (dentro das células).'], conclusion:'Resposta: Produção de energia nas células'},
-        {q:'Quais são os reinos dos seres vivos (classificação moderna)?', visual:null, options:['A) Animal e Vegetal','B) 3 reinos: Animal, Vegetal, Mineral','C) 5 reinos: Monera, Protista, Fungi, Plantae, Animalia','D) 2 reinos: Procarioto e Eucarioto','E) 4 reinos'], answer:'C', steps:['A classificação de Whittaker divide em 5 reinos: Monera, Protista, Fungi, Plantae e Animalia.'], conclusion:'Resposta: 5 reinos'},
-        {q:'O que é a mitose?', visual:null, options:['A) Reprodução sexual','B) Divisão celular que gera células idênticas à original','C) Fusão de células','D) Morte celular programada','E) Mutação do DNA'], answer:'B', steps:['Mitose = divisão que origina 2 células-filhas geneticamente idênticas à célula-mãe.'], conclusion:'Resposta: Divisão celular que gera células idênticas'},
-        {q:'Qual é a função dos anticorpos?', visual:null, options:['A) Transportar oxigênio','B) Digerir alimentos','C) Defender o organismo contra agentes invasores','D) Produzir hormônios','E) Gerar energia'], answer:'C', steps:['Anticorpos são proteínas do sistema imune que neutralizam agentes patogênicos.'], conclusion:'Resposta: Defender o organismo'},
-        {q:'O que é um vírus?', visual:null, options:['A) Ser vivo unicelular','B) Bactéria pequena','C) Agente infeccioso que só se reproduz dentro de células vivas','D) Fungo microscópico','E) Protozoário'], answer:'C', steps:['Vírus não são células — são partículas que precisam de células hospedeiras para se reproduzir.'], conclusion:'Resposta: Agente infeccioso que só se reproduz em células vivas'},
-        {q:'Qual sistema do corpo humano é responsável pelo movimento?', visual:null, options:['A) Sistema nervoso','B) Sistema locomotor (ósseo + muscular)','C) Sistema circulatório','D) Sistema endócrino','E) Sistema digestório'], answer:'B', steps:['O sistema locomotor = ossos + músculos + articulações, responsável pelo movimento.'], conclusion:'Resposta: Sistema locomotor'},
-        {q:'O que é a biodiversidade?', visual:null, options:['A) Número de espécies em extinção','B) Variedade de formas de vida em um ecossistema','C) Estudo de fósseis','D) Tipo de poluição','E) Processo de desmatamento'], answer:'B', steps:['Biodiversidade = variedade de seres vivos (espécies, genes e ecossistemas).'], conclusion:'Resposta: Variedade de formas de vida'},
+        {q:'O que é seleção natural?',visual:null,options:['A) Escolha artificial','B) Organismos mais adaptados sobrevivem e se reproduzem mais','C) Tipo de reprodução','D) Mutação','E) Hibridização'],answer:'B',steps:['Darwin: mais adaptados passam seus genes.'],conclusion:'Resposta: Sobrevivência dos mais adaptados'},
+        {q:'O que são fungos?',visual:null,options:['A) Plantas sem clorofila','B) Animais microscópicos','C) Eucariontes que se alimentam por absorção','D) Bactérias','E) Vírus'],answer:'C',steps:['Fungos são eucariontes heterotróficos.'],conclusion:'Resposta: Eucariontes por absorção'},
+        {q:'Função das hemácias?',visual:null,options:['A) Combater infecções','B) Coagular sangue','C) Transportar oxigênio','D) Produzir anticorpos','E) Filtrar toxinas'],answer:'C',steps:['Hemácias transportam O₂ pela hemoglobina.'],conclusion:'Resposta: Transportar oxigênio'},
+        {q:'O que é respiração celular?',visual:null,options:['A) Respirar ar','B) Troca de gases nos pulmões','C) Produção de ATP nas células','D) Fotossíntese reversa','E) Divisão celular'],answer:'C',steps:['Glicose + O₂ → ATP + CO₂ + H₂O.'],conclusion:'Resposta: Produção de energia (ATP)'},
+        {q:'Quantos reinos dos seres vivos?',visual:null,options:['A) Animal e Vegetal','B) 3','C) 5','D) 2','E) 4'],answer:'C',steps:['Monera, Protista, Fungi, Plantae, Animalia.'],conclusion:'Resposta: 5 reinos'},
+        {q:'O que é mitose?',visual:null,options:['A) Reprodução sexual','B) Divisão que gera células idênticas','C) Fusão de células','D) Morte celular','E) Mutação'],answer:'B',steps:['Mitose: 2 células-filhas idênticas.'],conclusion:'Resposta: Divisão que gera células idênticas'},
+        {q:'Função dos anticorpos?',visual:null,options:['A) Transportar O₂','B) Digerir alimentos','C) Defender contra invasores','D) Produzir hormônios','E) Gerar energia'],answer:'C',steps:['Anticorpos neutralizam patógenos.'],conclusion:'Resposta: Defender o organismo'},
+        {q:'O que é um vírus?',visual:null,options:['A) Ser vivo unicelular','B) Bactéria pequena','C) Agente que só se reproduz em células vivas','D) Fungo','E) Protozoário'],answer:'C',steps:['Vírus precisam de células hospedeiras.'],conclusion:'Resposta: Agente infeccioso em células vivas'},
+        {q:'Responsável pelo movimento corporal?',visual:null,options:['A) Nervoso','B) Sistema locomotor','C) Circulatório','D) Endócrino','E) Digestório'],answer:'B',steps:['Ossos + músculos + articulações.'],conclusion:'Resposta: Sistema locomotor'},
+        {q:'O que é biodiversidade?',visual:null,options:['A) Espécies em extinção','B) Variedade de formas de vida','C) Estudo de fósseis','D) Poluição','E) Desmatamento'],answer:'B',steps:['Variedade de espécies, genes e ecossistemas.'],conclusion:'Resposta: Variedade de formas de vida'},
       ],
       'gerais': [
-        {q:'O que é a democracia?', visual:null, options:['A) Governo de um só','B) Governo do povo, pelo povo e para o povo','C) Governo militar','D) Governo de uma família','E) Governo de religiosos'], answer:'B', steps:['Democracia vem do grego: demos (povo) + kratos (poder). Governo pelo povo.'], conclusion:'Resposta: Governo do povo'},
-        {q:'Qual é a lei mais importante do Brasil?', visual:null, options:['A) Código Civil','B) Código Penal','C) Constituição Federal','D) CLT','E) Estatuto da Criança'], answer:'C', steps:['A Constituição Federal de 1988 é a lei maior do Brasil — "Constituição Cidadã".'], conclusion:'Resposta: Constituição Federal'},
-        {q:'Qual cientista formulou a Lei da Gravidade?', visual:null, options:['A) Einstein','B) Galileu','C) Copérnico','D) Newton','E) Kepler'], answer:'D', steps:['Isaac Newton formulou a Lei da Gravitação Universal em 1687.'], conclusion:'Resposta: Newton'},
-        {q:'Quantos países existem na América do Sul?', visual:null, options:['A) 10','B) 12','C) 14','D) 16','E) 18'], answer:'B', steps:['A América do Sul tem 12 países independentes.'], conclusion:'Resposta: 12 países'},
-        {q:'Qual é a obra mais famosa de Leonardo da Vinci além da Mona Lisa?', visual:null, options:['A) Guernica','B) O Grito','C) A Última Ceia','D) Noite Estrelada','E) O Nascimento de Vênus'], answer:'C', steps:['"A Última Ceia" é o afresco mais famoso de Da Vinci, pintado entre 1495 e 1498.'], conclusion:'Resposta: A Última Ceia'},
-        {q:'O que é o PIB?', visual:null, options:['A) Produto Interno Bruto — soma de tudo que um país produz','B) Plano de Investimento Bancário','C) Partido Independente do Brasil','D) Produto Internacional Bruto','E) Política de Integração Básica'], answer:'A', steps:['PIB = soma de todos os bens e serviços produzidos num país em um período.'], conclusion:'Resposta: Produto Interno Bruto'},
-        {q:'Em que ano foi proclamada a República no Brasil?', visual:null, options:['A) 1822','B) 1850','C) 1888','D) 1889','E) 1900'], answer:'D', steps:['A República foi proclamada em 15 de novembro de 1889 pelo Marechal Deodoro.'], conclusion:'Resposta: 1889'},
-        {q:'Qual é a capital da China?', visual:null, options:['A) Xangai','B) Hong Kong','C) Pequim','D) Cantão','E) Nanquim'], answer:'C', steps:['Pequim (Beijing) é a capital da República Popular da China.'], conclusion:'Resposta: Pequim'},
-        {q:'O que é inflação?', visual:null, options:['A) Queda geral de preços','B) Aumento geral e contínuo dos preços','C) Aumento do salário mínimo','D) Redução de impostos','E) Crescimento do PIB'], answer:'B', steps:['Inflação = aumento generalizado e contínuo dos preços, reduzindo o poder de compra.'], conclusion:'Resposta: Aumento geral dos preços'},
-        {q:'Qual é o maior órgão do corpo humano?', visual:null, options:['A) Fígado','B) Pulmão','C) Intestino','D) Pele','E) Cérebro'], answer:'D', steps:['A pele é o maior órgão do corpo humano, com cerca de 2 m² de área.'], conclusion:'Resposta: Pele'},
+        {q:'O que é democracia?',visual:null,options:['A) Governo de um só','B) Governo do povo','C) Governo militar','D) Governo de família','E) Governo de religiosos'],answer:'B',steps:['Demos=povo, kratos=poder.'],conclusion:'Resposta: Governo do povo'},
+        {q:'Lei mais importante do Brasil?',visual:null,options:['A) Código Civil','B) Código Penal','C) Constituição Federal','D) CLT','E) ECA'],answer:'C',steps:['Constituição de 1988 — Constituição Cidadã.'],conclusion:'Resposta: Constituição Federal'},
+        {q:'Quem formulou a Lei da Gravidade?',visual:null,options:['A) Einstein','B) Galileu','C) Copérnico','D) Newton','E) Kepler'],answer:'D',steps:['Isaac Newton, em 1687.'],conclusion:'Resposta: Newton'},
+        {q:'Quantos países na América do Sul?',visual:null,options:['A) 10','B) 12','C) 14','D) 16','E) 18'],answer:'B',steps:['12 países independentes.'],conclusion:'Resposta: 12'},
+        {q:'O que é o PIB?',visual:null,options:['A) Produto Interno Bruto','B) Plano de Investimento','C) Partido Independente','D) Produto Internacional','E) Política de Integração'],answer:'A',steps:['Soma de tudo que um país produz.'],conclusion:'Resposta: Produto Interno Bruto'},
+        {q:'Proclamação da República no Brasil?',visual:null,options:['A) 1822','B) 1850','C) 1888','D) 1889','E) 1900'],answer:'D',steps:['15 de novembro de 1889.'],conclusion:'Resposta: 1889'},
+        {q:'Capital da China?',visual:null,options:['A) Xangai','B) Hong Kong','C) Pequim','D) Cantão','E) Nanquim'],answer:'C',steps:['Pequim (Beijing).'],conclusion:'Resposta: Pequim'},
+        {q:'O que é inflação?',visual:null,options:['A) Queda de preços','B) Aumento geral dos preços','C) Aumento de salário','D) Redução de impostos','E) Crescimento do PIB'],answer:'B',steps:['Aumento geral e contínuo dos preços.'],conclusion:'Resposta: Aumento geral dos preços'},
+        {q:'Maior órgão do corpo humano?',visual:null,options:['A) Fígado','B) Pulmão','C) Intestino','D) Pele','E) Cérebro'],answer:'D',steps:['Pele com ~2 m² de área.'],conclusion:'Resposta: Pele'},
+        {q:'Símbolo químico do ferro?',visual:null,options:['A) Fe','B) Fr','C) Fo','D) Fi','E) Fa'],answer:'A',steps:['Fe vem do latim Ferrum.'],conclusion:'Resposta: Fe'},
       ],
       'estatistica': [
-        {q:'Média de: 12, 18, 24, 6:', visual:null, options:['A) 12','B) 14','C) 15','D) 16','E) 18'], answer:'C', steps:['(12+18+24+6)/4 = 60/4 = <code>15</code>.'], conclusion:'Resposta: 15'},
-        {q:'Mediana de: 3, 5, 7, 9, 11:', visual:null, options:['A) 5','B) 6','C) 7','D) 8','E) 9'], answer:'C', steps:['5 valores ordenados. O do meio (3°) é <code>7</code>.'], conclusion:'Resposta: 7'},
-        {q:'Moda de: 2, 4, 4, 6, 8, 8, 8:', visual:null, options:['A) 2','B) 4','C) 6','D) 8','E) Amodal'], answer:'D', steps:['O 8 aparece 3 vezes — maior frequência.'], conclusion:'Resposta: 8'},
-        {q:'Se a média de 4 números é 10, sua soma é:', visual:null, options:['A) 30','B) 35','C) 40','D) 45','E) 50'], answer:'C', steps:['Soma = 10 × 4 = <code>40</code>.'], conclusion:'Resposta: 40'},
-        {q:'Conjunto bimodal: qual tem DUAS modas?', visual:null, options:['A) 1,2,3,4','B) 2,2,3,4','C) 2,2,3,3,4','D) 2,3,3,4','E) 1,2,3,3'], answer:'C', steps:['2,2,3,3,4: o 2 e o 3 aparecem 2 vezes cada → bimodal: moda = 2 e 3.'], conclusion:'Resposta: 2,2,3,3,4'},
-        {q:'Mediana de: 10, 30, 20, 40 (ordenado: 10,20,30,40):', visual:null, options:['A) 20','B) 22','C) 25','D) 30','E) 35'], answer:'C', steps:['4 valores: mediana = (20+30)/2 = <code>25</code>.'], conclusion:'Resposta: 25'},
-        {q:'Notas de um aluno: 5, 6, 7, 8, 9. Qual é a média?', visual:null, options:['A) 6','B) 6,5','C) 7','D) 7,5','E) 8'], answer:'C', steps:['(5+6+7+8+9)/5 = 35/5 = <code>7</code>.'], conclusion:'Resposta: 7'},
-        {q:'Um conjunto tem média 8 e 5 elementos. Se tirarmos um elemento de valor 8, qual é a nova média?', visual:null, options:['A) 7','B) 7,5','C) 8','D) 8,5','E) 9'], answer:'C', steps:['Soma total = 40. Removendo 8: soma = 32, elementos = 4. Média = 32/4 = <code>8</code>.'], conclusion:'Resposta: 8'},
-        {q:'Qual medida é menos afetada por valores extremos (outliers)?', visual:null, options:['A) Média','B) Mediana','C) Moda','D) Soma','E) Todas igualmente'], answer:'B', steps:['A mediana é menos sensível a valores extremos do que a média.'], conclusion:'Resposta: Mediana'},
-        {q:'Temperatura diária em °C: 20,22,25,22,28. Qual é a moda?', visual:null, options:['A) 20','B) 22','C) 25','D) 28','E) 23,4'], answer:'B', steps:['O 22 aparece 2 vezes — é a moda.'], conclusion:'Resposta: 22'},
+        {q:'Média de: 12, 18, 24, 6:',visual:null,options:['A) 12','B) 14','C) 15','D) 16','E) 18'],answer:'C',steps:['(12+18+24+6)/4 = 60/4 = 15.'],conclusion:'Resposta: 15'},
+        {q:'Mediana de: 3, 5, 7, 9, 11:',visual:null,options:['A) 5','B) 6','C) 7','D) 8','E) 9'],answer:'C',steps:['5 valores — o do meio é 7.'],conclusion:'Resposta: 7'},
+        {q:'Moda de: 2, 4, 4, 6, 8, 8, 8:',visual:null,options:['A) 2','B) 4','C) 6','D) 8','E) Amodal'],answer:'D',steps:['8 aparece 3 vezes.'],conclusion:'Resposta: 8'},
+        {q:'Média de 4 números é 10. Soma?',visual:null,options:['A) 30','B) 35','C) 40','D) 45','E) 50'],answer:'C',steps:['10 × 4 = 40.'],conclusion:'Resposta: 40'},
+        {q:'Qual conjunto é bimodal?',visual:null,options:['A) 1,2,3,4','B) 2,2,3,4','C) 2,2,3,3,4','D) 2,3,3,4','E) 1,2,3,3'],answer:'C',steps:['2 e 3 aparecem 2 vezes cada.'],conclusion:'Resposta: 2,2,3,3,4'},
+        {q:'Mediana de: 10,20,30,40 (ord):',visual:null,options:['A) 20','B) 22','C) 25','D) 30','E) 35'],answer:'C',steps:['4 valores: (20+30)/2 = 25.'],conclusion:'Resposta: 25'},
+        {q:'Média de: 5, 6, 7, 8, 9:',visual:null,options:['A) 6','B) 6,5','C) 7','D) 7,5','E) 8'],answer:'C',steps:['(5+6+7+8+9)/5 = 35/5 = 7.'],conclusion:'Resposta: 7'},
+        {q:'Qual medida é menos afetada por outliers?',visual:null,options:['A) Média','B) Mediana','C) Moda','D) Soma','E) Todas'],answer:'B',steps:['Mediana é menos sensível a valores extremos.'],conclusion:'Resposta: Mediana'},
+        {q:'Temperatura: 20,22,25,22,28. Moda?',visual:null,options:['A) 20','B) 22','C) 25','D) 28','E) 23,4'],answer:'B',steps:['22 aparece 2 vezes.'],conclusion:'Resposta: 22'},
+        {q:'Média ponderada: 7(peso 2) e 9(peso 3):',visual:null,options:['A) 7,8','B) 8','C) 8,2','D) 8,6','E) 9'],answer:'C',steps:['(7×2+9×3)/(2+3) = 41/5 = 8,2.'],conclusion:'Resposta: 8,2'},
       ],
     },
     '8°': {
       'geografia': [
-        {q:'O que é a globalização?', visual:null, options:['A) Separação dos países','B) Integração econômica, cultural e política mundial','C) Criação de fronteiras','D) Comércio apenas regional','E) Isolamento nacional'], answer:'B', steps:['Globalização = integração mundial em economia, cultura, tecnologia e política.'], conclusion:'Resposta: Integração econômica, cultural e política mundial'},
-        {q:'Qual é a principal fonte de energia do mundo atualmente?', visual:null, options:['A) Solar','B) Nuclear','C) Hidráulica','D) Combustíveis fósseis','E) Eólica'], answer:'D', steps:['Os combustíveis fósseis (petróleo, carvão, gás) ainda respondem por ~80% da energia mundial.'], conclusion:'Resposta: Combustíveis fósseis'},
-        {q:'O que é o IDH?', visual:null, options:['A) Índice de Desenvolvimento Humano','B) Índice de Desigualdade Humana','C) Instituto de Dados Históricos','D) Indicador de Desempenho Habitacional','E) Índice de Democracia e Habitação'], answer:'A', steps:['IDH mede desenvolvimento humano: saúde, educação e renda.'], conclusion:'Resposta: Índice de Desenvolvimento Humano'},
-        {q:'Qual é a região mais industrializada do Brasil?', visual:null, options:['A) Norte','B) Nordeste','C) Centro-Oeste','D) Sudeste','E) Sul'], answer:'D', steps:['O Sudeste (SP, RJ, MG, ES) concentra a maior parte da indústria brasileira.'], conclusion:'Resposta: Sudeste'},
-        {q:'O que é o Protocolo de Kyoto?', visual:null, options:['A) Tratado de paz entre países asiáticos','B) Acordo para redução de gases do efeito estufa','C) Aliança militar','D) Acordo comercial','E) Tratado sobre energia nuclear'], answer:'B', steps:['Kyoto (1997) comprometeu países a reduzir emissões de gases do efeito estufa.'], conclusion:'Resposta: Acordo para redução de gases do efeito estufa'},
-        {q:'Qual país tem a maior reserva de petróleo do mundo?', visual:null, options:['A) Arábia Saudita','B) Rússia','C) EUA','D) Venezuela','E) Irã'], answer:'D', steps:['A Venezuela tem as maiores reservas provadas de petróleo do mundo.'], conclusion:'Resposta: Venezuela'},
-        {q:'O que é a transumância?', visual:null, options:['A) Migração permanente de populações','B) Deslocamento sazonal de rebanhos em busca de pastagens','C) Tipo de cultivo agrícola','D) Fenômeno climático','E) Movimento tectônico'], answer:'B', steps:['Transumância = migração sazonal de rebanhos entre pastagens de planície e montanha.'], conclusion:'Resposta: Deslocamento sazonal de rebanhos'},
-        {q:'Qual é o nome do processo de formação das montanhas?', visual:null, options:['A) Erosão','B) Vulcanismo','C) Tectonismo (orogênese)','D) Intemperismo','E) Sedimentação'], answer:'C', steps:['Orogênese = processo de formação de montanhas por movimentos das placas tectônicas.'], conclusion:'Resposta: Tectonismo/orogênese'},
-        {q:'O Cerrado brasileiro é considerado:', visual:null, options:['A) Deserto','B) Floresta densa','C) Savana tropical — hotspot de biodiversidade','D) Mangue','E) Tundra'], answer:'C', steps:['O Cerrado é uma savana tropical e um dos principais hotspots de biodiversidade do mundo.'], conclusion:'Resposta: Savana tropical e hotspot de biodiversidade'},
-        {q:'Qual é o maior porto da América do Sul?', visual:null, options:['A) Buenos Aires','B) Rio de Janeiro','C) Santos','D) Montevidéu','E) Valparaíso'], answer:'C', steps:['O Porto de Santos (SP) é o maior da América Latina em movimentação de cargas.'], conclusion:'Resposta: Santos'},
+        {q:'O que é globalização?',visual:null,options:['A) Separação de países','B) Integração econômica e cultural mundial','C) Criação de fronteiras','D) Comércio regional','E) Isolamento'],answer:'B',steps:['Integração mundial em economia, cultura e política.'],conclusion:'Resposta: Integração mundial'},
+        {q:'Principal fonte de energia do mundo?',visual:null,options:['A) Solar','B) Nuclear','C) Hidráulica','D) Combustíveis fósseis','E) Eólica'],answer:'D',steps:['Fósseis respondem por ~80% da energia.'],conclusion:'Resposta: Combustíveis fósseis'},
+        {q:'O que é IDH?',visual:null,options:['A) Índice de Desenvolvimento Humano','B) Índice de Desigualdade','C) Instituto de Dados','D) Indicador Habitacional','E) Índice de Democracia'],answer:'A',steps:['Mede saúde, educação e renda.'],conclusion:'Resposta: Índice de Desenvolvimento Humano'},
+        {q:'Região mais industrializada do Brasil?',visual:null,options:['A) Norte','B) Nordeste','C) Centro-Oeste','D) Sudeste','E) Sul'],answer:'D',steps:['Sudeste (SP, RJ, MG, ES) concentra a maior indústria.'],conclusion:'Resposta: Sudeste'},
+        {q:'O que é o Protocolo de Kyoto?',visual:null,options:['A) Tratado de paz','B) Acordo para reduzir gases estufa','C) Aliança militar','D) Acordo comercial','E) Tratado nuclear'],answer:'B',steps:['Kyoto (1997): redução de emissões.'],conclusion:'Resposta: Redução de gases estufa'},
+        {q:'País com maior reserva de petróleo?',visual:null,options:['A) Arábia Saudita','B) Rússia','C) EUA','D) Venezuela','E) Irã'],answer:'D',steps:['Venezuela tem as maiores reservas provadas.'],conclusion:'Resposta: Venezuela'},
+        {q:'O que é orogênese?',visual:null,options:['A) Erosão','B) Vulcanismo','C) Formação de montanhas','D) Intemperismo','E) Sedimentação'],answer:'C',steps:['Movimento das placas tectônicas forma montanhas.'],conclusion:'Resposta: Formação de montanhas'},
+        {q:'O Cerrado é:',visual:null,options:['A) Deserto','B) Floresta densa','C) Savana tropical e hotspot de biodiversidade','D) Mangue','E) Tundra'],answer:'C',steps:['Savana tropical e um dos maiores hotspots do mundo.'],conclusion:'Resposta: Savana tropical'},
+        {q:'O que é transumância?',visual:null,options:['A) Migração permanente','B) Deslocamento sazonal de rebanhos','C) Tipo de cultivo','D) Fenômeno climático','E) Movimento tectônico'],answer:'B',steps:['Migração sazonal de rebanhos entre pastagens.'],conclusion:'Resposta: Deslocamento sazonal de rebanhos'},
+        {q:'Maior porto da América do Sul?',visual:null,options:['A) Buenos Aires','B) Rio de Janeiro','C) Santos','D) Montevidéu','E) Valparaíso'],answer:'C',steps:['Porto de Santos é o maior da América Latina.'],conclusion:'Resposta: Santos'},
       ],
       'biologia': [
-        {q:'O que é a meiose?', visual:null, options:['A) Divisão que gera células idênticas','B) Divisão que gera 4 células com metade do material genético','C) Fusão de células','D) Reprodução assexuada','E) Tipo de mutação'], answer:'B', steps:['Meiose = divisão celular que produz 4 células haploides (gametas) com metade dos cromossomos.'], conclusion:'Resposta: Divisão que gera 4 células com metade do material genético'},
-        {q:'O que são hormônios?', visual:null, options:['A) Enzimas digestivas','B) Substâncias químicas produzidas por glândulas que regulam funções do corpo','C) Anticorpos especializados','D) Nutrientes essenciais','E) Tipo de proteína estrutural'], answer:'B', steps:['Hormônios são mensageiros químicos do sistema endócrino que regulam funções corporais.'], conclusion:'Resposta: Substâncias químicas que regulam funções do corpo'},
-        {q:'O que é a mutação genética?', visual:null, options:['A) Cópia perfeita do DNA','B) Alteração na sequência do DNA','C) Processo de fotossíntese','D) Divisão celular normal','E) Tipo de reprodução'], answer:'B', steps:['Mutação = alteração na sequência de bases do DNA, podendo ser espontânea ou induzida.'], conclusion:'Resposta: Alteração na sequência do DNA'},
-        {q:'Qual é a função do fígado?', visual:null, options:['A) Bombeamento de sangue','B) Troca de gases','C) Produção de bile, desintoxicação e metabolismo de nutrientes','D) Produção de urina','E) Digestão mecânica'], answer:'C', steps:['O fígado produz bile, metaboliza nutrientes, desintoxica o sangue e armazena glicogênio.'], conclusion:'Resposta: Produção de bile, desintoxicação e metabolismo'},
-        {q:'O que é a simbiose?', visual:null, options:['A) Relação em que um ser prejudica o outro','B) Relação em que ambos os organismos se beneficiam','C) Predação','D) Competição','E) Parasitismo'], answer:'B', steps:['Simbiose (mutualismo) = relação benéfica para ambos os organismos envolvidos.'], conclusion:'Resposta: Relação benéfica para ambos'},
-        {q:'Qual é a função da insulina?', visual:null, options:['A) Aumentar o açúcar no sangue','B) Regular os níveis de glicose no sangue (reduzindo-os)','C) Combater infecções','D) Controlar a pressão','E) Estimular o crescimento'], answer:'B', steps:['A insulina (produzida pelo pâncreas) reduz a glicemia, permitindo que as células absorvam glicose.'], conclusion:'Resposta: Regular (reduzir) os níveis de glicose no sangue'},
-        {q:'O que é um ecossistema aquático de transição entre mar e rio?', visual:null, options:['A) Taiga','B) Mangue','C) Cerrado','D) Tundra','E) Savana'], answer:'B', steps:['O mangue é o ecossistema de transição entre ambientes marinhos e fluviais.'], conclusion:'Resposta: Mangue'},
-        {q:'O que é a cadeia de DNA formada?', visual:null, options:['A) Simples, de proteínas','B) Dupla hélice de nucleotídeos','C) Tripla hélice de aminoácidos','D) Simples de açúcares','E) Quadrupla hélice de lipídios'], answer:'B', steps:['O DNA tem estrutura de dupla hélice, composta por nucleotídeos (Watson e Crick, 1953).'], conclusion:'Resposta: Dupla hélice de nucleotídeos'},
-        {q:'O que são células-tronco?', visual:null, options:['A) Células mortas','B) Células diferenciadas que não se dividem','C) Células indiferenciadas capazes de se transformar em vários tipos celulares','D) Células cancerígenas','E) Células do sistema nervoso'], answer:'C', steps:['Células-tronco são indiferenciadas e têm potencial de se especializar em diferentes tecidos.'], conclusion:'Resposta: Células indiferenciadas que podem se especializar'},
-        {q:'O que é a fotossíntese artificial?', visual:null, options:['A) Fotossíntese em laboratório com plantas artificiais','B) Processo tecnológico que imita a fotossíntese para produzir energia','C) Tipo de célula solar','D) Respiração celular invertida','E) Mutação em cloroplastos'], answer:'B', steps:['Fotossíntese artificial = tecnologia que imita plantas para converter luz solar em combustível.'], conclusion:'Resposta: Tecnologia que imita a fotossíntese para produzir energia'},
+        {q:'O que é meiose?',visual:null,options:['A) Gera células idênticas','B) Gera 4 células com metade do material genético','C) Fusão de células','D) Reprodução assexuada','E) Mutação'],answer:'B',steps:['Meiose: 4 gametas haploides.'],conclusion:'Resposta: 4 células com metade do material'},
+        {q:'O que são hormônios?',visual:null,options:['A) Enzimas digestivas','B) Substâncias que regulam funções corporais','C) Anticorpos','D) Nutrientes','E) Proteínas estruturais'],answer:'B',steps:['Mensageiros químicos do sistema endócrino.'],conclusion:'Resposta: Reguladores do corpo'},
+        {q:'O que é mutação genética?',visual:null,options:['A) Cópia perfeita','B) Alteração na sequência do DNA','C) Fotossíntese','D) Divisão normal','E) Reprodução'],answer:'B',steps:['Alteração na sequência de bases do DNA.'],conclusion:'Resposta: Alteração no DNA'},
+        {q:'Função do fígado?',visual:null,options:['A) Bombear sangue','B) Troca de gases','C) Bile, desintoxicação e metabolismo','D) Urina','E) Digestão mecânica'],answer:'C',steps:['Produz bile, metaboliza nutrientes, desintoxica.'],conclusion:'Resposta: Bile, desintoxicação e metabolismo'},
+        {q:'O que é simbiose?',visual:null,options:['A) Um prejudica o outro','B) Ambos se beneficiam','C) Predação','D) Competição','E) Parasitismo'],answer:'B',steps:['Mutualismo = benefício mútuo.'],conclusion:'Resposta: Ambos se beneficiam'},
+        {q:'Função da insulina?',visual:null,options:['A) Aumentar açúcar no sangue','B) Reduzir glicemia','C) Combater infecções','D) Controlar pressão','E) Crescimento'],answer:'B',steps:['Insulina (pâncreas) reduz glicemia.'],conclusion:'Resposta: Reduzir glicemia'},
+        {q:'Estrutura do DNA?',visual:null,options:['A) Simples de proteínas','B) Dupla hélice de nucleotídeos','C) Tripla de aminoácidos','D) Simples de açúcares','E) Quádrupla de lipídios'],answer:'B',steps:['Dupla hélice (Watson e Crick, 1953).'],conclusion:'Resposta: Dupla hélice'},
+        {q:'O que são células-tronco?',visual:null,options:['A) Células mortas','B) Diferenciadas que não se dividem','C) Indiferenciadas que se especializam','D) Cancerígenas','E) Nervosas'],answer:'C',steps:['Indiferenciadas com potencial de especialização.'],conclusion:'Resposta: Indiferenciadas que se especializam'},
+        {q:'Ecossistema entre mar e rio?',visual:null,options:['A) Taiga','B) Mangue','C) Cerrado','D) Tundra','E) Savana'],answer:'B',steps:['Mangue = transição entre ambiente marinho e fluvial.'],conclusion:'Resposta: Mangue'},
+        {q:'O que é fotossíntese artificial?',visual:null,options:['A) Com plantas artificiais','B) Imita fotossíntese para produzir energia','C) Célula solar','D) Respiração invertida','E) Mutação'],answer:'B',steps:['Tecnologia que converte luz solar em combustível.'],conclusion:'Resposta: Imita fotossíntese para energia'},
       ],
       'gerais': [
-        {q:'O que é a Inteligência Artificial?', visual:null, options:['A) Robôs físicos','B) Simulação de processos inteligentes por sistemas computacionais','C) Internet das coisas','D) Computadores quânticos','E) Redes neurais apenas'], answer:'B', steps:['IA = sistemas que simulam capacidades cognitivas humanas como aprendizado e raciocínio.'], conclusion:'Resposta: Simulação de processos inteligentes por computadores'},
-        {q:'Qual é o gás responsável pelo efeito estufa?', visual:null, options:['A) Oxigênio','B) Nitrogênio','C) Dióxido de carbono (CO₂)','D) Hidrogênio','E) Hélio'], answer:'C', steps:['O CO₂ é o principal gás do efeito estufa, retendo calor na atmosfera.'], conclusion:'Resposta: Dióxido de carbono (CO₂)'},
-        {q:'O que é o Teorema de Pitágoras?', visual:null, options:['A) a+b=c','B) a²+b²=c²','C) a×b=c²','D) a²-b²=c','E) a+b+c=180°'], answer:'B', steps:['Em triângulo retângulo: hipotenusa²=cateto²+cateto². a²+b²=c².'], conclusion:'Resposta: a²+b²=c²'},
-        {q:'Quem foi Mahatma Gandhi?', visual:null, options:['A) Presidente da China','B) Líder da independência da Índia pela não-violência','C) General militar','D) Cientista britânico','E) Rei do Paquistão'], answer:'B', steps:['Gandhi liderou a independência da Índia do domínio britânico usando resistência pacífica.'], conclusion:'Resposta: Líder da independência da Índia pela não-violência'},
-        {q:'O que é blockchain?', visual:null, options:['A) Tipo de vírus','B) Rede social','C) Sistema de registro distribuído e seguro de transações','D) Linguagem de programação','E) Tipo de hardware'], answer:'C', steps:['Blockchain é um livro-razão distribuído e imutável, base das criptomoedas.'], conclusion:'Resposta: Sistema de registro distribuído e seguro'},
-        {q:'Qual é a função do Sistema Único de Saúde (SUS)?', visual:null, options:['A) Saúde só para servidores públicos','B) Saúde paga para todos os brasileiros','C) Garantir saúde gratuita e universal a todos os brasileiros','D) Importar medicamentos','E) Regular hospitais privados'], answer:'C', steps:['O SUS garante acesso universal e gratuito à saúde para todos os brasileiros.'], conclusion:'Resposta: Saúde gratuita e universal para todos'},
-        {q:'O que é energia renovável?', visual:null, options:['A) Energia do petróleo','B) Energia nuclear','C) Energia proveniente de fontes naturais que se renovam','D) Energia do carvão','E) Energia do gás natural'], answer:'C', steps:['Energia renovável vem de fontes que se regeneram: solar, eólica, hídrica, biomassa.'], conclusion:'Resposta: Fontes naturais que se renovam'},
-        {q:'Quantos bits tem um byte?', visual:null, options:['A) 4','B) 6','C) 8','D) 10','E) 16'], answer:'C', steps:['1 byte = 8 bits. É a unidade básica de informação digital.'], conclusion:'Resposta: 8 bits'},
-        {q:'O que é a OMS?', visual:null, options:['A) Organização Mundial do Serviço','B) Organização Mundial da Saúde','C) Organização das Mulheres e Saúde','D) Órgão Mundial de Segurança','E) Ordem Mundial de Sustentabilidade'], answer:'B', steps:['OMS = Organização Mundial da Saúde, agência da ONU para saúde global.'], conclusion:'Resposta: Organização Mundial da Saúde'},
-        {q:'Qual foi o primeiro país a ter o voto feminino?', visual:null, options:['A) EUA','B) França','C) Brasil','D) Nova Zelândia','E) Suécia'], answer:'D', steps:['A Nova Zelândia foi o primeiro país a conceder voto às mulheres, em 1893.'], conclusion:'Resposta: Nova Zelândia'},
+        {q:'O que é Inteligência Artificial?',visual:null,options:['A) Robôs físicos','B) Simulação de processos inteligentes por computadores','C) Internet das coisas','D) Computação quântica','E) Só redes neurais'],answer:'B',steps:['IA simula capacidades cognitivas humanas.'],conclusion:'Resposta: Simulação inteligente por computadores'},
+        {q:'Gás responsável pelo efeito estufa?',visual:null,options:['A) Oxigênio','B) Nitrogênio','C) CO₂','D) Hidrogênio','E) Hélio'],answer:'C',steps:['CO₂ retém calor na atmosfera.'],conclusion:'Resposta: CO₂'},
+        {q:'Teorema de Pitágoras?',visual:null,options:['A) a+b=c','B) a²+b²=c²','C) a×b=c²','D) a²-b²=c','E) a+b+c=180°'],answer:'B',steps:['Hipotenusa²=cateto²+cateto².'],conclusion:'Resposta: a²+b²=c²'},
+        {q:'Quem foi Mahatma Gandhi?',visual:null,options:['A) Presidente da China','B) Líder da independência da Índia pela não-violência','C) General militar','D) Cientista britânico','E) Rei do Paquistão'],answer:'B',steps:['Gandhi liderou a independência pela resistência pacífica.'],conclusion:'Resposta: Líder da independência da Índia'},
+        {q:'O que é blockchain?',visual:null,options:['A) Vírus','B) Rede social','C) Registro distribuído e seguro de transações','D) Linguagem de programação','E) Hardware'],answer:'C',steps:['Base das criptomoedas: livro-razão distribuído.'],conclusion:'Resposta: Registro distribuído e seguro'},
+        {q:'Função do SUS?',visual:null,options:['A) Saúde só para servidores','B) Saúde paga','C) Saúde gratuita e universal','D) Importar medicamentos','E) Regular hospitais'],answer:'C',steps:['SUS: acesso universal e gratuito à saúde.'],conclusion:'Resposta: Saúde gratuita e universal'},
+        {q:'O que é energia renovável?',visual:null,options:['A) Petróleo','B) Nuclear','C) Fontes naturais que se renovam','D) Carvão','E) Gás natural'],answer:'C',steps:['Solar, eólica, hídrica, biomassa.'],conclusion:'Resposta: Fontes que se renovam'},
+        {q:'Quantos bits tem um byte?',visual:null,options:['A) 4','B) 6','C) 8','D) 10','E) 16'],answer:'C',steps:['1 byte = 8 bits.'],conclusion:'Resposta: 8'},
+        {q:'O que é a OMS?',visual:null,options:['A) Organização Mundial do Serviço','B) Organização Mundial da Saúde','C) Organização das Mulheres','D) Órgão de Segurança','E) Ordem de Sustentabilidade'],answer:'B',steps:['OMS: agência da ONU para saúde global.'],conclusion:'Resposta: Organização Mundial da Saúde'},
+        {q:'Primeiro país com voto feminino?',visual:null,options:['A) EUA','B) França','C) Brasil','D) Nova Zelândia','E) Suécia'],answer:'D',steps:['Nova Zelândia, em 1893.'],conclusion:'Resposta: Nova Zelândia'},
       ],
       'estatistica': [
-        {q:'Desvio médio de: 2, 4, 6, 8 (média=5):', visual:null, options:['A) 1','B) 2','C) 3','D) 4','E) 5'], answer:'B', steps:['Desvios: |2-5|=3, |4-5|=1, |6-5|=1, |8-5|=3. Média = (3+1+1+3)/4 = 8/4 = <code>2</code>.'], conclusion:'Resposta: 2'},
-        {q:'Qual gráfico é mais adequado para mostrar proporções de um todo?', visual:null, options:['A) Histograma','B) Gráfico de linha','C) Gráfico de pizza (setor)','D) Gráfico de dispersão','E) Boxplot'], answer:'C', steps:['Gráfico de pizza/setor mostra proporções relativas de um todo (partes = 100%).'], conclusion:'Resposta: Gráfico de pizza'},
-        {q:'Frequência relativa de "azul" em: azul,azul,verde,vermelho,azul:', visual:null, options:['A) 20%','B) 40%','C) 50%','D) 60%','E) 80%'], answer:'D', steps:['Azul aparece 3 vezes em 5. 3/5 = 0,6 = <code>60%</code>.'], conclusion:'Resposta: 60%'},
-        {q:'A amplitude de: 3, 7, 2, 9, 5 é:', visual:null, options:['A) 5','B) 6','C) 7','D) 8','E) 9'], answer:'C', steps:['Amplitude = máximo − mínimo = 9 − 2 = <code>7</code>.'], conclusion:'Resposta: 7'},
-        {q:'Média ponderada: nota 7 (peso 2) e nota 9 (peso 3):', visual:null, options:['A) 7,8','B) 8','C) 8,2','D) 8,6','E) 9'], answer:'C', steps:['MP = (7×2 + 9×3)/(2+3) = (14+27)/5 = 41/5 = <code>8,2</code>.'], conclusion:'Resposta: 8,2'},
-        {q:'Dados: 4,4,4,4,4. Qual é o desvio padrão?', visual:null, options:['A) 0','B) 1','C) 2','D) 4','E) 5'], answer:'A', steps:['Todos os valores são iguais → sem variação → desvio padrão = <code>0</code>.'], conclusion:'Resposta: 0'},
-        {q:'Qual é a mediana de: 1,3,3,6,7,8,9?', visual:null, options:['A) 3','B) 5','C) 6','D) 7','E) 8'], answer:'C', steps:['7 valores. O 4° (central) é <code>6</code>.'], conclusion:'Resposta: 6'},
-        {q:'Qual medida de tendência central é mais afetada por um valor muito alto?', visual:null, options:['A) Moda','B) Mediana','C) Média','D) Amplitude','E) Desvio padrão'], answer:'C', steps:['A média é a mais sensível a outliers pois usa todos os valores no cálculo.'], conclusion:'Resposta: Média'},
-        {q:'Probabilidade de tirar um número par em um dado de 6 faces:', visual:null, options:['A) 1/6','B) 1/3','C) 1/2','D) 2/3','E) 5/6'], answer:'C', steps:['Pares: 2,4,6 → 3 de 6 faces. P = 3/6 = <code>1/2</code>.'], conclusion:'Resposta: 1/2'},
-        {q:'Num conjunto com média 10, se somarmos 5 a todos os valores, a nova média é:', visual:null, options:['A) 10','B) 12','C) 14','D) 15','E) 50'], answer:'D', steps:['Somar constante c a todos os valores aumenta a média em c. 10+5 = <code>15</code>.'], conclusion:'Resposta: 15'},
+        {q:'Amplitude de: 3, 7, 2, 9, 5:',visual:null,options:['A) 5','B) 6','C) 7','D) 8','E) 9'],answer:'C',steps:['Máx-mín = 9-2 = 7.'],conclusion:'Resposta: 7'},
+        {q:'Gráfico para mostrar proporções?',visual:null,options:['A) Histograma','B) Linha','C) Pizza','D) Dispersão','E) Boxplot'],answer:'C',steps:['Pizza/setor mostra proporções do todo.'],conclusion:'Resposta: Pizza'},
+        {q:'Freq. relativa de "azul" em: azul,azul,verde,vermelho,azul:',visual:null,options:['A) 20%','B) 40%','C) 50%','D) 60%','E) 80%'],answer:'D',steps:['3 de 5 = 60%.'],conclusion:'Resposta: 60%'},
+        {q:'Média ponderada: 7(p2) e 9(p3):',visual:null,options:['A) 7,8','B) 8','C) 8,2','D) 8,6','E) 9'],answer:'C',steps:['(14+27)/5 = 41/5 = 8,2.'],conclusion:'Resposta: 8,2'},
+        {q:'DP de: 4,4,4,4,4:',visual:null,options:['A) 0','B) 1','C) 2','D) 4','E) 5'],answer:'A',steps:['Valores iguais → desvio = 0.'],conclusion:'Resposta: 0'},
+        {q:'Mediana de: 1,3,3,6,7,8,9:',visual:null,options:['A) 3','B) 5','C) 6','D) 7','E) 8'],answer:'C',steps:['7 valores — o 4° é 6.'],conclusion:'Resposta: 6'},
+        {q:'Medida mais afetada por outliers?',visual:null,options:['A) Moda','B) Mediana','C) Média','D) Amplitude','E) DP'],answer:'C',steps:['Média usa todos os valores.'],conclusion:'Resposta: Média'},
+        {q:'P(par) num dado de 6 faces:',visual:null,options:['A) 1/6','B) 1/3','C) 1/2','D) 2/3','E) 5/6'],answer:'C',steps:['Pares: 2,4,6 → 3/6 = 1/2.'],conclusion:'Resposta: 1/2'},
+        {q:'Média de conjunto aumenta c se somarmos 5 a todos:',visual:null,options:['A) c','B) c+2','C) c+5','D) 5c','E) 2c'],answer:'C',steps:['Somar c a todos aumenta média em c.'],conclusion:'Resposta: c+5'},
+        {q:'Desvio médio de: 2,4,6,8 (média=5):',visual:null,options:['A) 1','B) 2','C) 3','D) 4','E) 5'],answer:'B',steps:['|2-5|+|4-5|+|6-5|+|8-5| = 3+1+1+3 = 8. 8/4=2.'],conclusion:'Resposta: 2'},
       ],
     },
     '9°': {
       'geografia': [
-        {q:'O que é o aquecimento global?', visual:null, options:['A) Aumento natural da temperatura da Terra','B) Elevação da temperatura média da Terra causada por gases do efeito estufa','C) Variação climática local','D) Expansão dos desertos','E) Aquecimento dos oceanos apenas'], answer:'B', steps:['Aquecimento global = elevação da temperatura média terrestre por emissão de gases estufa.'], conclusion:'Resposta: Elevação da temperatura por gases estufa'},
-        {q:'Qual é o país com maior PIB do mundo?', visual:null, options:['A) China','B) Alemanha','C) Japão','D) EUA','E) Índia'], answer:'D', steps:['Os EUA têm o maior PIB nominal, acima de US$ 25 trilhões.'], conclusion:'Resposta: EUA'},
-        {q:'O que é a urbanização?', visual:null, options:['A) Diminuição da população urbana','B) Migração do campo para a cidade e crescimento das cidades','C) Crescimento rural','D) Industrialização agrícola','E) Êxodo urbano'], answer:'B', steps:['Urbanização = processo de crescimento das cidades e aumento da população urbana.'], conclusion:'Resposta: Migração campo→cidade e crescimento urbano'},
-        {q:'O que são placas tectônicas?', visual:null, options:['A) Tipos de rochas sedimentares','B) Fragmentos da crosta terrestre que se movem sobre o manto','C) Camadas da atmosfera','D) Tipos de relevos','E) Correntes oceânicas'], answer:'B', steps:['Placas tectônicas são grandes fragmentos da litosfera que se movem, causando terremotos e vulcões.'], conclusion:'Resposta: Fragmentos da crosta que se movem sobre o manto'},
-        {q:'O que é o êxodo rural?', visual:null, options:['A) Migração da cidade para o campo','B) Crescimento das cidades','C) Migração em massa do campo para a cidade','D) Desmatamento rural','E) Industrialização agrícola'], answer:'C', steps:['Êxodo rural = migração em massa da população rural para centros urbanos.'], conclusion:'Resposta: Migração em massa do campo para a cidade'},
-        {q:'Qual é o oceano mais profundo?', visual:null, options:['A) Atlântico','B) Índico','C) Ártico','D) Pacífico','E) Antártico'], answer:'D', steps:['O Pacífico tem a Fossa das Marianas, ponto mais profundo com ~11.000m.'], conclusion:'Resposta: Pacífico'},
-        {q:'O que é a desertificação?', visual:null, options:['A) Criação de desertos artificiais','B) Degradação de terras áridas, tornando-as improdutivas como deserto','C) Expansão de florestas','D) Tipo de erosão costeira','E) Formação de oásis'], answer:'B', steps:['Desertificação = degradação do solo em regiões áridas/semiáridas, tornando-as desérticas.'], conclusion:'Resposta: Degradação de terras tornando-as desérticas'},
-        {q:'Qual é o nome do fenômeno climático causado pelo aquecimento das águas do Pacífico?', visual:null, options:['A) La Niña','B) El Niño','C) Monção','D) Furacão','E) Anticiclone'], answer:'B', steps:['El Niño = aquecimento anômalo das águas do Pacífico Equatorial, afetando climas mundiais.'], conclusion:'Resposta: El Niño'},
-        {q:'O que é a Agenda 2030 da ONU?', visual:null, options:['A) Tratado militar','B) Acordo comercial entre países ricos','C) Plano global com 17 Objetivos de Desenvolvimento Sustentável (ODS)','D) Protocolo climático','E) Acordo monetário'], answer:'C', steps:['A Agenda 2030 tem 17 ODS para desenvolvimento sustentável global até 2030.'], conclusion:'Resposta: Plano com 17 Objetivos de Desenvolvimento Sustentável'},
-        {q:'O que é a pegada de carbono?', visual:null, options:['A) Poluição visual','B) Quantidade de CO₂ emitida por uma pessoa, empresa ou produto','C) Tipo de combustível','D) Medida de poluição sonora','E) Indicador de biodiversidade'], answer:'B', steps:['Pegada de carbono = total de gases de efeito estufa emitidos direta ou indiretamente.'], conclusion:'Resposta: Quantidade de CO₂ emitida por pessoa/empresa/produto'},
+        {q:'O que é aquecimento global?',visual:null,options:['A) Aumento natural','B) Elevação da temp. por gases estufa','C) Variação local','D) Expansão de desertos','E) Só oceanos'],answer:'B',steps:['Emissão de gases estufa pela ação humana.'],conclusion:'Resposta: Elevação da temperatura por gases estufa'},
+        {q:'País com maior PIB do mundo?',visual:null,options:['A) China','B) Alemanha','C) Japão','D) EUA','E) Índia'],answer:'D',steps:['EUA com mais de US$ 25 trilhões.'],conclusion:'Resposta: EUA'},
+        {q:'O que é urbanização?',visual:null,options:['A) Diminuição urbana','B) Migração campo→cidade','C) Crescimento rural','D) Industrialização agrícola','E) Êxodo urbano'],answer:'B',steps:['Crescimento das cidades e população urbana.'],conclusion:'Resposta: Migração campo→cidade'},
+        {q:'O que são placas tectônicas?',visual:null,options:['A) Rochas sedimentares','B) Fragmentos da crosta que se movem','C) Camadas da atmosfera','D) Tipos de relevo','E) Correntes oceânicas'],answer:'B',steps:['Fragmentos da litosfera que causam terremotos.'],conclusion:'Resposta: Fragmentos da crosta'},
+        {q:'O que é êxodo rural?',visual:null,options:['A) Cidade→campo','B) Crescimento urbano','C) Migração campo→cidade','D) Desmatamento','E) Industrialização'],answer:'C',steps:['Migração em massa do campo para centros urbanos.'],conclusion:'Resposta: Migração campo→cidade'},
+        {q:'Oceano mais profundo?',visual:null,options:['A) Atlântico','B) Índico','C) Ártico','D) Pacífico','E) Antártico'],answer:'D',steps:['Fossa das Marianas: ~11.000m.'],conclusion:'Resposta: Pacífico'},
+        {q:'O que é desertificação?',visual:null,options:['A) Desertos artificiais','B) Degradação de terras tornando-as desérticas','C) Expansão de florestas','D) Erosão costeira','E) Formação de oásis'],answer:'B',steps:['Degradação do solo em regiões áridas.'],conclusion:'Resposta: Degradação tornando terras desérticas'},
+        {q:'El Niño é:',visual:null,options:['A) La Niña','B) Aquecimento das águas do Pacífico Equatorial','C) Monção','D) Furacão','E) Anticiclone'],answer:'B',steps:['Aquecimento anômalo do Pacífico afeta climas mundiais.'],conclusion:'Resposta: Aquecimento do Pacífico Equatorial'},
+        {q:'Agenda 2030 da ONU:',visual:null,options:['A) Tratado militar','B) Acordo comercial','C) 17 Objetivos de Desenvolvimento Sustentável','D) Protocolo climático','E) Acordo monetário'],answer:'C',steps:['17 ODS para desenvolvimento sustentável até 2030.'],conclusion:'Resposta: 17 Objetivos de Desenvolvimento Sustentável'},
+        {q:'Pegada de carbono é:',visual:null,options:['A) Poluição visual','B) Quantidade de CO₂ emitida','C) Combustível','D) Poluição sonora','E) Biodiversidade'],answer:'B',steps:['Total de gases estufa emitidos por pessoa/empresa.'],conclusion:'Resposta: CO₂ emitido'},
       ],
       'biologia': [
-        {q:'O que é a engenharia genética?', visual:null, options:['A) Estudo de fósseis','B) Manipulação direta do DNA de organismos','C) Criação de animais híbridos naturais','D) Estudo do comportamento animal','E) Tipo de cirurgia cerebral'], answer:'B', steps:['Engenharia genética = técnicas de manipulação do DNA para modificar organismos.'], conclusion:'Resposta: Manipulação direta do DNA'},
-        {q:'O que são antibióticos?', visual:null, options:['A) Remédios que combatem vírus','B) Vacinas preventivas','C) Substâncias que combatem infecções bacterianas','D) Anti-inflamatórios','E) Hormônios artificiais'], answer:'C', steps:['Antibióticos combatem bactérias — não funcionam contra vírus.'], conclusion:'Resposta: Substâncias que combatem bactérias'},
-        {q:'O que é o câncer?', visual:null, options:['A) Infecção bacteriana','B) Doença causada por vírus','C) Crescimento descontrolado de células anormais','D) Deficiência imunológica','E) Doença genética sempre hereditária'], answer:'C', steps:['Câncer = multiplicação descontrolada de células que formam tumores malignos.'], conclusion:'Resposta: Crescimento descontrolado de células anormais'},
-        {q:'O que é a evolução das espécies?', visual:null, options:['A) Mudança individual de um organismo','B) Processo de transformação das espécies ao longo do tempo por seleção natural e mutações','C) Adaptação individual','D) Metamorfose','E) Hibridização'], answer:'B', steps:['Evolução = mudança das espécies ao longo de gerações por mutação e seleção natural (Darwin).'], conclusion:'Resposta: Transformação das espécies ao longo do tempo'},
-        {q:'O que é a CRISPR?', visual:null, options:['A) Tipo de vírus','B) Ferramenta de edição genética precisa','C) Proteína antibacteriana','D) Tipo de vacina','E) Órgão do sistema imune'], answer:'B', steps:['CRISPR-Cas9 é uma ferramenta molecular que permite editar sequências específicas do DNA.'], conclusion:'Resposta: Ferramenta de edição genética'},
-        {q:'O que é a neuroplasticidade?', visual:null, options:['A) Cirurgia cerebral','B) Capacidade do cérebro de se reorganizar e formar novas conexões','C) Doença neurológica','D) Tipo de neurônio','E) Substância química cerebral'], answer:'B', steps:['Neuroplasticidade = capacidade do cérebro de se adaptar, reorganizar e criar novas sinapses.'], conclusion:'Resposta: Capacidade do cérebro de se reorganizar'},
-        {q:'O que é a microbiota intestinal?', visual:null, options:['A) Parasitos intestinais','B) Conjunto de microrganismos (bactérias, fungos) que habitam o intestino','C) Enzimas digestivas','D) Tipo de célula intestinal','E) Hormônio digestivo'], answer:'B', steps:['A microbiota intestinal são trilhões de microrganismos que vivem no intestino e afetam a saúde.'], conclusion:'Resposta: Conjunto de microrganismos que habitam o intestino'},
-        {q:'O que é a epigenética?', visual:null, options:['A) Estudo de epidemias','B) Mutação do DNA','C) Modificações que afetam a expressão dos genes sem alterar o DNA','D) Tipo de evolução','E) Herança genética simples'], answer:'C', steps:['Epigenética = modificações na expressão gênica sem mudança na sequência do DNA (ambiente e comportamento).'], conclusion:'Resposta: Modificações na expressão gênica sem alterar o DNA'},
-        {q:'O que são células dendríticas?', visual:null, options:['A) Células nervosas ramificadas','B) Células do sistema imune que apresentam antígenos aos linfócitos','C) Células da pele','D) Células musculares especiais','E) Células do fígado'], answer:'B', steps:['Células dendríticas são APCs (Células Apresentadoras de Antígenos) — ativam o sistema imune.'], conclusion:'Resposta: Células que apresentam antígenos ao sistema imune'},
-        {q:'O que é a biônica?', visual:null, options:['A) Estudo de bactérias','B) Tipo de energia renovável','C) Campo que integra biologia e engenharia para criar sistemas artificiais inspirados na natureza','D) Cirurgia estética','E) Tipo de alimento funcional'], answer:'C', steps:['Biônica = ciência que usa princípios biológicos para criar soluções tecnológicas e dispositivos artificiais.'], conclusion:'Resposta: Integração de biologia e engenharia inspirada na natureza'},
+        {q:'O que é engenharia genética?',visual:null,options:['A) Fósseis','B) Manipulação direta do DNA','C) Híbridos naturais','D) Comportamento animal','E) Cirurgia cerebral'],answer:'B',steps:['Técnicas de manipulação do DNA.'],conclusion:'Resposta: Manipulação do DNA'},
+        {q:'O que são antibióticos?',visual:null,options:['A) Combatem vírus','B) Vacinas','C) Combatem infecções bacterianas','D) Anti-inflamatórios','E) Hormônios'],answer:'C',steps:['Antibióticos combatem bactérias — não vírus.'],conclusion:'Resposta: Combatem bactérias'},
+        {q:'O que é câncer?',visual:null,options:['A) Infecção bacteriana','B) Vírus','C) Crescimento descontrolado de células','D) Deficiência imune','E) Doença hereditária'],answer:'C',steps:['Multiplicação descontrolada de células anormais.'],conclusion:'Resposta: Crescimento descontrolado de células'},
+        {q:'O que é evolução das espécies?',visual:null,options:['A) Mudança individual','B) Transformação das espécies por seleção natural','C) Adaptação individual','D) Metamorfose','E) Hibridização'],answer:'B',steps:['Darwin: mutação + seleção natural ao longo de gerações.'],conclusion:'Resposta: Transformação ao longo do tempo'},
+        {q:'O que é CRISPR?',visual:null,options:['A) Vírus','B) Ferramenta de edição genética','C) Proteína','D) Vacina','E) Órgão imune'],answer:'B',steps:['CRISPR-Cas9: edita sequências específicas do DNA.'],conclusion:'Resposta: Edição genética'},
+        {q:'O que é neuroplasticidade?',visual:null,options:['A) Cirurgia cerebral','B) Capacidade do cérebro de se reorganizar','C) Doença neurológica','D) Tipo de neurônio','E) Substância química'],answer:'B',steps:['Cérebro adapta-se e cria novas sinapses.'],conclusion:'Resposta: Reorganização cerebral'},
+        {q:'Microbiota intestinal:',visual:null,options:['A) Parasitos','B) Microrganismos que habitam o intestino','C) Enzimas','D) Células','E) Hormônio'],answer:'B',steps:['Trilhões de microrganismos no intestino.'],conclusion:'Resposta: Microrganismos do intestino'},
+        {q:'O que é epigenética?',visual:null,options:['A) Epidemias','B) Mutação do DNA','C) Modificações na expressão gênica sem alterar o DNA','D) Evolução','E) Herança simples'],answer:'C',steps:['Expressão gênica modificada sem mudar o DNA.'],conclusion:'Resposta: Expressão gênica sem alterar DNA'},
+        {q:'O que é biônica?',visual:null,options:['A) Bactérias','B) Energia','C) Biologia + engenharia inspirada na natureza','D) Cirurgia estética','E) Alimento funcional'],answer:'C',steps:['Usa princípios biológicos para criar tecnologias.'],conclusion:'Resposta: Biologia + engenharia'},
+        {q:'Células dendríticas:',visual:null,options:['A) Nervosas','B) Apresentam antígenos ao sistema imune','C) Pele','D) Musculares','E) Fígado'],answer:'B',steps:['APCs que ativam o sistema imune.'],conclusion:'Resposta: Apresentam antígenos'},
       ],
       'gerais': [
-        {q:'O que é machine learning?', visual:null, options:['A) Programação manual de regras','B) Ensino de humanos por máquinas','C) Sistemas que aprendem com dados sem serem explicitamente programados','D) Tradução automática','E) Robótica industrial'], answer:'C', steps:['Machine learning = sistemas de IA que aprendem padrões a partir de dados.'], conclusion:'Resposta: Sistemas que aprendem com dados'},
-        {q:'O que é a criptomoeda?', visual:null, options:['A) Moeda física segura','B) Moeda digital descentralizada baseada em criptografia','C) Tipo de cartão de crédito','D) Moeda do governo digital','E) Investimento bancário'], answer:'B', steps:['Criptomoeda = moeda digital descentralizada que usa criptografia (ex: Bitcoin, Ethereum).'], conclusion:'Resposta: Moeda digital descentralizada baseada em criptografia'},
-        {q:'O que é o efeito estufa?', visual:null, options:['A) Aquecimento artificial de estufas agrícolas','B) Fenômeno natural em que a atmosfera retém calor, aquecendo a Terra','C) Tipo de poluição industrial','D) Fenômeno da camada de ozônio','E) Processo de nuvens'], answer:'B', steps:['O efeito estufa é natural e essencial — gases retêm calor solar, mantendo a Terra habitável.'], conclusion:'Resposta: Atmosfera que retém calor aquecendo a Terra'},
-        {q:'O que é o metaverso?', visual:null, options:['A) Novo planeta descoberto','B) Rede social avançada','C) Ambiente virtual imersivo e persistente onde pessoas interagem','D) Tipo de inteligência artificial','E) Sistema operacional'], answer:'C', steps:['Metaverso = mundo virtual 3D imersivo onde pessoas se conectam, trabalham e socializam.'], conclusion:'Resposta: Ambiente virtual imersivo e persistente'},
-        {q:'Qual é a principal causa da extinção das espécies atualmente?', visual:null, options:['A) Asteroides','B) Vulcões','C) Ação humana (desmatamento, poluição, caça)','D) Mudanças climáticas naturais','E) Doenças'], answer:'C', steps:['A ação humana é a principal causa da 6ª extinção em massa: desmatamento, caça e poluição.'], conclusion:'Resposta: Ação humana'},
-        {q:'O que é a computação quântica?', visual:null, options:['A) Computação muito rápida','B) Computação que usa princípios da mecânica quântica com qubits','C) Rede de computadores','D) Inteligência artificial avançada','E) Armazenamento em nuvem'], answer:'B', steps:['Computação quântica usa qubits (superposição e entrelaçamento quântico) para processamento.'], conclusion:'Resposta: Computação com princípios quânticos usando qubits'},
-        {q:'O que é a Declaração Universal dos Direitos Humanos?', visual:null, options:['A) Lei brasileira de 1988','B) Tratado militar da ONU','C) Documento da ONU (1948) que proclama direitos fundamentais a todos os seres humanos','D) Acordo econômico mundial','E) Constituição da Europa'], answer:'C', steps:['A DUDH foi adotada pela ONU em 1948, proclamando direitos universais para todos.'], conclusion:'Resposta: Documento da ONU de 1948 com direitos fundamentais'},
-        {q:'O que é a nanotecnologia?', visual:null, options:['A) Tecnologia muito grande','B) Tecnologia de satélites','C) Manipulação de matéria em escala nanométrica (bilionésimos de metro)','D) Tipo de robótica','E) Impressão 3D'], answer:'C', steps:['Nanotecnologia = ciência e engenharia em escala nanométrica (1nm = 10⁻⁹m).'], conclusion:'Resposta: Manipulação de matéria em escala nanométrica'},
-        {q:'O que é a responsabilidade social empresarial?', visual:null, options:['A) Pagar impostos','B) Obedecer às leis','C) Comprometimento voluntário das empresas com desenvolvimento social e ambiental','D) Ter lucro sustentável','E) Contratar funcionários'], answer:'C', steps:['RSE = ações voluntárias das empresas para impacto positivo na sociedade e meio ambiente.'], conclusion:'Resposta: Comprometimento voluntário com desenvolvimento social e ambiental'},
-        {q:'O que é a Internet das Coisas (IoT)?', visual:null, options:['A) Rede social global','B) Conexão de objetos físicos à internet para coletar e trocar dados','C) Sistema de vigilância','D) Rede 5G','E) Tipo de nuvem computacional'], answer:'B', steps:['IoT = objetos físicos (eletrodomésticos, carros, sensores) conectados à internet.'], conclusion:'Resposta: Conexão de objetos físicos à internet'},
+        {q:'O que é machine learning?',visual:null,options:['A) Programação manual','B) Máquinas ensinam humanos','C) Sistemas que aprendem com dados','D) Tradução automática','E) Robótica'],answer:'C',steps:['Sistemas de IA que aprendem padrões a partir de dados.'],conclusion:'Resposta: Sistemas que aprendem com dados'},
+        {q:'O que é criptomoeda?',visual:null,options:['A) Moeda física segura','B) Moeda digital descentralizada','C) Cartão de crédito','D) Moeda do governo','E) Investimento bancário'],answer:'B',steps:['Ex: Bitcoin — descentralizada e criptografada.'],conclusion:'Resposta: Moeda digital descentralizada'},
+        {q:'O que é efeito estufa?',visual:null,options:['A) Estufas agrícolas','B) Atmosfera retém calor aquecendo a Terra','C) Poluição industrial','D) Camada de ozônio','E) Nuvens'],answer:'B',steps:['Natural e essencial: gases retêm calor solar.'],conclusion:'Resposta: Atmosfera retém calor'},
+        {q:'O que é metaverso?',visual:null,options:['A) Planeta','B) Rede social','C) Ambiente virtual imersivo e persistente','D) IA','E) Sistema operacional'],answer:'C',steps:['Mundo virtual 3D onde pessoas se conectam.'],conclusion:'Resposta: Ambiente virtual imersivo'},
+        {q:'Principal causa de extinção das espécies hoje?',visual:null,options:['A) Asteroides','B) Vulcões','C) Ação humana','D) Mudanças naturais','E) Doenças'],answer:'C',steps:['Desmatamento, caça e poluição pela ação humana.'],conclusion:'Resposta: Ação humana'},
+        {q:'O que é computação quântica?',visual:null,options:['A) Muito rápida','B) Usa qubits e mecânica quântica','C) Rede de computadores','D) IA avançada','E) Nuvem'],answer:'B',steps:['Qubits com superposição e entrelaçamento.'],conclusion:'Resposta: Qubits e mecânica quântica'},
+        {q:'Declaração Universal dos Direitos Humanos:',visual:null,options:['A) Lei brasileira 1988','B) Tratado militar','C) Documento ONU 1948 com direitos fundamentais','D) Acordo econômico','E) Constituição europeia'],answer:'C',steps:['ONU, 1948: direitos universais a todos.'],conclusion:'Resposta: ONU 1948'},
+        {q:'O que é nanotecnologia?',visual:null,options:['A) Tecnologia grande','B) Satélites','C) Matéria em escala nanométrica','D) Robótica','E) Impressão 3D'],answer:'C',steps:['1nm = 10⁻⁹m.'],conclusion:'Resposta: Escala nanométrica'},
+        {q:'O que é IoT?',visual:null,options:['A) Rede social','B) Objetos físicos conectados à internet','C) Vigilância','D) Rede 5G','E) Nuvem'],answer:'B',steps:['Objetos físicos que coletam e trocam dados.'],conclusion:'Resposta: Objetos conectados à internet'},
+        {q:'O que é RSE?',visual:null,options:['A) Pagar impostos','B) Obedecer leis','C) Comprometimento voluntário com responsabilidade social','D) Ter lucro','E) Contratar'],answer:'C',steps:['Ações voluntárias para impacto positivo na sociedade.'],conclusion:'Resposta: Comprometimento voluntário social'},
       ],
       'estatistica': [
-        {q:'Variância de: 2, 4, 6 (média=4):', visual:null, options:['A) 2','B) 2,67','C) 4','D) 8','E) 12'], answer:'C', steps:['Desvios²: (2-4)²=4, (4-4)²=0, (6-4)²=4. Variância=(4+0+4)/3=8/3≈<code>2,67</code>... população: 8/3. Amostra: 8/2=4.'], conclusion:'Resposta: 4 (variância amostral)'},
-        {q:'Desvio padrão de: 2, 4, 6 (variância=4):', visual:null, options:['A) 1','B) 1,5','C) 2','D) 4','E) 8'], answer:'C', steps:['DP = √variância = √4 = <code>2</code>.'], conclusion:'Resposta: 2'},
-        {q:'P(A∪B) quando P(A)=0,3, P(B)=0,4, P(A∩B)=0,1:', visual:null, options:['A) 0,5','B) 0,6','C) 0,7','D) 0,8','E) 1'], answer:'B', steps:['P(A∪B) = P(A)+P(B)-P(A∩B) = 0,3+0,4-0,1 = <code>0,6</code>.'], conclusion:'Resposta: 0,6'},
-        {q:'Em uma distribuição normal, 68% dos dados estão dentro de:', visual:null, options:['A) 1 desvio padrão da média','B) 2 desvios padrão','C) 3 desvios padrão','D) 4 desvios padrão','E) Metade dos dados'], answer:'A', steps:['Regra 68-95-99,7: 68% ficam a ±1DP da média na distribuição normal.'], conclusion:'Resposta: 1 desvio padrão da média'},
-        {q:'Coeficiente de variação (CV) = (DP/média)×100. Com DP=5 e média=25:', visual:null, options:['A) 10%','B) 15%','C) 20%','D) 25%','E) 30%'], answer:'C', steps:['CV = (5/25)×100 = 0,2×100 = <code>20%</code>.'], conclusion:'Resposta: 20%'},
-        {q:'Probabilidade de tirar 2 caras em 2 lançamentos de moeda:', visual:null, options:['A) 1/8','B) 1/4','C) 1/3','D) 1/2','E) 3/4'], answer:'B', steps:['P = (1/2)×(1/2) = <code>1/4</code>.'], conclusion:'Resposta: 1/4'},
-        {q:'A mediana divide a distribuição em:', visual:null, options:['A) 33% e 67%','B) 25% e 75%','C) 50% e 50%','D) 40% e 60%','E) Depende dos dados'], answer:'C', steps:['A mediana é o valor que divide a distribuição ao meio: 50% abaixo e 50% acima.'], conclusion:'Resposta: 50% e 50%'},
-        {q:'O que é o quartil Q1?', visual:null, options:['A) Mediana da metade superior','B) 25° percentil — valor abaixo do qual está 25% dos dados','C) Primeiro decil','D) Valor mínimo','E) Média do primeiro quarto'], answer:'B', steps:['Q1 (1° quartil) = 25° percentil = 25% dos dados estão abaixo deste valor.'], conclusion:'Resposta: 25° percentil'},
-        {q:'Correlação de +1 entre X e Y indica:', visual:null, options:['A) Sem relação entre X e Y','B) Relação inversa perfeita','C) Relação direta perfeita','D) Relação fraca positiva','E) Causalidade de X em Y'], answer:'C', steps:['Correlação +1 = relação linear positiva perfeita: quando X aumenta, Y aumenta proporcionalmente.'], conclusion:'Resposta: Relação direta perfeita'},
-        {q:'Qual é a fórmula da média ponderada?', visual:null, options:['A) Σx/n','B) Σ(xi×wi)/Σwi','C) (máx+mín)/2','D) Σ(xi-x̄)²/n','E) √(Σxi²/n)'], answer:'B', steps:['Média ponderada = soma dos produtos (valor × peso) dividida pela soma dos pesos.'], conclusion:'Resposta: Σ(xi×wi)/Σwi'},
+        {q:'P(A∪B) com P(A)=0,3, P(B)=0,4, P(A∩B)=0,1:',visual:null,options:['A) 0,5','B) 0,6','C) 0,7','D) 0,8','E) 1'],answer:'B',steps:['0,3+0,4-0,1 = 0,6.'],conclusion:'Resposta: 0,6'},
+        {q:'DP de: 2,4,6 (var amostral=4):',visual:null,options:['A) 1','B) 1,5','C) 2','D) 4','E) 8'],answer:'C',steps:['DP = √4 = 2.'],conclusion:'Resposta: 2'},
+        {q:'68% dos dados em distribuição normal ficam em:',visual:null,options:['A) ±1 DP','B) ±2 DP','C) ±3 DP','D) ±4 DP','E) Metade'],answer:'A',steps:['Regra 68-95-99,7.'],conclusion:'Resposta: ±1 DP'},
+        {q:'CV = (DP/média)×100. DP=5, média=25:',visual:null,options:['A) 10%','B) 15%','C) 20%','D) 25%','E) 30%'],answer:'C',steps:['(5/25)×100 = 20%.'],conclusion:'Resposta: 20%'},
+        {q:'P(2 caras em 2 lançamentos):',visual:null,options:['A) 1/8','B) 1/4','C) 1/3','D) 1/2','E) 3/4'],answer:'B',steps:['(1/2)×(1/2) = 1/4.'],conclusion:'Resposta: 1/4'},
+        {q:'Mediana divide em:',visual:null,options:['A) 33/67','B) 25/75','C) 50/50','D) 40/60','E) Depende'],answer:'C',steps:['50% abaixo e 50% acima.'],conclusion:'Resposta: 50/50'},
+        {q:'Q1 é:',visual:null,options:['A) Mediana da metade superior','B) 25° percentil','C) 1° decil','D) Mínimo','E) Média do 1° quarto'],answer:'B',steps:['Q1 = 25° percentil.'],conclusion:'Resposta: 25° percentil'},
+        {q:'Correlação +1 indica:',visual:null,options:['A) Sem relação','B) Relação inversa perfeita','C) Relação direta perfeita','D) Relação fraca','E) Causalidade'],answer:'C',steps:['X aumenta → Y aumenta proporcionalmente.'],conclusion:'Resposta: Relação direta perfeita'},
+        {q:'Fórmula da média ponderada:',visual:null,options:['A) Σx/n','B) Σ(xi×wi)/Σwi','C) (máx+mín)/2','D) Σ(xi-x̄)²/n','E) √(Σxi²/n)'],answer:'B',steps:['Soma dos produtos dividida pela soma dos pesos.'],conclusion:'Resposta: Σ(xi×wi)/Σwi'},
+        {q:'Moda de: 3,5,5,7,9,5,3,2:',visual:null,options:['A) 3','B) 5','C) 7','D) 2','E) 4'],answer:'B',steps:['5 aparece 3 vezes.'],conclusion:'Resposta: 5'},
       ],
     },
   };
 
-  // Merge extraQuestions into allQuestions
+  // Merge extra into allQuestions
   for (const ano of Object.keys(extraQuestions)) {
     if (!allQuestions[ano]) allQuestions[ano] = {};
     for (const cat of Object.keys(extraQuestions[ano])) {
       allQuestions[ano][cat] = extraQuestions[ano][cat];
     }
   }
-
-  // Remove placeholder
-  delete allQuestions['5°_geo'];
 
   return allQuestions[ano]?.[cat] || [];
 }
@@ -1261,9 +1222,6 @@ function getPuzzlesFor(ano, cat) {
 // ============================================
 // CONTINUAÇÃO DO CÓDIGO (Funções existentes)
 // ============================================
-// (Aqui vai todo o resto do código JavaScript que já estava funcionando)
-// Como o código é muito longo, mantive as funções principais.
-// O banco de questões acima é a única alteração necessária.
 
 // ============================================
 // SHARE FUNCTIONS
@@ -1800,18 +1758,12 @@ function goHome(){
 // SUPABASE AUTH
 // ============================================
 async function onSplashStart() {
-  const timeout = setTimeout(() => {
-    if(document.getElementById('screen-splash')?.classList.contains('active'))
-      showScreen('screen-auth');
-  }, 4000);
   try {
     const { data } = await _sb.auth.getSession();
-    clearTimeout(timeout);
     const user = data?.session?.user;
     if(user){ _sbUser=user; await sbLoadAndGo(user); }
     else showScreen('screen-auth');
   } catch(e) {
-    clearTimeout(timeout);
     showScreen('screen-auth');
   }
 }
@@ -1868,60 +1820,9 @@ async function doSignup() {
 
 async function doGoogleLogin() {
   const msg = document.getElementById('auth-error');
-  if(msg){ msg.textContent = ''; msg.style.color = ''; }
-  try {
-    const { error } = await _sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href }
-    });
-    if(error && msg){
-      msg.style.color = 'var(--yellow)';
-      msg.textContent = (error.message.includes('provider') || error.message.includes('enabled'))
-        ? 'Ative o Google: Supabase > Authentication > Providers > Google'
-        : error.message;
-    }
-  } catch(e) {
-    if(msg){ msg.style.color='var(--yellow)'; msg.textContent='Erro ao conectar com Google.'; }
-  }
+  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar.';
+  msg.style.color = 'var(--yellow)';
 }
-
-// Captura retorno OAuth redirect (hash fragment na URL após redirect do Google)
-_sb.auth.onAuthStateChange(async (event, session) => {
-  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
-    if (!_sbUser) {
-      _sbUser = session.user;
-      await sbLoadAndGo(session.user);
-    }
-  }
-});
-
-// Detecta automaticamente sessão ao carregar a página (resolve o loop do Google OAuth)
-(async function autoDetectSession() {
-  // Se a URL tem access_token ou code no hash/query = voltou do OAuth
-  const hasOAuthParams = window.location.hash.includes('access_token') ||
-                         window.location.hash.includes('error') ||
-                         window.location.search.includes('code=') ||
-                         window.location.search.includes('error=');
-  if (hasOAuthParams) {
-    // Mostra splash direto para não mostrar tela de login enquanto processa
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const splash = document.getElementById('screen-splash');
-    if (splash) splash.classList.add('active');
-    // Aguarda Supabase processar os tokens do hash
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      const { data } = await _sb.auth.getSession();
-      if (data?.session?.user) {
-        _sbUser = data.session.user;
-        await sbLoadAndGo(data.session.user);
-        return;
-      }
-    } catch(e) {}
-    // Limpa a URL e vai para auth se falhou
-    window.history.replaceState({}, document.title, window.location.pathname);
-    showScreen('screen-auth');
-  }
-})();
 
 async function sbLoadAndGo(user) {
   try {
@@ -2045,41 +1946,21 @@ function loadHistory() {
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
-console.log('NardIQ PWA iniciado! Supabase: jcwgzovdcfgfnciqudox');
-// Checa instalacao iOS apos carregar
-window.addEventListener('load', function() {
-  setTimeout(checkiOSInstall, 2000);
-  // Mostra banner manual se Chrome nao disparou beforeinstallprompt em 5s
-  setTimeout(function() {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-    if (!isStandalone && !installBannerVisible) {
-      const banner = document.getElementById('install-banner');
-      if (banner) {
-        if (deferredPrompt) {
-          showInstallBanner();
-        } else {
-          // Instrucao manual para Android Chrome
-          banner.querySelector('span:nth-child(2)').textContent = 'Instalar: menu ⋮ → "Adicionar à tela inicial"';
-          banner.classList.add('visible');
-          installBannerVisible = true;
-        }
-      }
-    }
-  }, 5000);
-});
+console.log('🚀 NardIQ PWA iniciado!');
 console.log('📚 Banco de questões: 250 perguntas');
 console.log('🔗 Supabase URL:', 'https://jcwgzovdcfgfnciqudox.supabase.co');
 
+// Verificar se já está instalado como PWA
 if (window.matchMedia('(display-mode: standalone)').matches) {
   console.log('📱 App está rodando como PWA instalado');
+  // Esconder banner se já estiver instalado
+  hideInstallBanner();
 }
 
-// ============================================
-// SERVICE WORKER — REGISTRO PWA
-// ============================================
+// Verificar se o navegador suporta service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/NardIQ/sw.js')
+    navigator.serviceWorker.register('/sw.js')
       .then(reg => console.log('SW registrado:', reg.scope))
       .catch(err => console.log('SW erro:', err));
   });
