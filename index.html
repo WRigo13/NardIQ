@@ -1820,17 +1820,47 @@ async function doSignup() {
 
 async function doGoogleLogin() {
   const msg = document.getElementById('auth-error');
-  msg.textContent = '⚠️ Google OAuth não está ativado. Use e-mail e senha para entrar.';
-  msg.style.color = 'var(--yellow)';
+  if(msg){ msg.textContent = ''; }
+  try {
+    const { error } = await _sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://wrigo13.github.io/NardIQ/'
+      }
+    });
+    if(error && msg){
+      msg.style.color = 'var(--red)';
+      msg.textContent = 'Erro: ' + error.message;
+    }
+  } catch(e) {
+    if(msg){ msg.textContent = 'Erro de conexão.'; }
+  }
 }
+
+// Detecta retorno do OAuth ao carregar a página
+(async function handleOAuthReturn() {
+  const hash = window.location.hash;
+  const search = window.location.search;
+  if (hash.includes('access_token') || search.includes('code=')) {
+    try {
+      const { data } = await _sb.auth.getSession();
+      if (data?.session?.user) {
+        _sbUser = data.session.user;
+        // Limpa a URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        await sbLoadAndGo(data.session.user);
+      }
+    } catch(e) { console.log('OAuth return error:', e); }
+  }
+})();
 
 async function sbLoadAndGo(user) {
   try {
-    let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+    let{data}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).maybeSingle();
     if(!data){
       const username = (user.user_metadata?.full_name||user.email||'jogador').split(' ')[0].replace(/[^a-zA-Z0-9]/g,'').slice(0,16)||('user'+Math.floor(Math.random()*9999));
       await _sb.from('nardiq_profiles').insert({id:user.id,username,xp:0,best_streak:0,total_correct:0,total_questions:0});
-      const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).single();
+      const{data:d2}=await _sb.from('nardiq_profiles').select('*').eq('id',user.id).maybeSingle();
       data=d2;
     }
     _sbProfile=data;
