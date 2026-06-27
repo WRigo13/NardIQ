@@ -1664,6 +1664,117 @@ function selectAno(a) { state.ano=a; renderHome(); }
 // ============================================
 // QUIZ FUNCTIONS (Principais)
 // ============================================
+
+// ═══════════════════════════════════════════════════════
+// IA — GERADOR DE QUESTÕES INFINITAS (Claude API)
+// ═══════════════════════════════════════════════════════
+const AI_QUEUE = {};      // {catKey_ano: [questões geradas]}
+const AI_GENERATING = {}; // flag para evitar chamadas duplas
+const AI_USED = {};       // hashes de questões já vistas
+
+function qHash(q) {
+  return (q.q||'').slice(0,40).replace(/\s/g,'');
+}
+
+function catNameForAI(catKey) {
+  const map = {
+    sequencias:'Sequências numéricas', algebra:'Álgebra', equacoes:'Equações',
+    logica:'Raciocínio Lógico', geometria:'Geometria', geografia:'Geografia',
+    biologia:'Biologia', gerais:'Conhecimentos Gerais', estatistica:'Estatística (Média, Moda, Mediana)',
+    portugues:'Português e Figuras de Linguagem', fisica:'Física', quimica:'Química',
+    enem:'Questão estilo ENEM'
+  };
+  return map[catKey] || catKey;
+}
+
+async function generateAIQuestions(catKey, ano) {
+  const key = catKey + '_' + ano;
+  if (AI_GENERATING[key]) return;
+  AI_GENERATING[key] = true;
+  if (!AI_QUEUE[key]) AI_QUEUE[key] = [];
+  if (!AI_USED[key]) AI_USED[key] = new Set();
+
+  const catName = catNameForAI(catKey);
+  const prompt = `Gere 5 questões de múltipla escolha DIFERENTES sobre "${catName}" para alunos do ${ano} ano do ensino fundamental brasileiro.
+
+REGRAS OBRIGATÓRIAS:
+- Cada questão deve ser COMPLETAMENTE DIFERENTE das anteriores
+- 4 alternativas (A, B, C, D)
+- Nível adequado para o ${ano} ano
+- Didática e clara
+- Explique o raciocínio nos steps
+
+Responda SOMENTE com JSON válido, sem texto extra, neste formato exato:
+[
+  {
+    "q": "Texto da questão aqui?",
+    "options": ["A) opção1", "B) opção2", "C) opção3", "D) opção4"],
+    "answer": "A",
+    "steps": ["Passo 1 explicando", "Passo 2 com <code>resposta</code>"],
+    "conclusion": "Resposta: valor correto"
+  }
+]`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) throw new Error('API error: ' + res.status);
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+
+    // Parse JSON from response
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('No JSON found');
+
+    const questions = JSON.parse(jsonMatch[0]);
+
+    for (const q of questions) {
+      const hash = qHash(q);
+      if (!AI_USED[key].has(hash) && q.q && q.options && q.answer) {
+        q.aiGenerated = true;
+        q.visual = null;
+        AI_QUEUE[key].push(q);
+        AI_USED[key].add(hash);
+      }
+    }
+    console.log(`🤖 IA gerou ${questions.length} questões para ${key}. Fila: ${AI_QUEUE[key].length}`);
+  } catch(e) {
+    console.log('IA error:', e.message);
+  }
+  AI_GENERATING[key] = false;
+}
+
+function getNextAIQuestion(catKey, ano) {
+  const key = catKey + '_' + ano;
+  if (!AI_QUEUE[key] || AI_QUEUE[key].length === 0) return null;
+  // Repõe fila quando < 3
+  if (AI_QUEUE[key].length < 3) {
+    generateAIQuestions(catKey, ano);
+  }
+  return AI_QUEUE[key].shift();
+}
+
+function injectAIQuestion() {
+  // A cada 3 questões do banco, injeta 1 da IA
+  const key = state.category + '_' + state.ano;
+  const aiQ = getNextAIQuestion(state.category, state.ano);
+  if (aiQ) {
+    // Injeta na posição atual + 2
+    const insertAt = Math.min(state.currentIndex + 2, state.currentQuestions.length);
+    state.currentQuestions.splice(insertAt, 0, aiQ);
+    renderProgress();
+    console.log('🤖 Questão IA injetada na posição', insertAt);
+  }
+}
+
 function startQuiz(catKey) {
   state.category = catKey;
   state.lives=3; state.streak=0;
@@ -1696,6 +1807,9 @@ function startQuiz(catKey) {
   showScreen('quiz');
   renderProgress();
   loadQuestion();
+
+  // Pré-gera questões IA em background
+  generateAIQuestions(catKey, state.ano);
 }
 
 function renderProgress() {
@@ -1737,6 +1851,7 @@ function loadQuestion() {
     const area=$id('question-area');
     if(!area) return;
     area.innerHTML = `
+      ${q.aiGenerated ? '<div style="display:inline-flex;align-items:center;gap:5px;background:color-mix(in srgb,#A78BFA 15%,var(--surface));border:1px solid #A78BFA;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:#A78BFA;margin-bottom:8px">🤖 Gerada por IA</div>' : ''}
       <div class="q-text">${escHtml(q.q)}</div>
       ${renderVisual(q)}
       <div class="options-list">${(q.options||[]).map((o,i)=>`
@@ -1845,6 +1960,10 @@ function selectOption(i) {
     $set('quiz-xp','textContent',state.sessionXp+' XP');
     if(state.streak>=3){$cls('streak-badge').add('visible');$set('streak-num','textContent',state.streak);}
     showXpFloat('+'+xpEarned+' XP');
+    // A cada 3 acertos, injeta questão da IA
+    if(state.sessionCorrect % 3 === 0 && state.sessionCorrect > 0) {
+      injectAIQuestion();
+    }
   } else {
     state.sessionWrong++; state.streak=0;
     $cls('streak-badge').remove('visible');
