@@ -1695,35 +1695,38 @@ async function generateAIQuestions(catKey, ano) {
   if (!AI_USED[key]) AI_USED[key] = new Set();
 
   const catName = catNameForAI(catKey);
-  const prompt = `Gere 5 questões de múltipla escolha DIFERENTES sobre "${catName}" para alunos do ${ano} ano do ensino fundamental brasileiro.
+  // Usa timestamp + random para garantir variedade total
+  const seed = Date.now() + Math.random().toString(36).slice(2);
+  const prompt = `Gere 5 questões de múltipla escolha INÉDITAS e VARIADAS sobre "${catName}" para alunos do ${ano} ano do ensino fundamental brasileiro. Seed de aleatoriedade: ${seed}
 
-REGRAS OBRIGATÓRIAS:
-- Cada questão deve ser COMPLETAMENTE DIFERENTE das anteriores
+REGRAS:
+- As questões devem ser COMPLETAMENTE DIFERENTES entre si
+- Aborde subtópicos VARIADOS dentro de "${catName}"
 - 4 alternativas (A, B, C, D)
-- Nível adequado para o ${ano} ano
-- Didática e clara
-- Explique o raciocínio nos steps
+- Nível adequado para ${ano} ano
+- Inclua questões contextualizadas com situações do cotidiano brasileiro
+- Explique o raciocínio detalhado nos steps
+- Use <code>resposta</code> para destacar a resposta nos steps
 
-Responda SOMENTE com JSON válido, sem texto extra, neste formato exato:
+Responda APENAS com JSON válido (sem texto antes ou depois), neste formato:
 [
   {
-    "q": "Texto da questão aqui?",
+    "q": "Texto da questão?",
     "options": ["A) opção1", "B) opção2", "C) opção3", "D) opção4"],
-    "answer": "A",
-    "steps": ["Passo 1 explicando", "Passo 2 com <code>resposta</code>"],
-    "conclusion": "Resposta: valor correto"
+    "answer": "B",
+    "steps": ["Passo 1 de raciocínio", "Cálculo: resultado = <code>valor</code>"],
+    "conclusion": "Resposta: valor"
   }
 ]`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://jcwgzovdcfgfnciqudox.supabase.co/functions/v1/ai-questions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjd2d6b3ZkY2ZnZm5jaXF1ZG94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4MTIzMDIsImV4cCI6MjA5NzM4ODMwMn0.1DzJbGUWtW_21hNTs3EspmJaf3-hMMkeUN5JWRf8ka0'
+      },
+      body: JSON.stringify({ prompt })
     });
 
     if (!res.ok) throw new Error('API error: ' + res.status);
@@ -1747,7 +1750,10 @@ Responda SOMENTE com JSON válido, sem texto extra, neste formato exato:
     }
     console.log(`🤖 IA gerou ${questions.length} questões para ${key}. Fila: ${AI_QUEUE[key].length}`);
   } catch(e) {
-    console.log('IA error:', e.message);
+    console.warn('🤖 IA error:', e.message);
+    // Tenta novamente em 10s
+    setTimeout(() => { AI_GENERATING[key] = false; }, 10000);
+    return;
   }
   AI_GENERATING[key] = false;
 }
